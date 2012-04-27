@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <CommonArea>trunk</CommonArea>
+    <RestApiArea>trunk</RestApiArea>
+    <BugTrapArea>1.3.3718.38316</BugTrapArea>
+    <Log4QtArea>trunk</Log4QtArea>
+    <CoreArea>trunk</CoreArea>
+    <SettingsArea>trunk</SettingsArea>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="CommonArea">
+      <Value>$(CommonArea)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="RestApiArea">
+      <Value>$(RestApiArea)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="BugTrapArea">
+      <Value>$(BugTrapArea)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="Log4QtArea">
+      <Value>$(Log4QtArea)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="CoreArea">
+      <Value>$(CoreArea)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="SettingsArea">
+      <Value>$(SettingsArea)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

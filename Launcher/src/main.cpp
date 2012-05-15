@@ -53,7 +53,8 @@ int main(int argc, char *argv[])
 #ifdef _DEBUG
     LogManager::setThreshold(Level::ALL_INT);
 #else
-    LogManager::setThreshold(Level::WARN_INT);
+    //LogManager::setThreshold(Level::WARN_INT);
+    LogManager::setThreshold(Level::ALL_INT);
 #endif
     LogManager::setHandleQtMessages(true);
     //--- End of prepare log4qt

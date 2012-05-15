@@ -92,6 +92,7 @@ xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\bin\*d.dll" "$(Tar
 xcopy /Y /I /R "$(TargetDir)..\..\GameExecutor\$(ConfigurationName)\*.dll" "$(TargetDir)"
 xcopy /Y /I /R "$(TargetDir)..\..\Launcher\$(ConfigurationName)\*.*" "$(TargetDir)"
 xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\bin\*.dll" "$(TargetDir)"
+@echo xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\bin\*.dll" "$(TargetDir)"
 xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\bin\*.dll" "$(TargetDir)"
 xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\bin\*.dll" "$(TargetDir)"
 del /F /S /Q "$(TargetDir)*d.dll"</Command>

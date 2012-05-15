@@ -208,7 +208,11 @@ namespace GGS {
 
       void ExecutableFile::launcherStart()
       {
+#ifdef _DEBUG
+        this->_process.start(QCoreApplication::applicationDirPath() + "/Launcherd.exe");
+#else
         this->_process.start(QCoreApplication::applicationDirPath() + "/Launcher.exe");
+#endif
       }
     }
   }

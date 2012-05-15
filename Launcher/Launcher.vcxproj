@@ -69,7 +69,14 @@ xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\bin\*.dll" "$(TargetDir)"
 xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\bin\*.dll" "$(TargetDir)"
 xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\bin\*.dll" "$(TargetDir)"
 xcopy /Y /I /R "$(QGNACOMMONDIR)\IntelleSoft\BugTrap\$(BugTrapArea)\bin\*.dll" "$(TargetDir)"
-xcopy /Y /I /R "$(QGNACOMMONDIR)\Log4Qt\$(Log4QtArea)\bin\*.dll" "$(TargetDir)"</Command>
+xcopy /Y /I /R "$(QGNACOMMONDIR)\Log4Qt\$(Log4QtArea)\bin\*.dll" "$(TargetDir)"
+
+IF NOT "$(QGNACOMMONDIR)"=="" (
+xcopy /Y /I /R "$(TargetDir)*.exe" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\bin"
+) else (
+ECHO QGNACOMMONDIR not defined!
+EXIT /B 1
+)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -95,7 +102,14 @@ xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\bin\*.dll" "$(Target
 xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\bin\*.dll" "$(TargetDir)"
 xcopy /Y /I /R "$(QGNACOMMONDIR)\IntelleSoft\BugTrap\$(BugTrapArea)\bin\*.dll" "$(TargetDir)"
 xcopy /Y /I /R "$(QGNACOMMONDIR)\Log4Qt\$(Log4QtArea)\bin\*.dll" "$(TargetDir)"
-del /F /S /Q "$(TargetDir)*d.dll"</Command>
+del /F /S /Q "$(TargetDir)*d.dll"
+
+IF NOT "$(QGNACOMMONDIR)"=="" (
+xcopy /Y /I /R "$(TargetDir)*.exe" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\bin"
+) else (
+ECHO QGNACOMMONDIR not defined!
+EXIT /B 1
+)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

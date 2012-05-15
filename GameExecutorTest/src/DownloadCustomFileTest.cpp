@@ -27,7 +27,8 @@ TEST(DownloadCustomFileTest, Success)
   QUrl url;
   url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml");
   url.addQueryItem("downloadCustomFileOverride", "1");
-
+  url.addQueryItem("downloadCustomFileUrl", "http://files.gamenet.ru/update/bs/");
+  //http://files.gamenet.ru/update/bs/live/launcher/serverinfo_back.xml
   Core::Service srvHook;
   srvHook.setUrl(url);
   srvHook.setArea(Core::Service::Live);
@@ -36,9 +37,9 @@ TEST(DownloadCustomFileTest, Success)
   QString basePath = QCoreApplication::applicationDirPath();
   QDir().mkpath(basePath + "/launcher");
   
-  srvHook.setExtractionPath(basePath);
+  srvHook.setInstallPath(basePath);
 
-  QFile file(basePath + "./launcher/serverinfo_back.xml");
+  QFile file(basePath + "./live/launcher/serverinfo_back.xml");
   file.remove();
 
   GameExecutor::Hook::DownloadCustomFile hook1;
@@ -61,7 +62,7 @@ TEST(DownloadCustomFileTest, UncorrectDomainFail)
   QString basePath = QCoreApplication::applicationDirPath();
   QDir().mkpath(basePath + "/launcher");
 
-  srvHook.setExtractionPath(basePath);
+  srvHook.setInstallPath(basePath);
 
   GameExecutor::Hook::DownloadCustomFile hook1;
   ASSERT_FALSE(hook1.CanExecute(srvHook));
@@ -81,7 +82,7 @@ TEST(DownloadCustomFileTest, LockedFileFail)
   QString basePath = QCoreApplication::applicationDirPath();
   QDir().mkpath(basePath + "/launcher");
 
-  srvHook.setExtractionPath(basePath);
+  srvHook.setInstallPath(basePath);
 
   QString finalFilePath = basePath + "./launcher/serverinfo_back.xml";
 

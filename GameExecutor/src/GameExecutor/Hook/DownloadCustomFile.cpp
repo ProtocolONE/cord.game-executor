@@ -2,6 +2,8 @@
 
 #include <QtCore/QEventLoop>
 #include <QtCore/QScopedPointer>
+#include <QtCore/QFileInfo>
+#include <QtCore/QDir>
 
 #include <QtNetwork/QHostInfo>
 #include <QtNetwork/QHostAddress>
@@ -30,16 +32,47 @@ namespace GGS {
                
         QString relativeFilePath = url.queryItemValue("downloadCustomFile");
 
-        QFile file(service.extractionPath() + "/" + relativeFilePath);
+        QString path = QString("%1/%2/%3").arg(service.installPath(), service.areaString(), relativeFilePath);
+        QFile file(path);
+        QFileInfo fileInfo(file);
+
+        if (!fileInfo.absoluteDir().mkpath(fileInfo.absoluteDir().absolutePath())) {
+          return false;
+        }
 
         if (!url.hasQueryItem("downloadCustomFileOverride") && file.exists()) {
           return true;
         };
 
-        QUrl baseUrl = service.torrentUrlWithArea();
-        QUrl fileUrl = baseUrl.resolved(QUrl(relativeFilePath));
-      
-        bool result = this->DownloadFile(fileUrl, file);
+        bool result;
+        if (url.hasQueryItem("downloadCustomFileUrl")) {
+          QUrl baseUrl(url.queryItemValue("downloadCustomFileUrl"));
+          
+          switch(service.area()){
+          case GGS::Core::Service::Pts:
+            baseUrl = baseUrl.resolved(QUrl("./pts/"));
+            break;
+          case GGS::Core::Service::Tst:
+            baseUrl = baseUrl.resolved(QUrl("./tst/"));
+            break;
+          case GGS::Core::Service::Live:
+            baseUrl = baseUrl.resolved(QUrl("./live/"));
+            break;
+          default:
+            baseUrl = baseUrl.resolved(QUrl("./live/"));
+            break;
+          };
+
+          QUrl fileUrl = baseUrl.resolved(QUrl(relativeFilePath));
+          qDebug() << "custom download " << fileUrl.toString();
+          result = this->DownloadFile(fileUrl, file);
+        } else {
+          QUrl baseUrl = service.torrentUrlWithArea();
+          QUrl fileUrl = baseUrl.resolved(QUrl(relativeFilePath));
+
+          result = this->DownloadFile(fileUrl, file);
+        }
+
         if (!result) {
           //UNDONE Нет механизма показать ошибку во всплывающем окне
           //someManager::ShowErrorAboutGameFileDownloading

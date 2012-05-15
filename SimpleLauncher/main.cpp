@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     Service srvHook;
     srvHook.setUrl(url);
     srvHook.setTorrentUrl(QUrl("http://files.gamenet.ru/update/bs"));
-    srvHook.setExtractionPath("c:\\tmp");
+    srvHook.setInstallPath("c:\\tmp");
     
     DownloadCustomFile hook1;
     hook1.PreExecute(srvHook);
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
     url.setScheme("exe");
     url.setPath("C:/GameNetLive/Games/mw2/mw2_bin/mw2.exe");
     url.addQueryItem("workingDir", "C:/GameNetLive/Games/mw2/mw2_bin/");
-     
+    
     url.addQueryItem("args", "%userId% %appKey% %token%");
 
     Service srv;

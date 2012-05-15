@@ -75,7 +75,8 @@ namespace GGS {
         this->_args.replace("%userId%", credential.userId(), Qt::CaseInsensitive);
         this->_args.replace("%appKey%", credential.appKey(), Qt::CaseInsensitive);
 
-        if (-1 == this->_args.indexOf("%token%", 0, Qt::CaseInsensitive)) {
+        if (-1 == this->_args.indexOf("%token%", 0, Qt::CaseInsensitive)
+          && -1 == this->_args.indexOf("%login%", 0, Qt::CaseInsensitive)) {
           emit this->internalStart();
           return;
         }
@@ -103,6 +104,7 @@ namespace GGS {
           UserServiceAccountResponse *response = cmd->response();
 
           this->_args.replace("%token%", response->getToken(), Qt::CaseInsensitive);
+          this->_args.replace("%login%", response->getLogin(), Qt::CaseInsensitive);
           emit this->internalStart();
           return;
         }

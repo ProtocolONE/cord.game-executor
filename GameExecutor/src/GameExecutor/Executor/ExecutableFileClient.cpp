@@ -110,9 +110,7 @@ namespace GGS{
 
         qDebug() << __LINE__ << __FUNCTION__ << error << this->_gameProcess.exitCode();
 
-        if (error == QProcess::FailedToStart) {
-          this->setUserActivityLogout(Fail);
-        }
+        this->setUserActivityLogout(Fail);
       }
 
       void ExecutableFileClient::processStarted()

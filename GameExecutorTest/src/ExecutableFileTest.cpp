@@ -97,7 +97,7 @@ TEST_F(ExecutableFileTest, Success)
   url.setScheme("exe");
   url.setPath(QCoreApplication::applicationDirPath() + "/fixtures/success.bat");
   url.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
-  url.addQueryItem("args", "%userId% %token%");
+  url.addQueryItem("args", "%userId% %token% %login%");
   
   Core::Service srv;
   srv.setId("300003010000000000");

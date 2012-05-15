@@ -80,6 +80,7 @@ TEST_F(ServiceInfoCounterTest, BasicTest)
   info = GameExecutor::ServiceInfoCounter::queryInfo(srv);
   ASSERT_EQ(1, info.successCount());
   ASSERT_EQ(1, info.failedCount());
-  ASSERT_GE(info.lastExecutionTime().toTime_t(), QDateTime::currentDateTime().toTime_t() - 2);
+  // Машина с тестами выполняет 1 секунду за 8 
+  ASSERT_GE(info.lastExecutionTime().toTime_t(), QDateTime::currentDateTime().toTime_t() - 15);
   ASSERT_GE(info.playedTime().second(), 1);
 }

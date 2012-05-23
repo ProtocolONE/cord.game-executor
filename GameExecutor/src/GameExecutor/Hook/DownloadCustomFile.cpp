@@ -26,6 +26,8 @@ namespace GGS {
 
       bool DownloadCustomFile::CanExecute(const Core::Service &service)
       {
+        DEBUG_LOG << "for" << service.id();
+
         QUrl url = service.url();
         if (!url.hasQueryItem("downloadCustomFile"))
           return true;
@@ -64,7 +66,7 @@ namespace GGS {
           };
 
           QUrl fileUrl = baseUrl.resolved(QUrl(relativeFilePath));
-          qDebug() << "custom download " << fileUrl.toString();
+          DEBUG_LOG << "custom download" << fileUrl.toString();
           result = this->DownloadFile(fileUrl, file);
         } else {
           QUrl baseUrl = service.torrentUrlWithArea();

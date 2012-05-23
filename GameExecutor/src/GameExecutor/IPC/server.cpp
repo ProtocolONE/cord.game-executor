@@ -50,13 +50,13 @@ namespace GGS {
       {
         QLocalSocket *client = qobject_cast<QLocalSocket *>(QObject::sender());
         if (!client) {
-          qWarning() << __LINE__ << __FUNCTION__;
+          WARNING_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
           return;
         }
 
         int id = this->getClientIdByLocalSocket(client);
         if (0 == id) {
-          qDebug() << __LINE__ << __FUNCTION__;
+          WARNING_LOG << "wrong id";
         }
         
         this->_clients.remove(id);
@@ -73,13 +73,13 @@ namespace GGS {
       {
         QLocalSocket *client = qobject_cast<QLocalSocket *>(QObject::sender());
         if (!client) {
-          qWarning() << __LINE__ << __FUNCTION__;
+          WARNING_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
           return;
         }
 
         int id = this->getClientIdByLocalSocket(client);
         if (0 == id) {
-          qWarning() << __LINE__ << __FUNCTION__;
+          WARNING_LOG << "wrong id";
         }
 
         emit this->error(id, PeerClosedError);
@@ -88,7 +88,7 @@ namespace GGS {
       void Server::sendMessage(int id, const QString &message)
       {
         if (!this->_clients.contains(id)) {
-          qWarning() << __LINE__ << __FUNCTION__ << id;
+          WARNING_LOG << "client id not exists" << id;
           emit this->error(id, PeerNotExistsError);
           return;
         }
@@ -108,7 +108,7 @@ namespace GGS {
       {
         QLocalSocket *reply = qobject_cast<QLocalSocket *>(QObject::sender());
         if (!reply) {
-          qWarning() << __LINE__ << __FUNCTION__;
+          WARNING_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
           return;
         }
         
@@ -119,7 +119,7 @@ namespace GGS {
         
         int id = this->getClientIdByLocalSocket(reply);
         if (id == 0) {
-          qCritical() << __LINE__ << __FUNCTION__;
+          CRITICAL_LOG << "wrong id";
         }
         
         emit this->messageReceived(id, message);

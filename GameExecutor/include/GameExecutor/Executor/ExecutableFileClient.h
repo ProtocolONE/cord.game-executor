@@ -52,6 +52,7 @@ namespace GGS{
 
       private slots:
         void connectedToServer();
+        void disconnectedOrError();
         void messageFromServer(QString message);
 
         void processError(QProcess::ProcessError error);

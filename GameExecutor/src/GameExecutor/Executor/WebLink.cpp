@@ -24,7 +24,7 @@ namespace GGS {
 
       void WebLink::execute(const Core::Service &service, GameExecutor::GameExecutorService *executorService)
       {
-        qDebug() << __LINE__ << __FUNCTION__;
+        DEBUG_LOG;
 
         emit this->started(service);
         

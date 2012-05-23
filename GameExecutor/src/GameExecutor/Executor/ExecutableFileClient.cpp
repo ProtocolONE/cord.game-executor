@@ -19,11 +19,15 @@ namespace GGS{
     namespace Executor {
       ExecutableFileClient::ExecutableFileClient(QObject *parent) : QObject(parent), _finishPassed(false)
       {
-        qDebug() << __FUNCTION__;
+        DEBUG_LOG;
 
         this->_client.setName(QString(GAMEEXECUTOR_IPC_CHANNEL));
 
         connect(&this->_client, SIGNAL(connected()), this, SLOT(connectedToServer()));
+
+        connect(&this->_client, SIGNAL(disconnected()), this, SLOT(disconnectedOrError()));
+        connect(&this->_client, SIGNAL(error(QLocalSocket::LocalSocketError)), this, SLOT(disconnectedOrError()));
+
         connect(&this->_client, SIGNAL(messageReceived(QString)), this, SLOT(messageFromServer(QString)));
 
         connect(&this->_gameProcess, SIGNAL(started()), this, SLOT(processStarted()));
@@ -50,30 +54,30 @@ namespace GGS{
 
       void ExecutableFileClient::exec()
       {
-        qDebug() << __FUNCTION__;
+        DEBUG_LOG;
         this->_client.connectToServer();
       }
 
       void ExecutableFileClient::connectedToServer()
       {
-        qDebug() << __LINE__ << __FUNCTION__;
+        DEBUG_LOG;
       }
 
       void ExecutableFileClient::messageFromServer( QString message )
       {
-        qDebug() << __LINE__ << __FUNCTION__ << "'" << message << "'";
+        DEBUG_LOG << "'" << message << "'";
 
         QStringList params = message.split("|", QString::KeepEmptyParts, Qt::CaseInsensitive);
         if (params.at(0) != "start") {
-          qCritical() << __LINE__ << __FUNCTION__;
+          CRITICAL_LOG << "unsupported command" << params.at(0);
           emit this->exit(Fail);
           return;
         }
-
+        
         QString exeFile = params.at(1);
 
         if (!QFile::exists(exeFile)) {
-          qCritical() << __LINE__ << __FUNCTION__ "'" << exeFile << "'";
+          CRITICAL_LOG << "file not exists '" << exeFile << "'";
           emit this->exit(Fail);
           return;
         }
@@ -82,7 +86,7 @@ namespace GGS{
         this->_gameId = params.at(6).toInt(&gameIdCastResult);
 
         if (false == gameIdCastResult) {
-          qCritical() << __LINE__ << __FUNCTION__ << params.at(6);
+          CRITICAL_LOG << params.at(6);
           emit this->exit(Fail);
           return;
         }
@@ -108,14 +112,14 @@ namespace GGS{
 
         this->_finishPassed = true;
 
-        qDebug() << __LINE__ << __FUNCTION__ << error << this->_gameProcess.exitCode();
+        DEBUG_LOG << "with error" << error << "and exitCode" << this->_gameProcess.exitCode();
 
         this->setUserActivityLogout(Fail);
       }
 
       void ExecutableFileClient::processStarted()
       {
-        qDebug() << __LINE__ << __FUNCTION__ << this->_gameProcess.pid()->dwProcessId;
+        DEBUG_LOG << "with process id" << this->_gameProcess.pid()->dwProcessId;
 
         this->_pid = this->_gameProcess.pid();
 
@@ -150,8 +154,6 @@ namespace GGS{
           return;
         } 
 
-        qDebug() << __LINE__ << __FUNCTION__;
-
         if (this->_finishPassed) 
           return;
 
@@ -170,14 +172,14 @@ namespace GGS{
         int realExitCode = 
           (exitStatus == QProcess::CrashExit && static_cast<unsigned int>(exitCode) != 0xC0000005) ? Fail : Success;
 
-        qDebug() << __LINE__ << __FUNCTION__ << exitStatus << static_cast<unsigned int>(exitCode) << realExitCode;
+        DEBUG_LOG << "with exit status" << exitStatus << static_cast<unsigned int>(exitCode) << realExitCode;
 
         this->setUserActivityLogout(realExitCode);
       }
 
       void ExecutableFileClient::setUserActivity()
       {
-        qDebug() << __LINE__ << __FUNCTION__;
+        DEBUG_LOG << "request";
 
         SetUserActivity *cmd = new SetUserActivity();
 
@@ -194,33 +196,31 @@ namespace GGS{
       {
         SetUserActivity *cmd = qobject_cast<SetUserActivity *>(QObject::sender());
         if (!cmd) {
-          qWarning() << __LINE__ << __FUNCTION__;
+          WARNING_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
           return;
         }
 
         cmd->deleteLater();
 
         if (result != CommandBaseInterface::NoError) {
-          qWarning() << __LINE__ << __FUNCTION__ << result << cmd->getGenericErrorMessageCode();
+          WARNING_LOG << "error" << result << cmd->getGenericErrorMessageCode();
           QTimer::singleShot(300000, this, SLOT(setUserActivity())); //default timeOut is 5 minutes;
           return;
         }
 
         int timeOut = cmd->getTimeout();
         if (timeOut <= 0) {
-          qWarning() <<  "setUserActivityResult wrong timeOut " << timeOut;
+          WARNING_LOG <<  "wrong timeOut" << timeOut;
           QTimer::singleShot(300000, this, SLOT(setUserActivity()));
           return;  
         }
 
         QTimer::singleShot(timeOut * 1000, this, SLOT(setUserActivity()));
-
-        qDebug() << __LINE__ << __FUNCTION__;
       }
 
       void ExecutableFileClient::setUserActivityLogout(int code)
       {
-        qDebug() << __LINE__ << __FUNCTION__;
+        DEBUG_LOG;
 
         this->_code = code;
 
@@ -237,17 +237,22 @@ namespace GGS{
 
       void ExecutableFileClient::setUserActivityLogoutResult(GGS::RestApi::CommandBaseInterface::CommandResults result)
       {
-         qDebug() << __LINE__ << __FUNCTION__ << result;
+         DEBUG_LOG << "with result" << result;
 
          SetUserActivity *cmd = qobject_cast<SetUserActivity *>(QObject::sender());
          if (!cmd) {
-           qWarning() << __LINE__ << __FUNCTION__;
+           WARNING_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
            return;
          }
 
          cmd->deleteLater();
 
          emit this->exit(this->_code);
+      }
+
+      void ExecutableFileClient::disconnectedOrError()
+      {
+         emit this->exit(1);
       }
     }
   }

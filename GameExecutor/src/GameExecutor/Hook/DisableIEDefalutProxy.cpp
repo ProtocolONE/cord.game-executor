@@ -24,7 +24,7 @@ namespace GGS {
 
       bool DisableIEDefalutProxy::PreExecute(const Core::Service &service)
       {
-          qDebug() << __FUNCTION__;
+        DEBUG_LOG << "for" << service.id();
 
         QSettings reg("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", QSettings::NativeFormat);
         if (0 == reg.value("ProxyEnable", "0").toInt() && 0 == reg.value("GlobalUserOffline", "0").toInt())

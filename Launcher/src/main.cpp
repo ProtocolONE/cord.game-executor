@@ -59,14 +59,14 @@ int main(int argc, char *argv[])
     LogManager::setHandleQtMessages(true);
     //--- End of prepare log4qt
 
-    qDebug() << "Starting application";
-    
+    DEBUG_LOG << "Starting application"; 
+
     Launcher app;
     app.exec();
 
     int result = a.exec();
     
-    qDebug() << "Shutdown application";
+    DEBUG_LOG << "Shutdown application";
     LogManager::qtLogger()->removeAllAppenders(); 
     
     return result;

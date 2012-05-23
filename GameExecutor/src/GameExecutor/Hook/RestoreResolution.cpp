@@ -19,7 +19,7 @@ namespace GGS {
 
       bool RestoreResolution::PreExecute(const Core::Service &service)
       {
-        qDebug() << __FUNCTION__;
+        DEBUG_LOG << "for" << service.id();
 
         //http://msdn.microsoft.com/en-us/library/dd162611(v=vs.85).aspx
         this->_enabled = EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &this->_beforeExecuteDisplay);
@@ -28,7 +28,7 @@ namespace GGS {
 
       void RestoreResolution::PostExecute(const Core::Service &service, GGS::GameExecutor::FinishState state)
       {
-        qDebug() << __FUNCTION__;
+        DEBUG_LOG << "for" << service.id();
 
         if (!this->_enabled)
           return;

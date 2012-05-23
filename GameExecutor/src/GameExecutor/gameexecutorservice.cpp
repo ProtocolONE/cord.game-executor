@@ -1,5 +1,4 @@
 #include <GameExecutor/gameexecutorservice.h>
-
 #include <QtCore/QtConcurrentRun>
 
 namespace GGS {

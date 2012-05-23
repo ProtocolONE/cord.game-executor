@@ -94,7 +94,7 @@ namespace GGS {
       {
         GetUserServiceAccount *cmd = qobject_cast<GetUserServiceAccount*>(QObject::sender());
         if (!cmd) {
-          qCritical() << __LINE__ << __FUNCTION__ << QObject::sender()->metaObject()->className();
+          CRITICAL_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
           return;
         }
 
@@ -114,7 +114,7 @@ namespace GGS {
         FinishState state = (CommandBaseInterface::GenericError == result) 
           ? this->finishStateFromRestApiErrorCode(errorCode) : ExternalFatalError;
         
-        qCritical() << "getUserServiceAccountResult " << errorCode;
+        CRITICAL_LOG << "with error code" << errorCode;
         
         this->finished(this->_service, state);
       }
@@ -123,11 +123,11 @@ namespace GGS {
       {
         QProcess *process = qobject_cast<QProcess*>(QObject::sender());
         if (!process) {
-          qCritical() << __LINE__ << __FUNCTION__;
+          CRITICAL_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
           return;
         }
 
-        qCritical() << __LINE__ << __FUNCTION__ << error;
+        CRITICAL_LOG << "with error code" << error;
         this->finished(this->_service, ExternalFatalError);
       }
 
@@ -135,11 +135,11 @@ namespace GGS {
       {
         QProcess *process = qobject_cast<QProcess*>(QObject::sender());
         if (!process) {
-          qCritical() << __LINE__ << __FUNCTION__;
+          CRITICAL_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
           return;
         }
 
-        qDebug() << __FUNCTION__ << process->pid();
+        DEBUG_LOG << "launcher process pid" << process->pid();
 
         emit this->started(this->_service);
       }
@@ -148,31 +148,30 @@ namespace GGS {
       {
         QProcess *process = qobject_cast<QProcess*>(QObject::sender());
         if (!process) {
-          qCritical() << __LINE__ << __FUNCTION__;
+          CRITICAL_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
           return;
         }
 
-        qDebug() << __LINE__ << __FUNCTION__ << process->pid();
+        DEBUG_LOG << "launcher with pid" << process->pid() << "finished";
 
         if (QProcess::NormalExit == exitStatus && exitCode == 0) {
           emit this->finished(this->_service, Success);
           return;
         }
 
-        qCritical() << __LINE__ << __FUNCTION__  << exitCode;
-
+        CRITICAL_LOG << "with error code" << exitCode;
         emit this->finished(this->_service, ExternalFatalError);
       }
 
       void ExecutableFile::launcerMessageReceived(int id, QString message)
       {
         Q_ASSERT(this->_processIpcId == id);
-        qDebug() << __LINE__ << __FUNCTION__ << message;
+        DEBUG_LOG << "message from launcher" << message;
       }
 
-      void ExecutableFile::launcherConnected( int id )
+      void ExecutableFile::launcherConnected(int id)
       {
-        qDebug() << __LINE__ << __FUNCTION__;
+        DEBUG_LOG << "with id" << id;
         this->_processIpcId = id;
 
         QString message = 

@@ -55,7 +55,7 @@ namespace GGS {
       void Client::readReady() {
         QLocalSocket *reply = qobject_cast<QLocalSocket *>(QObject::sender());
         if (!reply) {
-          qWarning() << __LINE__ << __FUNCTION__;
+          WARNING_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
           return;
         }
 

@@ -26,7 +26,7 @@ namespace GGS {
 
       bool DisableDEP::PreExecute(const Core::Service &service)
       {
-        qDebug() << __FUNCTION__;
+        DEBUG_LOG << "for" << service.id();
 
         QUrl serviceUrl = service.url();
 

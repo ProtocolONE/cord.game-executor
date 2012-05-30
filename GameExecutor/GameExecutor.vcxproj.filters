@@ -146,6 +146,24 @@
     <ClCompile Include="src\GameExecutor\ServiceInfoCounter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_HookInterface.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_HookInterface.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameExecutor\HookInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ExecutionLoop_p.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ExecutionLoop_p.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameExecutor\ExecutionLoop_p.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="include\GameExecutor\IPC\Client.h">
@@ -184,15 +202,18 @@
     <CustomBuild Include="include\GameExecutor\ServiceInfoCounter.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="include\GameExecutor\HookInterface.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="include\GameExecutor\ExecutionLoop_p.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\GameExecutor\ExecutorInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\GameExecutor\gameexecutor_global.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\GameExecutor\HookInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\GameExecutor\Enum.h">

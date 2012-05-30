@@ -26,18 +26,14 @@ namespace GGS {
         \brief Отключение прокси перед запуском игры. Актуально для Aika2, которая на ряде ПК не запускается, если 
         в InternetExplorer выставлена любая прокси.
       */
-      class GAMEEXECUTOR_EXPORT DisableIEDefalutProxy : public QObject, public HookInterface
+      class GAMEEXECUTOR_EXPORT DisableIEDefalutProxy : public HookInterface
       {
         Q_OBJECT
       public:
         explicit DisableIEDefalutProxy(QObject *parent = 0);
         ~DisableIEDefalutProxy();
 
-        virtual bool CanExecute(const Core::Service &service);
-
-        virtual void PostExecute(const Core::Service &service, GGS::GameExecutor::FinishState state);
-
-        virtual bool PreExecute(const Core::Service &service);
+        virtual void PreExecute(const Core::Service &service);
       };
     }
   }

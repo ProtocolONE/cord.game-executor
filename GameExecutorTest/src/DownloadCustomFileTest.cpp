@@ -16,13 +16,34 @@
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QEventLoop>
+
+#include <QtTest/QSignalSpy>
 
 #include <gtest/gtest.h>
 #include <Windows.h>
 
 using namespace GGS;
 
-TEST(DownloadCustomFileTest, Success) 
+class DownloadCustomFileTest : public ::testing::Test 
+{
+public:
+  bool executeHookCanStep(const Core::Service &service) 
+  {
+    GameExecutor::Hook::DownloadCustomFile hook1;
+    QSignalSpy spy(&hook1, SIGNAL(canExecuteCompleted(bool)));
+    
+    QEventLoop loop;
+    QObject::connect(&hook1, SIGNAL(canExecuteCompleted(bool)), &loop, SLOT(quit()), Qt::QueuedConnection);
+
+    hook1.CanExecute(service);
+    loop.exec();
+
+    return spy.takeFirst().at(0).toBool();
+  }
+};
+
+TEST_F(DownloadCustomFileTest, Success) 
 {
   QUrl url;
   url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml");
@@ -42,13 +63,12 @@ TEST(DownloadCustomFileTest, Success)
   QFile file(basePath + "./live/launcher/serverinfo_back.xml");
   file.remove();
 
-  GameExecutor::Hook::DownloadCustomFile hook1;
-  ASSERT_TRUE(hook1.CanExecute(srvHook));
+  ASSERT_TRUE(executeHookCanStep(srvHook));
   ASSERT_TRUE(file.exists());
   ASSERT_TRUE(file.size() > 0);
 }
 
-TEST(DownloadCustomFileTest, UncorrectDomainFail) 
+TEST_F(DownloadCustomFileTest, UncorrectDomainFail) 
 {
   QUrl url;
   url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml");
@@ -64,11 +84,10 @@ TEST(DownloadCustomFileTest, UncorrectDomainFail)
 
   srvHook.setInstallPath(basePath);
 
-  GameExecutor::Hook::DownloadCustomFile hook1;
-  ASSERT_FALSE(hook1.CanExecute(srvHook));
+  ASSERT_FALSE(executeHookCanStep(srvHook));
 }
 
-TEST(DownloadCustomFileTest, LockedFileFail) 
+TEST_F(DownloadCustomFileTest, LockedFileFail) 
 {
   QUrl url;
   url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml");
@@ -89,7 +108,7 @@ TEST(DownloadCustomFileTest, LockedFileFail)
   HANDLE hFile = CreateFile(finalFilePath.toStdWString().c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, 0, NULL);
 
   GameExecutor::Hook::DownloadCustomFile hook1;
-  EXPECT_FALSE(hook1.CanExecute(srvHook));
+  EXPECT_FALSE(executeHookCanStep(srvHook));
 
   CloseHandle(hFile);
 }

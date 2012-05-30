@@ -16,7 +16,7 @@
 #include <GameExecutor/IPC/Server.h>
 
 #include <Core/Service>
-#include <RestApi/CommandBaseInterface>
+#include <RestApi/CommandBase>
 
 #include <QtCore/QProcess>
 #include <QtCore/QCoreApplication>
@@ -72,7 +72,7 @@ namespace GGS {
         void launcerMessageReceived(int id, QString message);
         void launcherConnected(int id);
 
-        void getUserServiceAccountResult(GGS::RestApi::CommandBaseInterface::CommandResults result);
+        void getUserServiceAccountResult(GGS::RestApi::CommandBase::CommandResults result);
 
       private:
         void createAndExecuteLauncherProcess();

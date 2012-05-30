@@ -14,9 +14,10 @@
 #include <GameExecutor/gameexecutor_global.h>
 #include <GameExecutor/HookInterface.h>
 
-#include <QObject>
 #include <QtCore/QUrl>
 #include <QtCore/QFile>
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QHostInfo>
 
 namespace GGS {
   namespace GameExecutor {
@@ -28,21 +29,24 @@ namespace GGS {
         \brief Позволяет загрузить произвольный файл перед запуском игры. Это нужно например для игры BS и MW2 где
         подобным образом загружаюьтся файлы конфигурации игры.
       */
-      class GAMEEXECUTOR_EXPORT DownloadCustomFile : public QObject, public HookInterface
+      class GAMEEXECUTOR_EXPORT DownloadCustomFile : public HookInterface
       {
         Q_OBJECT
       public:
         DownloadCustomFile(QObject *parent = 0);
         ~DownloadCustomFile();
 
-        virtual bool CanExecute(const Core::Service &service);
-
-        virtual void PostExecute(const Core::Service &service, GGS::GameExecutor::FinishState state);
-
-        virtual bool PreExecute(const Core::Service &service);
-
+        virtual void CanExecute(const Core::Service &service);
+      public slots:
+        void requestFinished();
       private:
-        bool DownloadFile(QUrl &fileUrl, QFile &file);
+        void DownloadFile();
+        
+        QUrl _url;
+        QHostInfo _info;
+        qint32 _infoIndex;
+        QFile _file;
+        QNetworkAccessManager _manager;
       };
     }
   }

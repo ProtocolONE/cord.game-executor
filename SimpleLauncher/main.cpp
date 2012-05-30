@@ -19,8 +19,8 @@
 #include <Core/service.h>
 
 #include <RestApi/RestApiManager>
+#include <RestApi/RequestFactory>
 #include <RestApi/GameNetCredential>
-#include <RestApi/HttpCommandRequest>
 #include <RestApi/FakeCache>
 
 #include <iostream>
@@ -30,7 +30,6 @@
 
 using GGS::RestApi::RestApiManager;
 using GGS::RestApi::GameNetCredential;
-using GGS::RestApi::HttpCommandRequest;
 using GGS::RestApi::FakeCache;
 
 using GGS::Core::Service;
@@ -77,13 +76,12 @@ int main(int argc, char *argv[])
     auth.setAppKey(QString("e8d6b0a31b408946334f23355ee2a0297f2758ac"));
     auth.setUserId(QString("400001000000065690"));
 
-    RestApi::HttpCommandRequest request;
     RestApi::FakeCache cache;
-    request.setCache(&cache);
-
+    
     RestApi::RestApiManager restapi;
+    restapi.setCache(&cache);
     restapi.setCridential(auth);
-    restapi.setRequest(&request);
+    restapi.setRequest(GGS::RestApi::RequestFactory::Http);
 
     WebLink cmd2;
     
@@ -91,8 +89,7 @@ int main(int argc, char *argv[])
 
     ExecutableFile cmd(&execService);
     cmd.setWorkingDirectory(QCoreApplication::applicationDirPath());
-
-
+    
     execService.setRestApiManager(&restapi);
     execService.registerExecutor(&cmd);
     execService.registerExecutor(&cmd2);

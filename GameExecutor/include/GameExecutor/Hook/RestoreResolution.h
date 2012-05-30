@@ -25,18 +25,16 @@ namespace GGS {
       
         \brief Сохраняет и восстанавливает разрешение экрана после запуска игры. 
       */
-      class GAMEEXECUTOR_EXPORT RestoreResolution : public QObject, public HookInterface
+      class GAMEEXECUTOR_EXPORT RestoreResolution : public HookInterface
       {
         Q_OBJECT
       public:
         explicit RestoreResolution(QObject *parent = 0);
         ~RestoreResolution();
 
-        virtual bool CanExecute(const Core::Service &service);
-
         virtual void PostExecute(const Core::Service &service, GGS::GameExecutor::FinishState state);
 
-        virtual bool PreExecute(const Core::Service &service);
+        virtual void PreExecute(const Core::Service &service);
       private:
         DEVMODE _beforeExecuteDisplay;
         bool _enabled;

@@ -7,7 +7,7 @@ namespace GGS {
   namespace GameExecutor {
     namespace Hook {
 
-      DisableDEP::DisableDEP(QObject *parent) : QObject(parent)
+      DisableDEP::DisableDEP(QObject *parent) : HookInterface(parent)
       {
       }
 
@@ -15,16 +15,7 @@ namespace GGS {
       {
       }
 
-      bool DisableDEP::CanExecute(const Core::Service &service)
-      {
-        return true;
-      }
-
-      void DisableDEP::PostExecute(const Core::Service &service, GGS::GameExecutor::FinishState state)
-      {
-      }
-
-      bool DisableDEP::PreExecute(const Core::Service &service)
+      void DisableDEP::PreExecute(const Core::Service &service)
       {
         DEBUG_LOG << "for" << service.id();
 
@@ -45,7 +36,7 @@ namespace GGS {
           
         regLayer.setValue(serviceUrl.path(), "DisableNXShowUI");
 
-        return true;
+        emit this->preExecuteCompleted(true);
       }
     }
   }

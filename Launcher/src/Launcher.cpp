@@ -1,13 +1,14 @@
 #include <Launcher.h>
 #include <QtCore/QCoreApplication>
+#include <RestApi/RequestFactory>
 
 Launcher::Launcher(QObject *parent) : QObject(parent)
 {
   connect(&this->client, SIGNAL(exit(int)), 
           this, SLOT(exit(int)));
   
-  this->request.setCache(&this->cache);
-  this->restapi.setRequest(&request);
+  this->restapi.setCache(&this->cache);
+  this->restapi.setRequest(GGS::RestApi::RequestFactory::Http);
 
   this->client.setRestApiManager(&this->restapi);
 }

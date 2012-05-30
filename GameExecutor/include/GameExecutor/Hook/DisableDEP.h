@@ -19,18 +19,14 @@
 namespace GGS {
   namespace GameExecutor {
     namespace Hook {
-      class GAMEEXECUTOR_EXPORT DisableDEP : public QObject, public HookInterface
+      class GAMEEXECUTOR_EXPORT DisableDEP : public HookInterface
       {
         Q_OBJECT
       public:
         explicit DisableDEP(QObject *parent = 0);
         ~DisableDEP();
 
-        virtual bool CanExecute(const Core::Service &service);
-
-        virtual bool PreExecute(const Core::Service &service);
-
-        virtual void PostExecute(const Core::Service &service, GGS::GameExecutor::FinishState state);
+        virtual void PreExecute(const Core::Service &service);
       };
     }
   }

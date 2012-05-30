@@ -186,13 +186,13 @@ namespace GGS{
         cmd->setGameId(this->_gameId);  
         cmd->setLogout(0);
 
-        connect(cmd, SIGNAL(result(GGS::RestApi::CommandBaseInterface::CommandResults)), 
-                this, SLOT(setUserActivityResult(GGS::RestApi::CommandBaseInterface::CommandResults)));
+        connect(cmd, SIGNAL(result(GGS::RestApi::CommandBase::CommandResults)), 
+                this, SLOT(setUserActivityResult(GGS::RestApi::CommandBase::CommandResults)));
         
         this->respApiManager()->execute(cmd);
       }
 
-      void ExecutableFileClient::setUserActivityResult(GGS::RestApi::CommandBaseInterface::CommandResults result)
+      void ExecutableFileClient::setUserActivityResult(GGS::RestApi::CommandBase::CommandResults result)
       {
         SetUserActivity *cmd = qobject_cast<SetUserActivity *>(QObject::sender());
         if (!cmd) {
@@ -202,7 +202,7 @@ namespace GGS{
 
         cmd->deleteLater();
 
-        if (result != CommandBaseInterface::NoError) {
+        if (result != CommandBase::NoError) {
           WARNING_LOG << "error" << result << cmd->getGenericErrorMessageCode();
           QTimer::singleShot(300000, this, SLOT(setUserActivity())); //default timeOut is 5 minutes;
           return;
@@ -229,13 +229,13 @@ namespace GGS{
         cmd->setGameId(this->_gameId);
         cmd->setLogout(1);
 
-        connect(cmd, SIGNAL(result(GGS::RestApi::CommandBaseInterface::CommandResults)), 
-                this, SLOT(setUserActivityLogoutResult(GGS::RestApi::CommandBaseInterface::CommandResults)));
+        connect(cmd, SIGNAL(result(GGS::RestApi::CommandBase::CommandResults)), 
+                this, SLOT(setUserActivityLogoutResult(GGS::RestApi::CommandBase::CommandResults)));
 
         this->respApiManager()->execute(cmd);
       }
 
-      void ExecutableFileClient::setUserActivityLogoutResult(GGS::RestApi::CommandBaseInterface::CommandResults result)
+      void ExecutableFileClient::setUserActivityLogoutResult(GGS::RestApi::CommandBase::CommandResults result)
       {
          DEBUG_LOG << "with result" << result;
 

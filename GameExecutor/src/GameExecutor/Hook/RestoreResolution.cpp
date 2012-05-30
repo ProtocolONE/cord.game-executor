@@ -4,7 +4,7 @@
 namespace GGS {
   namespace GameExecutor {
     namespace Hook {
-      RestoreResolution::RestoreResolution(QObject *parent/*=0*/) : QObject(parent)
+      RestoreResolution::RestoreResolution(QObject *parent/*=0*/) : HookInterface(parent)
       {
       }
 
@@ -12,43 +12,46 @@ namespace GGS {
       {
       }
 
-      bool RestoreResolution::CanExecute(const Core::Service &service)
-      {
-        return true;
-      }
-
-      bool RestoreResolution::PreExecute(const Core::Service &service)
+      void RestoreResolution::PreExecute(const Core::Service &service)
       {
         DEBUG_LOG << "for" << service.id();
 
         //http://msdn.microsoft.com/en-us/library/dd162611(v=vs.85).aspx
         this->_enabled = EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &this->_beforeExecuteDisplay);
-        return true;
+        emit this->preExecuteCompleted(true);
       }
 
       void RestoreResolution::PostExecute(const Core::Service &service, GGS::GameExecutor::FinishState state)
       {
         DEBUG_LOG << "for" << service.id();
 
-        if (!this->_enabled)
+        if (!this->_enabled) {
+          emit this->postExecuteCompleted();
           return;
+        }
 
         DEVMODE afterExecuteDisplay;
         bool result = EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &afterExecuteDisplay);
-        if (!result)
+        if (!result) {
+          emit this->postExecuteCompleted();
           return;
+        }
 
         if (afterExecuteDisplay.dmPelsHeight == this->_beforeExecuteDisplay.dmPelsHeight 
           && afterExecuteDisplay.dmPelsWidth == this->_beforeExecuteDisplay.dmPelsWidth
           && afterExecuteDisplay.dmBitsPerPel == this->_beforeExecuteDisplay.dmBitsPerPel) {
+            emit this->postExecuteCompleted();
             return;
         }
 
         //http://msdn.microsoft.com/en-us/library/dd183411(v=vs.85).aspx
-        if (DISP_CHANGE_FAILED == ChangeDisplaySettings(&this->_beforeExecuteDisplay, CDS_RESET))
-          return;
+        if (DISP_CHANGE_FAILED == ChangeDisplaySettings(&this->_beforeExecuteDisplay, CDS_RESET)) {
+           emit this->postExecuteCompleted();
+           return;
+        }
 
         ChangeDisplaySettings(&this->_beforeExecuteDisplay, CDS_UPDATEREGISTRY);
+        emit this->postExecuteCompleted();
       }
     }
   }

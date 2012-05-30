@@ -1,5 +1,7 @@
+#include <GameExecutor/ExecutionLoop_p.h>
 #include <GameExecutor/gameexecutorservice.h>
-#include <QtCore/QtConcurrentRun>
+
+#include <QtCore/QList>
 
 namespace GGS {
   namespace GameExecutor {
@@ -30,16 +32,6 @@ namespace GGS {
       }
 
       this->_executors[scheme] = executor;
-
-      connect(executor, SIGNAL(started(const Core::Service)), 
-              this, SIGNAL(started(const Core::Service)), Qt::QueuedConnection);
-
-      connect(executor, 
-              SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)), 
-              this, 
-              SLOT(internalExecutionFinished(const Core::Service, GGS::GameExecutor::FinishState)), 
-              Qt::QueuedConnection);
-      
       return true;
     }
 
@@ -56,7 +48,6 @@ namespace GGS {
       }
 
       this->_hooks[id].insert(priority, hook);
-
       return true;
     }
 
@@ -86,84 +77,37 @@ namespace GGS {
         return;
       }
 
-      QtConcurrent::run(this, &GameExecutorService::internalExecutionLoop, service);
-    }
-
-    void GameExecutorService::internalExecutionLoop(const Core::Service &service )
-    {
-      bool result = this->internalCanExecuteLoop(service);
-      if (!result) {
-        emit this->finished(service, GGS::GameExecutor::CanExecutionHookBreak);
-        return;
-      }
-
-      emit this->canExecuteCompleted(service, result);
-
-      result = this->internalPreExecuteLoop(service);
-      if (!result) {
-        emit this->finished(service, GGS::GameExecutor::PreExecutionHookBreak);
-        return;
-      }
-
-      emit this->preExecuteCompleted(service, result);
-
-      this->internalExecuteLoop(service);
-    }
-
-    bool GameExecutorService::internalCanExecuteLoop(const Core::Service &service)
-    {
-      QString id = service.id();
-
-      if (!this->_hooks.contains(id)) {
-        return true;
-      }
-
+      QList<HookInterface *> list;
       Q_FOREACH (HookInterface *hook, this->_hooks[id]) {
-        if (false == hook->CanExecute(service)) {
-          return false;
-        };
+        list.append(hook);
       }
 
-      return true;
+      ExecutionLoopPrivate *loop = new ExecutionLoopPrivate(this);
+      loop->setService(service);
+      loop->setHookList(list);
+      loop->setExecutor(this->_executors[scheme]);
+      loop->setExecutorService(this);
+
+      connect(loop, SIGNAL(canExecuteCompleted(const Core::Service &, bool)),
+        this, SIGNAL(canExecuteCompleted(const Core::Service &, bool)), Qt::QueuedConnection);
+
+      connect(loop, SIGNAL(preExecuteCompleted(const Core::Service &, bool)),
+        this, SIGNAL(preExecuteCompleted(const Core::Service &, bool)), Qt::QueuedConnection);
+
+      connect(loop, SIGNAL(started(const Core::Service &)),
+        this, SIGNAL(started(const Core::Service &)), Qt::QueuedConnection);
+
+      connect(loop, SIGNAL(finished(const Core::Service &, GGS::GameExecutor::FinishState)),
+        this, SLOT(privateFinished(const Core::Service &, GGS::GameExecutor::FinishState)), Qt::QueuedConnection);
+
+      loop->execute();
     }
 
-    bool GameExecutorService::internalPreExecuteLoop(const Core::Service &service)
+    void GameExecutorService::privateFinished( const Core::Service &service, GGS::GameExecutor::FinishState state )
     {
-      QString id = service.id();
-
-      if (!this->_hooks.contains(id)) {
-        return true;
-      }
-
-      Q_FOREACH (HookInterface *hook, this->_hooks[id]) {
-        if (false == hook->PreExecute(service)) {
-          return false;
-        };
-      }
-
-      return true;
-    }
-
-    void GameExecutorService::internalExecuteLoop(const Core::Service &service)
-    {
-      QString scheme = service.url().scheme();
-      this->_executors[scheme]->execute(service, this);
-    }
-
-    void GameExecutorService::internalExecutionFinished(const Core::Service &service, GGS::GameExecutor::FinishState state)
-    {
-      QtConcurrent::run(this, &GameExecutorService::internalPostExecuteLoop, service, state);
-    }
-
-    void GameExecutorService::internalPostExecuteLoop(const Core::Service &service, GGS::GameExecutor::FinishState state)
-    {
-      QString id = service.id();
-    
-      Q_FOREACH (HookInterface *hook, this->_hooks[id]) {
-        hook->PostExecute(service, state);
-      }
-
+      QObject::sender()->deleteLater();
       emit this->finished(service, state);
     }
+
   }
 }

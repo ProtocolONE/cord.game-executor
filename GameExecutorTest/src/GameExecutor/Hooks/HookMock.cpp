@@ -1,31 +1,32 @@
 #include <GameExecutor/Hooks/HookMock.h>
 
-HookMock::HookMock(QObject *parent) : QObject(parent)
+HookMock::HookMock(QObject *parent) 
+  : GGS::GameExecutor::HookInterface(parent)
 {
-
 }
 
 HookMock::~HookMock()
 {
-
 }
 
-bool HookMock::CanExecute( const Core::Service &service )
+void HookMock::CanExecute(const Core::Service &service)
 {
+  bool ret = true;
   if (this->_canFunc) {
-    return this->_canFunc(service);
+    ret = this->_canFunc(service);
   }
 
-  return true;
+  emit this->canExecuteCompleted(ret);
 }
 
-bool HookMock::PreExecute( const Core::Service &service )
+void HookMock::PreExecute( const Core::Service &service )
 {
+  bool ret = true;
   if (this->_preFunc) {
-    return this->_preFunc(service);
+    ret = this->_preFunc(service);
   }
 
-  return true;
+  emit this->preExecuteCompleted(ret);
 }
 
 void HookMock::PostExecute( const Core::Service &service, GGS::GameExecutor::FinishState state )
@@ -33,6 +34,8 @@ void HookMock::PostExecute( const Core::Service &service, GGS::GameExecutor::Fin
   if (this->_postFunc) {
     this->_postFunc(service, state);
   }
+
+  emit this->postExecuteCompleted();
 }
 
 void HookMock::setCanFunc( HookCanPreFunc func )

@@ -18,6 +18,7 @@
 #include <Core/Service>
 
 #include <RestApi/RestApiManager>
+#include <RestApi/RequestFactory>
 #include <RestApi/GameNetCredential>
 #include <RestApi/HttpCommandRequest>
 #include <RestApi/FakeCache>
@@ -41,11 +42,10 @@ protected:
     auth.setAppKey(QString("e8d6b0a31b408946334f23355ee2a0297f2758ac"));
     auth.setUserId(QString("400001000000065690"));
 
-    request.setCache(&cache);
-    
     restapi.setUri(QString("https://api.gamenet.ru/restapi"));
+    restapi.setCache(&cache);
     restapi.setCridential(auth);
-    restapi.setRequest(&request);
+    restapi.setRequest(GGS::RestApi::RequestFactory::Http);
 
     executorService.setRestApiManager(&restapi);
   }
@@ -64,8 +64,7 @@ protected:
       loop.exit();
     });;
 
-    //Очень важно запускать именно через отдельный поток, т.к. в реальном использовании это именно так.
-    QtConcurrent::run(&executor, &GGS::GameExecutor::Executor::ExecutableFile::execute, srv, &executorService);
+    executor.execute(srv, &executorService);
 
     loop.exec();
 

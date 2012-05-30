@@ -15,6 +15,7 @@
 #include <GameExecutor/Enum.h>
 
 #include <Core/Service>
+#include <QtCore/QObject>
 
 namespace GGS {
   namespace GameExecutor {
@@ -24,10 +25,12 @@ namespace GGS {
     
       \brief Интерфейс определяет механизм расширения процедуры запуска сервисов.
     */
-    class GAMEEXECUTOR_EXPORT HookInterface
+    class GAMEEXECUTOR_EXPORT HookInterface : public QObject
     {
+      Q_OBJECT
     public:
-      virtual ~HookInterface() {};
+      explicit HookInterface(QObject *parent = 0);
+      virtual ~HookInterface();
 
       /*!
         \fn virtual bool HookInterface::CanExecute(const Core::Service &service) = 0;
@@ -38,7 +41,7 @@ namespace GGS {
       
         \return true, если сервис может быть запущен.
       */
-      virtual bool CanExecute(const Core::Service &service) = 0;
+      virtual void CanExecute(const Core::Service &service);
 
       /*!
         \fn virtual bool HookInterface::PreExecute(const Core::Service &service) = 0;
@@ -50,7 +53,7 @@ namespace GGS {
       
         \return true, если сервис может быть запущен.
       */
-      virtual bool PreExecute(const Core::Service &service) = 0;
+      virtual void PreExecute(const Core::Service &service);
 
       /*!
         \fn virtual void HookInterface::PostExecute(const Core::Service &service,
@@ -64,7 +67,12 @@ namespace GGS {
 
         \sa GGS::GameExecutor::FinishState
       */
-      virtual void PostExecute(const Core::Service &service, GGS::GameExecutor::FinishState state) = 0;
+      virtual void PostExecute(const Core::Service &service, GGS::GameExecutor::FinishState state);
+
+    signals:
+      void canExecuteCompleted(bool result);
+      void preExecuteCompleted(bool result);
+      void postExecuteCompleted();
     };
   }
 }

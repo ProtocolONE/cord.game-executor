@@ -62,17 +62,10 @@ namespace GGS {
       void finished(const Core::Service &service, GGS::GameExecutor::FinishState state);
 
     private slots:
-      void internalExecutionFinished(const Core::Service &service, GGS::GameExecutor::FinishState state);
-
+      void privateFinished(const Core::Service &service, GGS::GameExecutor::FinishState state);
+   
     private:
-      void internalExecutionLoop(const Core::Service &service);
-      bool internalCanExecuteLoop(const Core::Service &service);
-      bool internalPreExecuteLoop(const Core::Service &service);
-      void internalExecuteLoop(const Core::Service &service);
-      void internalPostExecuteLoop(const Core::Service &service, GGS::GameExecutor::FinishState state);
-
       RestApi::RestApiManager *_restApiManager;
-
       QHash<QString, ExecutorBase*> _executors;
       QHash<QString, QMultiMap<int, HookInterface*>> _hooks;
     };

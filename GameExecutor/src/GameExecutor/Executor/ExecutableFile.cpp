@@ -5,6 +5,8 @@
 #include <RestApi/Commands/User/GetUserServiceAccount>
 
 #include <QtCore/QRegExp>
+#include <QtCore/QEventLoop>
+#include <QMetaObject>
 
 using RestApi::Commands::User::GetUserServiceAccount;
 using RestApi::Commands::User::Response::UserServiceAccountResponse;
@@ -84,13 +86,13 @@ namespace GGS {
         GetUserServiceAccount *cmd = new GetUserServiceAccount();
         cmd->setServiceId(service.id());
 
-        connect(cmd, SIGNAL(result(GGS::RestApi::CommandBaseInterface::CommandResults)), 
-          this, SLOT(getUserServiceAccountResult(GGS::RestApi::CommandBaseInterface::CommandResults)));
+        connect(cmd, SIGNAL(result(GGS::RestApi::CommandBase::CommandResults)), 
+          this, SLOT(getUserServiceAccountResult(GGS::RestApi::CommandBase::CommandResults)), Qt::DirectConnection);
 
         mgr->execute(cmd);
       }
 
-      void ExecutableFile::getUserServiceAccountResult(CommandBaseInterface::CommandResults result)
+      void ExecutableFile::getUserServiceAccountResult(CommandBase::CommandResults result)
       {
         GetUserServiceAccount *cmd = qobject_cast<GetUserServiceAccount*>(QObject::sender());
         if (!cmd) {
@@ -100,7 +102,7 @@ namespace GGS {
 
         cmd->deleteLater();  
 
-        if (result == CommandBaseInterface::NoError) {
+        if (result == CommandBase::NoError) {
           UserServiceAccountResponse *response = cmd->response();
 
           this->_args.replace("%token%", response->getToken(), Qt::CaseInsensitive);
@@ -111,7 +113,7 @@ namespace GGS {
 
         int errorCode = cmd->getGenericErrorMessageCode();
        
-        FinishState state = (CommandBaseInterface::GenericError == result) 
+        FinishState state = (CommandBase::GenericError == result) 
           ? this->finishStateFromRestApiErrorCode(errorCode) : ExternalFatalError;
         
         CRITICAL_LOG << "with error code" << errorCode;

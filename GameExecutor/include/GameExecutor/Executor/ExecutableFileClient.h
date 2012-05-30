@@ -15,12 +15,12 @@
 #include <GameExecutor/IPC/Client.h>
 
 #include <RestApi/RestApiManager>
-#include <RestApi/CommandBaseInterface>
+#include <RestApi/CommandBase>
 
 #include <QObject>
 #include <QtCore/QProcess>
 
-using GGS::RestApi::CommandBaseInterface;
+using GGS::RestApi::CommandBase;
 using namespace GGS::GameExecutor;
 
 namespace GGS{
@@ -70,8 +70,8 @@ namespace GGS{
         void checkProcessIsAlive();
 
         void setUserActivity();
-        void setUserActivityResult(GGS::RestApi::CommandBaseInterface::CommandResults result);
-        void setUserActivityLogoutResult(GGS::RestApi::CommandBaseInterface::CommandResults result);
+        void setUserActivityResult(GGS::RestApi::CommandBase::CommandResults result);
+        void setUserActivityLogoutResult(GGS::RestApi::CommandBase::CommandResults result);
       private:
         void setUserActivityLogout(int code);
 

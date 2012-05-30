@@ -1,22 +1,15 @@
 #include <GameExecutor/Hook/DownloadCustomFile.h>
 
-#include <QtCore/QEventLoop>
-#include <QtCore/QScopedPointer>
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
-
-#include <QtNetwork/QHostInfo>
 #include <QtNetwork/QHostAddress>
-#include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
-
-#include <QDataStream>
 
 namespace GGS {
   namespace GameExecutor {
     namespace Hook {
-      DownloadCustomFile::DownloadCustomFile(QObject *parent) : QObject(parent)
+      DownloadCustomFile::DownloadCustomFile(QObject *parent) : HookInterface(parent)
       {
       }
 
@@ -24,108 +17,81 @@ namespace GGS {
       {
       }
 
-      bool DownloadCustomFile::CanExecute(const Core::Service &service)
+      void DownloadCustomFile::CanExecute(const Core::Service &service)
       {
-        DEBUG_LOG << "for" << service.id();
-
         QUrl url = service.url();
-        if (!url.hasQueryItem("downloadCustomFile"))
-          return true;
-               
+        if (!url.hasQueryItem("downloadCustomFile")) {
+          emit this->canExecuteCompleted(true);
+          return;
+        }
+
         QString relativeFilePath = url.queryItemValue("downloadCustomFile");
 
         QString path = QString("%1/%2/%3").arg(service.installPath(), service.areaString(), relativeFilePath);
-        QFile file(path);
-        QFileInfo fileInfo(file);
+        
+        this->_file.setFileName(path);
+        QFileInfo fileInfo(this->_file);
 
         if (!fileInfo.absoluteDir().mkpath(fileInfo.absoluteDir().absolutePath())) {
-          return false;
+          emit this->canExecuteCompleted(false);
+          return;
         }
 
-        if (!url.hasQueryItem("downloadCustomFileOverride") && file.exists()) {
-          return true;
+        if (!url.hasQueryItem("downloadCustomFileOverride") && fileInfo.exists()) {
+          emit this->canExecuteCompleted(false);
+          return;
         };
 
-        bool result;
         if (url.hasQueryItem("downloadCustomFileUrl")) {
           QUrl baseUrl(url.queryItemValue("downloadCustomFileUrl"));
-          
-          switch(service.area()){
-          case GGS::Core::Service::Pts:
-            baseUrl = baseUrl.resolved(QUrl("./pts/"));
-            break;
-          case GGS::Core::Service::Tst:
-            baseUrl = baseUrl.resolved(QUrl("./tst/"));
-            break;
-          case GGS::Core::Service::Live:
-            baseUrl = baseUrl.resolved(QUrl("./live/"));
-            break;
-          default:
-            baseUrl = baseUrl.resolved(QUrl("./live/"));
-            break;
-          };
+          baseUrl = baseUrl.resolved("./" + service.areaString() + "/");
 
-          QUrl fileUrl = baseUrl.resolved(QUrl(relativeFilePath));
-          DEBUG_LOG << "custom download" << fileUrl.toString();
-          result = this->DownloadFile(fileUrl, file);
+          this->_url = baseUrl.resolved(QUrl(relativeFilePath));
+          DEBUG_LOG << "custom download" << this->_url.toString();
         } else {
           QUrl baseUrl = service.torrentUrlWithArea();
-          QUrl fileUrl = baseUrl.resolved(QUrl(relativeFilePath));
-
-          result = this->DownloadFile(fileUrl, file);
+          this->_url = baseUrl.resolved(QUrl(relativeFilePath));
         }
 
-        if (!result) {
-          //UNDONE Нет механизма показать ошибку во всплывающем окне
-          //someManager::ShowErrorAboutGameFileDownloading
+        this->_info = QHostInfo::fromName(this->_url.host());
+        this->_infoIndex = this->_info.addresses().size();
+
+        this->DownloadFile();
+      }
+
+      void DownloadCustomFile::DownloadFile()
+      {
+        if (--this->_infoIndex < 0) {
+          emit this->canExecuteCompleted(false);
+          return;
         }
 
-        return result;
+        this->_url.setHost(this->_info.addresses().at(this->_infoIndex).toString());
+
+        QNetworkReply *reply = this->_manager.get(QNetworkRequest(this->_url));
+        connect(reply, SIGNAL(finished()), this, SLOT(requestFinished()));
       }
 
-      bool DownloadCustomFile::DownloadFile(QUrl &fileUrl, QFile &file)
+      void DownloadCustomFile::requestFinished()
       {
-        QScopedPointer<QNetworkAccessManager> manager(new QNetworkAccessManager(this));
+        QNetworkReply *reply = qobject_cast<QNetworkReply*>(QObject::sender());
+        reply->deleteLater();
 
-        QHostInfo info = QHostInfo::fromName(fileUrl.host());
-
-        Q_FOREACH(QHostAddress address, info.addresses()) {
-          fileUrl.setHost(address.toString());
-
-          QNetworkReply *reply = manager->get(QNetworkRequest(fileUrl));
-
-          QEventLoop el;
-          connect(reply, SIGNAL(finished()), &el, SLOT(quit())); 
-          el.exec();
-
-          if (QNetworkReply::NoError != reply->error()) {
-            reply->deleteLater();
-            continue;
-          }
-
-          if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
-            reply->deleteLater();
-            return false;
-          }
-
-          file.write(reply->readAll());
-          file.flush();
-          file.close();
-
-          reply->deleteLater();
-          return true;
+        if (QNetworkReply::NoError != reply->error()) {
+          this->DownloadFile();
+          return;
+        }
+        
+        if (!this->_file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
+          emit this->canExecuteCompleted(false);
+          return ;
         }
 
-        return false;
-      }
+        this->_file.write(reply->readAll());
+        this->_file.flush();
+        this->_file.close();
 
-      void DownloadCustomFile::PostExecute(const Core::Service &service, GGS::GameExecutor::FinishState state)
-      {
-      }
-
-      bool DownloadCustomFile::PreExecute(const Core::Service &service)
-      {
-        return true;
+        emit this->canExecuteCompleted(true);
       }
     }
   }

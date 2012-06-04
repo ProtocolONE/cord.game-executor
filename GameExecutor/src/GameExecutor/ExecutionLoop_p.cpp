@@ -113,7 +113,7 @@ namespace GGS {
 
     void ExecutionLoopPrivate::setExecutorService(GGS::GameExecutor::GameExecutorService *val)
     {
-      this->_service = val;
+      this->_executorService = val;
     }
 
     void ExecutionLoopPrivate::setExecutor(GGS::GameExecutor::ExecutorBase *val)

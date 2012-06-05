@@ -45,7 +45,7 @@ TEST(ServerClientIPC, ClientDisconnectionSlot)
   ASSERT_TRUE(test.isDisconnected());
 }
 
-TEST(ServerClientIPC, ClientErrorSlot) 
+TEST(ServerClientIPC, DISABLED_ClientErrorSlot) 
 {
   ClientTest test;
   test.testErrorSlot();

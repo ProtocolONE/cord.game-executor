@@ -28,7 +28,7 @@ using namespace GGS;
 class DownloadCustomFileTest : public ::testing::Test 
 {
 public:
-  bool executeHookCanStep(const Core::Service &service) 
+  bool executeHookCanStep(Core::Service &service) 
   {
     GameExecutor::Hook::DownloadCustomFile hook1;
     QSignalSpy spy(&hook1, SIGNAL(canExecuteCompleted(bool)));

@@ -26,7 +26,7 @@ namespace GGS {
         explicit DisableDEP(QObject *parent = 0);
         ~DisableDEP();
 
-        virtual void PreExecute(const Core::Service &service);
+        virtual void PreExecute(Core::Service &service);
       };
     }
   }

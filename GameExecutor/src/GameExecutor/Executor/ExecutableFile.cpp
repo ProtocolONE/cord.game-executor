@@ -211,6 +211,7 @@ namespace GGS {
 
       void ExecutableFile::launcherStart()
       {
+        this->_process.close();
 #ifdef _DEBUG
         this->_process.start(QCoreApplication::applicationDirPath() + "/Launcherd.exe");
 #else

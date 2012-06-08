@@ -12,7 +12,7 @@ namespace GGS {
       {
       }
 
-      void RestoreResolution::PreExecute(const Core::Service &service)
+      void RestoreResolution::PreExecute(Core::Service &service)
       {
         DEBUG_LOG << "for" << service.id();
 
@@ -21,7 +21,7 @@ namespace GGS {
         emit this->preExecuteCompleted(true);
       }
 
-      void RestoreResolution::PostExecute(const Core::Service &service, GGS::GameExecutor::FinishState state)
+      void RestoreResolution::PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state)
       {
         DEBUG_LOG << "for" << service.id();
 

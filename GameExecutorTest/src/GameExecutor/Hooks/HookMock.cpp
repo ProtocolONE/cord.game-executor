@@ -9,7 +9,7 @@ HookMock::~HookMock()
 {
 }
 
-void HookMock::CanExecute(const Core::Service &service)
+void HookMock::CanExecute(Core::Service &service)
 {
   bool ret = true;
   if (this->_canFunc) {
@@ -19,7 +19,7 @@ void HookMock::CanExecute(const Core::Service &service)
   emit this->canExecuteCompleted(ret);
 }
 
-void HookMock::PreExecute( const Core::Service &service )
+void HookMock::PreExecute(Core::Service &service )
 {
   bool ret = true;
   if (this->_preFunc) {
@@ -29,7 +29,7 @@ void HookMock::PreExecute( const Core::Service &service )
   emit this->preExecuteCompleted(ret);
 }
 
-void HookMock::PostExecute( const Core::Service &service, GGS::GameExecutor::FinishState state )
+void HookMock::PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state )
 {
   if (this->_postFunc) {
     this->_postFunc(service, state);
@@ -38,17 +38,17 @@ void HookMock::PostExecute( const Core::Service &service, GGS::GameExecutor::Fin
   emit this->postExecuteCompleted();
 }
 
-void HookMock::setCanFunc( HookCanPreFunc func )
+void HookMock::setCanFunc(HookCanPreFunc func)
 {
   this->_canFunc = func;
 }
 
-void HookMock::setPreFunc( HookCanPreFunc func )
+void HookMock::setPreFunc(HookCanPreFunc func)
 {
   this->_preFunc = func;
 }
 
-void HookMock::setPostFunc( HookPostFunc func )
+void HookMock::setPostFunc(HookPostFunc func)
 {
   this->_postFunc = func;
 }

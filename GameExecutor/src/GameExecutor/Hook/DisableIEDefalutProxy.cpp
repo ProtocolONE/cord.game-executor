@@ -17,7 +17,7 @@ namespace GGS {
       {
       }
 
-      void DisableIEDefalutProxy::PreExecute(const Core::Service &service)
+      void DisableIEDefalutProxy::PreExecute(Core::Service &service)
       {
         DEBUG_LOG << "for" << service.id();
 

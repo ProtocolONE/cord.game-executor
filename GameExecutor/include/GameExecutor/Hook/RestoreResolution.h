@@ -32,9 +32,9 @@ namespace GGS {
         explicit RestoreResolution(QObject *parent = 0);
         ~RestoreResolution();
 
-        virtual void PostExecute(const Core::Service &service, GGS::GameExecutor::FinishState state);
+        virtual void PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state);
 
-        virtual void PreExecute(const Core::Service &service);
+        virtual void PreExecute(Core::Service &service);
       private:
         DEVMODE _beforeExecuteDisplay;
         bool _enabled;

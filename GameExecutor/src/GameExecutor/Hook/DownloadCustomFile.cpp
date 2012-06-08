@@ -17,7 +17,7 @@ namespace GGS {
       {
       }
 
-      void DownloadCustomFile::CanExecute(const Core::Service &service)
+      void DownloadCustomFile::CanExecute(Core::Service &service)
       {
         QUrl url = service.url();
         if (!url.hasQueryItem("downloadCustomFile")) {
@@ -38,7 +38,7 @@ namespace GGS {
         }
 
         if (!url.hasQueryItem("downloadCustomFileOverride") && fileInfo.exists()) {
-          emit this->canExecuteCompleted(false);
+          emit this->canExecuteCompleted(true);
           return;
         };
 

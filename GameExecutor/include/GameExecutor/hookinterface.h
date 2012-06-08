@@ -41,7 +41,7 @@ namespace GGS {
       
         \return true, если сервис может быть запущен.
       */
-      virtual void CanExecute(const Core::Service &service);
+      virtual void CanExecute(Core::Service &service);
 
       /*!
         \fn virtual bool HookInterface::PreExecute(const Core::Service &service) = 0;
@@ -53,7 +53,7 @@ namespace GGS {
       
         \return true, если сервис может быть запущен.
       */
-      virtual void PreExecute(const Core::Service &service);
+      virtual void PreExecute(Core::Service &service);
 
       /*!
         \fn virtual void HookInterface::PostExecute(const Core::Service &service,
@@ -67,7 +67,7 @@ namespace GGS {
 
         \sa GGS::GameExecutor::FinishState
       */
-      virtual void PostExecute(const Core::Service &service, GGS::GameExecutor::FinishState state);
+      virtual void PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state);
 
     signals:
       void canExecuteCompleted(bool result);

@@ -36,7 +36,7 @@ namespace GGS {
         DownloadCustomFile(QObject *parent = 0);
         ~DownloadCustomFile();
 
-        virtual void CanExecute(const Core::Service &service);
+        virtual void CanExecute(Core::Service &service);
       public slots:
         void requestFinished();
       private:

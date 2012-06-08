@@ -15,7 +15,7 @@ namespace GGS {
       {
       }
 
-      void DisableDEP::PreExecute(const Core::Service &service)
+      void DisableDEP::PreExecute(Core::Service &service)
       {
         DEBUG_LOG << "for" << service.id();
 

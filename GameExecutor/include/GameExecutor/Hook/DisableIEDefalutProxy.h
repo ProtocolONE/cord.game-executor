@@ -33,7 +33,7 @@ namespace GGS {
         explicit DisableIEDefalutProxy(QObject *parent = 0);
         ~DisableIEDefalutProxy();
 
-        virtual void PreExecute(const Core::Service &service);
+        virtual void PreExecute(Core::Service &service);
       };
     }
   }

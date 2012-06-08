@@ -31,11 +31,11 @@ public:
   HookMock(QObject *parent = 0);
   ~HookMock();
 
-  void CanExecute( const Core::Service &service );
+  void CanExecute(Core::Service &service );
 
-  void PostExecute( const Core::Service &service, GGS::GameExecutor::FinishState state );
+  void PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state );
 
-  void PreExecute( const Core::Service &service );
+  void PreExecute(Core::Service &service );
 
   void setCanFunc(HookCanPreFunc func);
   void setPreFunc(HookCanPreFunc func);

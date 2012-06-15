@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
     DEBUG_LOG << "Starting application"; 
 
     Launcher app;
-    app.exec();
+    app.exec(a);
 
     int result = a.exec();
     

@@ -26,6 +26,7 @@ namespace GGS {
       UnhandledRestApiError,
       CanExecutionHookBreak,
       PreExecutionHookBreak,
+      AlreadyStartedError,
     };
 
     Q_ENUMS(GGS::GameExecutor::FinishState);

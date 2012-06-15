@@ -18,6 +18,7 @@
 #include <RestApi/FakeCache>
 
 #include <QObject>
+#include <QtCore/QCoreApplication>
 
 class Launcher : public QObject
 {
@@ -27,7 +28,7 @@ public:
   Launcher(QObject *parent = 0);
   ~Launcher();
 
-  void exec();
+  void exec(QCoreApplication &app);
 
 private slots:
   void exit(int code);

@@ -19,8 +19,9 @@
 #include <RestApi/RestApiManager>
 
 #include <QtCore/QObject>
+#include <QtCore/QMutex>
 #include <QtCore/QString>
-#include <QtCore/QHash>
+#include <QtCore/QSet>
 #include <QtCore/QMultiMap>
 
 namespace GGS {
@@ -49,7 +50,7 @@ namespace GGS {
 
       bool hasExecutor(const QString &scheme) const;
 
-      bool addHook(const Core::Service &service, HookInterface *hook, int priority = 0);
+      bool addHook(const Core::Service &service, HookInterface* hook, int priority = 0);
 
       void clearHooks(const Core::Service &service);
 
@@ -68,6 +69,8 @@ namespace GGS {
       RestApi::RestApiManager *_restApiManager;
       QHash<QString, ExecutorBase*> _executors;
       QHash<QString, QMultiMap<int, HookInterface*>> _hooks;
+      QSet<QString> _startedServices;
+      QMutex _lock;
     };
   }
 }

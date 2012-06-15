@@ -1,6 +1,9 @@
 #include <Launcher.h>
-#include <QtCore/QCoreApplication>
+
 #include <RestApi/RequestFactory>
+
+#include <QtCore/QCoreApplication>
+#include <QtCore/QStringList>
 
 Launcher::Launcher(QObject *parent) : QObject(parent)
 {
@@ -17,8 +20,16 @@ Launcher::~Launcher()
 {
 }
 
-void Launcher::exec()
+void Launcher::exec(QCoreApplication &app)
 {
+  QStringList args = app.arguments();
+  if (args.size() != 2) {
+    qDebug() << "Wrong command line arguments" << args;
+    QCoreApplication::exit(-1);
+    return;
+  }
+  
+  client.setIpcName(args[1].trimmed());
   client.exec();
 }
 

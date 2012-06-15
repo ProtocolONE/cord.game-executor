@@ -33,6 +33,7 @@
 #include <QtTest/QSignalSpy>
 
 using namespace GGS;
+using GGS::RestApi::GameNetCredential;
 
 class ExecutableFileTest : public ::testing::Test 
 {
@@ -54,8 +55,10 @@ protected:
   {
   }
 
-  void ExecutionFlow(const Core::Service &srv, int startCount, GGS::GameExecutor::FinishState finishState)
+  void ExecutionFlow(const Core::Service &srv, int startCount, GGS::GameExecutor::FinishState finishState, const QString workingPath = "")
   {
+    GameExecutor::Executor::ExecutableFile executor;
+
     QSignalSpy startExecute(&executor, SIGNAL(started(const Core::Service)));
     QSignalSpy finishExecute(&executor, SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)));
 
@@ -64,9 +67,14 @@ protected:
       loop.exit();
     });;
 
+    if (workingPath.length()) 
+      executor.setWorkingDirectory(workingPath);
+
     executor.execute(srv, &executorService);
 
     loop.exec();
+    //такая конструкция нужна, чтобы "доработать" события deleteLater
+    while(loop.processEvents());
 
     ASSERT_EQ(startCount, startExecute.count());
     ASSERT_EQ(finishState, finishExecute.at(0).at(1).value<GGS::GameExecutor::FinishState>());
@@ -74,7 +82,7 @@ protected:
 
   Core::Service service;
   
-  GameExecutor::Executor::ExecutableFile executor;
+  
   GameExecutor::GameExecutorService executorService;
 
   QEventLoop loop;
@@ -87,6 +95,7 @@ protected:
 
 TEST_F(ExecutableFileTest, Scheme) 
 {
+  GameExecutor::Executor::ExecutableFile executor;
   ASSERT_EQ("exe", executor.scheme());
 }
 
@@ -122,12 +131,13 @@ TEST_F(ExecutableFileTest, ArgumentParsing)
   srv.setId("300003010000000000");
   srv.setGameId("71");
   srv.setUrl(url);
-
+  
+  QFile successOutput(QCoreApplication::applicationDirPath() + "/output.txt");
+  successOutput.remove();
+  
   ExecutionFlow(srv, 1, GGS::GameExecutor::Success);
 
   QString output;
-  QString filePath = QCoreApplication::applicationDirPath() + "/output.txt";
-  QFile successOutput(filePath);
   if (successOutput.open(QIODevice::ReadOnly)) {
     QTextStream in(&successOutput);
     output = in.readAll();
@@ -169,9 +179,7 @@ TEST_F(ExecutableFileTest, ExternalFatalErrorIfLauncerExeFailed)
   srv.setGameId("71");
   srv.setUrl(url);
 
-  executor.setWorkingDirectory("WrongPathToLauncer.Exe");
-
-  ExecutionFlow(srv, 0, GGS::GameExecutor::ExternalFatalError);
+  ExecutionFlow(srv, 0, GGS::GameExecutor::ExternalFatalError, "WrongPathToLauncer.Exe");
 }
 
 TEST_F(ExecutableFileTest, AuthorizationError) 

@@ -45,6 +45,8 @@ namespace GGS{
         void setRestApiManager(RestApi::RestApiManager *restApiManager);
         RestApi::RestApiManager *respApiManager();
 
+        void setIpcName(const QString& name);;
+
         void exec();
 
       signals:
@@ -76,6 +78,8 @@ namespace GGS{
         void setUserActivityLogout(int code);
 
         RestApi::RestApiManager *_restApiManager;
+
+        QString _ipcName;
 
         IPC::Client _client;
         QProcess _gameProcess;

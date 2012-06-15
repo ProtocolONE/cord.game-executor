@@ -21,8 +21,6 @@ namespace GGS{
       {
         DEBUG_LOG;
 
-        this->_client.setName(QString(GAMEEXECUTOR_IPC_CHANNEL));
-
         connect(&this->_client, SIGNAL(connected()), this, SLOT(connectedToServer()));
 
         connect(&this->_client, SIGNAL(disconnected()), this, SLOT(disconnectedOrError()));
@@ -55,6 +53,7 @@ namespace GGS{
       void ExecutableFileClient::exec()
       {
         DEBUG_LOG;
+        this->_client.setName(this->_ipcName);
         this->_client.connectToServer();
       }
 
@@ -253,6 +252,11 @@ namespace GGS{
       void ExecutableFileClient::disconnectedOrError()
       {
          emit this->exit(1);
+      }
+
+      void ExecutableFileClient::setIpcName(const QString& name)
+      {
+        this->_ipcName = name;
       }
     }
   }

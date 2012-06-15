@@ -1,7 +1,7 @@
 /****************************************************************************
 ** This file is a part of Syncopate Limited GameNet Application or it parts.
 **
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
+** Copyright (В©) 2011 - 2012, Syncopate Limited and/or affiliates. 
 ** All rights reserved.
 **
 ** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
@@ -71,8 +71,8 @@ TEST_F(GameExecutorServiceTest, BaseSignals)
     loop.exit();
   });
   
-  //Это может показаться странным, но это лучший способ проверить корректность следования сигналов при условии, что
-  //часть сигналы эмитятся в разных потоках.
+  //Р­С‚Рѕ РјРѕР¶РµС‚ РїРѕРєР°Р·Р°С‚СЊСЃСЏ СЃС‚СЂР°РЅРЅС‹Рј, РЅРѕ СЌС‚Рѕ Р»СѓС‡С€РёР№ СЃРїРѕСЃРѕР± РїСЂРѕРІРµСЂРёС‚СЊ РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚СЊ СЃР»РµРґРѕРІР°РЅРёСЏ СЃРёРіРЅР°Р»РѕРІ РїСЂРё СѓСЃР»РѕРІРёРё, С‡С‚Рѕ
+  //С‡Р°СЃС‚СЊ СЃРёРіРЅР°Р»С‹ СЌРјРёС‚СЏС‚СЃСЏ РІ СЂР°Р·РЅС‹С… РїРѕС‚РѕРєР°С….
   for (int y = 0; y < 1000; y++)
   {
     executorService.execute(service);
@@ -192,7 +192,7 @@ TEST_F(GameExecutorServiceTest, NormalFlowOfTheLoop)
   executorService.execute(service);
   loop.exec();
 
-  //UNDONE Проверить, что Core::Service реально тот, что был передан
+  //UNDONE РџСЂРѕРІРµСЂРёС‚СЊ, С‡С‚Рѕ Core::Service СЂРµР°Р»СЊРЅРѕ С‚РѕС‚, С‡С‚Рѕ Р±С‹Р» РїРµСЂРµРґР°РЅ
   ASSERT_EQ(true, canExecuteSpy.at(0).at(1).value<bool>());
   ASSERT_EQ(true, preExecuteSpy.at(0).at(1).value<bool>());
   ASSERT_EQ(1, startedSpy.count());
@@ -249,3 +249,34 @@ TEST_F(GameExecutorServiceTest, UnknownSchemeErrorCase)
   ASSERT_EQ(GGS::GameExecutor::UnknownSchemeError, 
             finishedSpy.at(0).at(1).value<GGS::GameExecutor::FinishState>());
 }
+
+
+TEST_F(GameExecutorServiceTest, MultiStartErrorCase) 
+{
+  QSignalSpy startedSpy(&executorService, SIGNAL(started(const Core::Service)));
+  QSignalSpy finishedSpy(&executorService, SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)));
+
+  int count = 0;
+  GameExecutorServiceWrapper wrapper(&executorService);
+  wrapper.setFinished([&](const Core::Service &service, GGS::GameExecutor::FinishState state) {
+    if (++count == 2) 
+      loop.exit();
+  });
+
+  service.setUrl(QUrl("test://"));
+  executorService.execute(service);
+  executorService.execute(service);
+  loop.exec();
+
+  ASSERT_EQ(1, startedSpy.count());
+  ASSERT_EQ(2, finishedSpy.count());
+
+  //РЎРїРµСЂРІС‹ РјС‹ РїРѕР»СѓС‡РёРј РѕС€РёР±РєСѓ РѕС‚ РїРѕРІС‚РѕСЂРЅРѕРіРѕ Р·Р°РїСѓСЃРєР°
+  EXPECT_EQ(GGS::GameExecutor::AlreadyStartedError, 
+    finishedSpy.at(0).at(1).value<GGS::GameExecutor::FinishState>());
+  
+  //РџРѕС‚РѕРј РєРѕСЂСЂРµРєС‚РЅС‹Р№ РѕС‚РІРµС‚ РѕС‚ РїРµСЂРІРѕРіРѕ Р·Р°РїСѓСЃРєР°
+  EXPECT_EQ(GGS::GameExecutor::Success, 
+    finishedSpy.at(1).at(1).value<GGS::GameExecutor::FinishState>());
+}
+

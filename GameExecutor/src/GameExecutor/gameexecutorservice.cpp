@@ -2,6 +2,7 @@
 #include <GameExecutor/gameexecutorservice.h>
 
 #include <QtCore/QList>
+#include <QtCore/QMutexLocker>
 
 namespace GGS {
   namespace GameExecutor {
@@ -77,6 +78,15 @@ namespace GGS {
         return;
       }
 
+      QMutexLocker lock(&this->_lock);
+
+      if (this->_startedServices.contains(id)) {
+        emit this->finished(service, AlreadyStartedError);
+        return;
+      } else {
+        this->_startedServices << id;
+      }
+
       QList<HookInterface *> list;
       Q_FOREACH (HookInterface *hook, this->_hooks[id]) {
         list.append(hook);
@@ -103,9 +113,13 @@ namespace GGS {
       loop->execute();
     }
 
-    void GameExecutorService::privateFinished( const Core::Service &service, GGS::GameExecutor::FinishState state )
+    void GameExecutorService::privateFinished(const Core::Service &service, GGS::GameExecutor::FinishState state)
     {
       QObject::sender()->deleteLater();
+
+      QMutexLocker lock(&this->_lock);
+      this->_startedServices.remove(service.id());
+     
       emit this->finished(service, state);
     }
 

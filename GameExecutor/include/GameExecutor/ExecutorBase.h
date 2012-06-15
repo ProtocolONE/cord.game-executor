@@ -26,6 +26,7 @@ namespace GGS {
       Q_OBJECT
     public:
       explicit ExecutorBase(QObject *parent = 0);
+      ExecutorBase(const QString &scheme, QObject *parent = 0);
       virtual ~ExecutorBase();
 
       virtual void execute(const Core::Service &service, GameExecutorService *executorService) = 0;

@@ -1,14 +1,19 @@
 #include <GameExecutor/Hook/DisableIEDefalutProxy.h>
 
-#include <Windows.h>
-#include <Wininet.h>
+#include <Core/UI/Message>
 
 #include <QtCore/QSettings>
 #include <QtCore/QDebug>
 
+#include <Windows.h>
+#include <Wininet.h>
+
 namespace GGS {
   namespace GameExecutor {
     namespace Hook {
+
+      using Core::UI::Message;
+
       DisableIEDefalutProxy::DisableIEDefalutProxy(QObject *parent) : HookInterface(parent)
       {
       }
@@ -27,12 +32,16 @@ namespace GGS {
           return;
         }
 
-        //UNDONE ���� � ��� ��� ����������� ��� ��������
-        /*
-        if (somePossibility->userDon`tWantToDisableThis) {
-        return false;
+        //UNDONE Локализация
+        Message::StandardButton reply = Message::warning(
+          QString::fromUtf8("Внимание!"), 
+          QString::fromUtf8("Во избежание проблем с подключением к игровому серверу не рекомендуется использовать функции \"Автономная работа\" и \"Использовать прокси сервер для подключений LAN\" в браузере Internet Explorer. Вы хотите, чтобы GameNet автоматически отключил эти функции?"), 
+          static_cast<Message::StandardButton>(Message::Yes | Message::No));
+        
+        if (reply == Message::No) {
+           emit this->preExecuteCompleted(true);
+           return;
         }
-        */
 
         reg.setValue("ProxyEnable", 0);
         reg.setValue("GlobalUserOffline", 0);

@@ -28,7 +28,7 @@ namespace GGS {
 
         QSettings reg("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", QSettings::NativeFormat);
         if (0 == reg.value("ProxyEnable", "0").toInt() && 0 == reg.value("GlobalUserOffline", "0").toInt()) {
-          emit this->preExecuteCompleted(true);
+          emit this->preExecuteCompleted(GGS::GameExecutor::Success);
           return;
         }
 
@@ -39,9 +39,9 @@ namespace GGS {
           static_cast<Message::StandardButton>(Message::Yes | Message::No));
         
         if (reply == Message::No) {
-           emit this->preExecuteCompleted(true);
+           emit this->preExecuteCompleted(GGS::GameExecutor::Success);
            return;
-        }
+        } 
 
         reg.setValue("ProxyEnable", 0);
         reg.setValue("GlobalUserOffline", 0);
@@ -52,7 +52,7 @@ namespace GGS {
         InternetSetOption(NULL, INTERNET_OPTION_SETTINGS_CHANGED, NULL, 0);
         InternetSetOption(NULL, INTERNET_OPTION_REFRESH, NULL, 0);
 
-        emit this->preExecuteCompleted(true);
+        emit this->preExecuteCompleted(GGS::GameExecutor::Success);
       }
     }
   }

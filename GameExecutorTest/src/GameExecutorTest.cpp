@@ -54,11 +54,11 @@ TEST_F(GameExecutorServiceTest, BaseSignals)
   QStringList check;
 
   GameExecutorServiceWrapper wrapper(&executorService);
-  wrapper.setCanExecuteCompleted([&](const Core::Service &service, bool result) {
+  wrapper.setCanExecuteCompleted([&](const Core::Service &service) {
     check.append("can");
   });
 
-  wrapper.setPreExecuteCompleted([&](const Core::Service &service, bool result) {
+  wrapper.setPreExecuteCompleted([&](const Core::Service &service) {
     check.append("pre");
   });
 
@@ -92,15 +92,15 @@ TEST_F(GameExecutorServiceTest, CanExecuteStopTheLoop)
 {
   HookMock hook;
   
-  hook.setCanFunc([&](const Core::Service &service) -> bool {
-    return false;
+  hook.setCanFunc([&](const Core::Service &service) -> GGS::GameExecutor::FinishState {
+    return GGS::GameExecutor::CanExecutionHookBreak;
   });
   
   executorService.clearHooks(service);
   executorService.addHook(service, &hook);
 
-  QSignalSpy canExecute(&executorService, SIGNAL(canExecuteCompleted(const Core::Service, bool)));
-  QSignalSpy preExecute(&executorService, SIGNAL(preExecuteCompleted(const Core::Service, bool)));
+  QSignalSpy canExecute(&executorService, SIGNAL(canExecuteCompleted(const Core::Service)));
+  QSignalSpy preExecute(&executorService, SIGNAL(preExecuteCompleted(const Core::Service)));
   QSignalSpy startExecute(&executorService, SIGNAL(started(const Core::Service)));
   QSignalSpy finishExecute(&executorService, SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)));
 
@@ -123,15 +123,15 @@ TEST_F(GameExecutorServiceTest, PreExecuteStopTheLoop)
 {
   HookMock hook;
 
-  hook.setPreFunc([&](const Core::Service &service) -> bool {
-    return false;
+  hook.setPreFunc([&](const Core::Service &service) -> GGS::GameExecutor::FinishState {
+    return GGS::GameExecutor::PreExecutionHookBreak;
   });
 
   executorService.clearHooks(service);
   executorService.addHook(service, &hook);
 
-  QSignalSpy canExecute(&executorService, SIGNAL(canExecuteCompleted(const Core::Service, bool)));
-  QSignalSpy preExecute(&executorService, SIGNAL(preExecuteCompleted(const Core::Service, bool)));
+  QSignalSpy canExecute(&executorService, SIGNAL(canExecuteCompleted(const Core::Service)));
+  QSignalSpy preExecute(&executorService, SIGNAL(preExecuteCompleted(const Core::Service)));
   QSignalSpy startExecute(&executorService, SIGNAL(started(const Core::Service)));
   QSignalSpy finishExecute(&executorService, SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)));
 
@@ -157,13 +157,13 @@ TEST_F(GameExecutorServiceTest, PreExecuteStopTheLoop)
 
 #define NORMAL_FLOW_OF_THE_LOOP_HOOK(Name,Index) \
   HookMock Name;\
-  Name.setCanFunc([&](const Core::Service &service) -> bool {\
+  Name.setCanFunc([&](const Core::Service &service) -> GGS::GameExecutor::FinishState {\
     check.append(QString(STRINGIZE(PPCAT(can, Name))));\
-    return true;\
+    return GGS::GameExecutor::Success;\
   });\
-  Name.setPreFunc([&](const Core::Service &service) -> bool {\
+  Name.setPreFunc([&](const Core::Service &service) -> GGS::GameExecutor::FinishState {\
    check.append(QString(STRINGIZE(PPCAT(pre, Name))));\
-   return true; \
+   return GGS::GameExecutor::Success; \
   });\
   Name.setPostFunc([&](const Core::Service &service, GGS::GameExecutor::FinishState state) { \
    check.append(QString(STRINGIZE(PPCAT(post, Name))));\
@@ -174,8 +174,8 @@ TEST_F(GameExecutorServiceTest, NormalFlowOfTheLoop)
 {
   QStringList check;
   
-  QSignalSpy canExecuteSpy(&executorService, SIGNAL(canExecuteCompleted(const Core::Service, bool)));
-  QSignalSpy preExecuteSpy(&executorService, SIGNAL(preExecuteCompleted(const Core::Service, bool)));
+  QSignalSpy canExecuteSpy(&executorService, SIGNAL(canExecuteCompleted(const Core::Service)));
+  QSignalSpy preExecuteSpy(&executorService, SIGNAL(preExecuteCompleted(const Core::Service)));
   QSignalSpy startedSpy(&executorService, SIGNAL(started(const Core::Service)));
   QSignalSpy finishedSpy(&executorService, SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)));
 
@@ -193,8 +193,8 @@ TEST_F(GameExecutorServiceTest, NormalFlowOfTheLoop)
   loop.exec();
 
   //UNDONE Проверить, что Core::Service реально тот, что был передан
-  ASSERT_EQ(true, canExecuteSpy.at(0).at(1).value<bool>());
-  ASSERT_EQ(true, preExecuteSpy.at(0).at(1).value<bool>());
+  ASSERT_EQ(1, canExecuteSpy.at(0).count());
+  ASSERT_EQ(1, preExecuteSpy.at(0).count());
   ASSERT_EQ(1, startedSpy.count());
   ASSERT_EQ(GGS::GameExecutor::Success, finishedSpy.at(0).at(1).value<GGS::GameExecutor::FinishState>());
 

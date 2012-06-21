@@ -31,14 +31,14 @@ namespace GGS {
       void execute();
 
     signals:
-      void canExecuteCompleted(const Core::Service &service, bool result);
-      void preExecuteCompleted(const Core::Service &service, bool result);
+      void canExecuteCompleted(const Core::Service &service);
+      void preExecuteCompleted(const Core::Service &service);
       void started(const Core::Service &service);
       void finished(const Core::Service &service, GGS::GameExecutor::FinishState state);
 
     private slots:
-      void executeHookCanStep(bool result);
-      void executeHookPreStep(bool result);
+      void executeHookCanStep(GGS::GameExecutor::FinishState result);
+      void executeHookPreStep(GGS::GameExecutor::FinishState result);
       void executorStep();
       void executorCompletedStep(const Core::Service &service, GGS::GameExecutor::FinishState state);
       void executeHookPostStep();

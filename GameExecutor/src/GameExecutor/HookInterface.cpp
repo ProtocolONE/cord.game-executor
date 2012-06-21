@@ -13,12 +13,12 @@ namespace GGS {
 
     void HookInterface::CanExecute(Core::Service &service)
     {
-      emit this->canExecuteCompleted(true);
+      emit this->canExecuteCompleted(GGS::GameExecutor::Success);
     }
 
     void HookInterface::PreExecute(Core::Service &service)
     {
-      emit this->preExecuteCompleted(true);
+      emit this->preExecuteCompleted(GGS::GameExecutor::Success);
     }
 
     void HookInterface::PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state)

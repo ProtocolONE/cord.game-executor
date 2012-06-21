@@ -28,18 +28,17 @@ using namespace GGS;
 class DownloadCustomFileTest : public ::testing::Test 
 {
 public:
-  bool executeHookCanStep(Core::Service &service) 
+  GGS::GameExecutor::FinishState executeHookCanStep(Core::Service &service) 
   {
     GameExecutor::Hook::DownloadCustomFile hook1;
-    QSignalSpy spy(&hook1, SIGNAL(canExecuteCompleted(bool)));
+    QSignalSpy spy(&hook1, SIGNAL(canExecuteCompleted(GGS::GameExecutor::FinishState)));
     
     QEventLoop loop;
-    QObject::connect(&hook1, SIGNAL(canExecuteCompleted(bool)), &loop, SLOT(quit()), Qt::QueuedConnection);
+    QObject::connect(&hook1, SIGNAL(canExecuteCompleted(GGS::GameExecutor::FinishState)), &loop, SLOT(quit()), Qt::QueuedConnection);
 
     hook1.CanExecute(service);
     loop.exec();
-
-    return spy.takeFirst().at(0).toBool();
+    return spy.at(0).at(0).value<GGS::GameExecutor::FinishState>();
   }
 };
 
@@ -63,7 +62,7 @@ TEST_F(DownloadCustomFileTest, Success)
   QFile file(basePath + "./live/launcher/serverinfo_back.xml");
   file.remove();
 
-  ASSERT_TRUE(executeHookCanStep(srvHook));
+  ASSERT_EQ(GGS::GameExecutor::Success, executeHookCanStep(srvHook));
   ASSERT_TRUE(file.exists());
   ASSERT_TRUE(file.size() > 0);
 }
@@ -84,7 +83,7 @@ TEST_F(DownloadCustomFileTest, UncorrectDomainFail)
 
   srvHook.setInstallPath(basePath);
 
-  ASSERT_FALSE(executeHookCanStep(srvHook));
+  ASSERT_EQ(GGS::GameExecutor::CanExecutionHookBreak, executeHookCanStep(srvHook));
 }
 
 TEST_F(DownloadCustomFileTest, LockedFileFail) 
@@ -108,7 +107,7 @@ TEST_F(DownloadCustomFileTest, LockedFileFail)
   HANDLE hFile = CreateFile(finalFilePath.toStdWString().c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, 0, NULL);
 
   GameExecutor::Hook::DownloadCustomFile hook1;
-  EXPECT_FALSE(executeHookCanStep(srvHook));
+  ASSERT_EQ(GGS::GameExecutor::CanExecutionHookBreak, executeHookCanStep(srvHook));
 
   CloseHandle(hFile);
 }

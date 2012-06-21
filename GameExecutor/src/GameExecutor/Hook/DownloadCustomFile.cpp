@@ -21,7 +21,7 @@ namespace GGS {
       {
         QUrl url = service.url();
         if (!url.hasQueryItem("downloadCustomFile")) {
-          emit this->canExecuteCompleted(true);
+          emit this->canExecuteCompleted(GGS::GameExecutor::Success);
           return;
         }
 
@@ -33,12 +33,12 @@ namespace GGS {
         QFileInfo fileInfo(this->_file);
 
         if (!fileInfo.absoluteDir().mkpath(fileInfo.absoluteDir().absolutePath())) {
-          emit this->canExecuteCompleted(false);
+          emit this->canExecuteCompleted(GGS::GameExecutor::CanExecutionHookBreak);
           return;
         }
 
         if (!url.hasQueryItem("downloadCustomFileOverride") && fileInfo.exists()) {
-          emit this->canExecuteCompleted(true);
+          emit this->canExecuteCompleted(GGS::GameExecutor::Success);
           return;
         };
 
@@ -62,7 +62,7 @@ namespace GGS {
       void DownloadCustomFile::DownloadFile()
       {
         if (--this->_infoIndex < 0) {
-          emit this->canExecuteCompleted(false);
+          emit this->canExecuteCompleted(GGS::GameExecutor::CanExecutionHookBreak);
           return;
         }
 
@@ -83,7 +83,7 @@ namespace GGS {
         }
         
         if (!this->_file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
-          emit this->canExecuteCompleted(false);
+          emit this->canExecuteCompleted(GGS::GameExecutor::CanExecutionHookBreak);
           return ;
         }
 
@@ -91,7 +91,7 @@ namespace GGS {
         this->_file.flush();
         this->_file.close();
 
-        emit this->canExecuteCompleted(true);
+        emit this->canExecuteCompleted(GGS::GameExecutor::Success);
       }
     }
   }

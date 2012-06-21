@@ -18,7 +18,7 @@ namespace GGS {
 
         //http://msdn.microsoft.com/en-us/library/dd162611(v=vs.85).aspx
         this->_enabled = EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &this->_beforeExecuteDisplay);
-        emit this->preExecuteCompleted(true);
+        emit this->preExecuteCompleted(GGS::GameExecutor::Success);
       }
 
       void RestoreResolution::PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state)

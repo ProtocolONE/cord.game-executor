@@ -11,7 +11,7 @@ HookMock::~HookMock()
 
 void HookMock::CanExecute(Core::Service &service)
 {
-  bool ret = true;
+  GGS::GameExecutor::FinishState ret = GGS::GameExecutor::Success;
   if (this->_canFunc) {
     ret = this->_canFunc(service);
   }
@@ -19,9 +19,9 @@ void HookMock::CanExecute(Core::Service &service)
   emit this->canExecuteCompleted(ret);
 }
 
-void HookMock::PreExecute(Core::Service &service )
+void HookMock::PreExecute(Core::Service &service)
 {
-  bool ret = true;
+  GGS::GameExecutor::FinishState ret = GGS::GameExecutor::Success;
   if (this->_preFunc) {
     ret = this->_preFunc(service);
   }
@@ -29,7 +29,7 @@ void HookMock::PreExecute(Core::Service &service )
   emit this->preExecuteCompleted(ret);
 }
 
-void HookMock::PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state )
+void HookMock::PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state)
 {
   if (this->_postFunc) {
     this->_postFunc(service, state);

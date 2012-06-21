@@ -16,16 +16,16 @@ GameExecutorServiceWrapper::~GameExecutorServiceWrapper()
 
 }
 
-void GameExecutorServiceWrapper::canExecuteCompleted(const Core::Service &service, bool result)
+void GameExecutorServiceWrapper::canExecuteCompleted(const Core::Service &service)
 {
   if (this->_canExecuteCompletedFunc)
-    this->_canExecuteCompletedFunc(service, result);
+    this->_canExecuteCompletedFunc(service);
 }
 
-void GameExecutorServiceWrapper::preExecuteCompleted(const Core::Service &service, bool result)
+void GameExecutorServiceWrapper::preExecuteCompleted(const Core::Service &service)
 {
   if (this->_preExecuteCompletedFunc) 
-    this->_preExecuteCompletedFunc(service, result);
+    this->_preExecuteCompletedFunc(service);
 }
 
 void GameExecutorServiceWrapper::started(const Core::Service &service)
@@ -64,11 +64,11 @@ void GameExecutorServiceWrapper::setGameExecutorService(GGS::GameExecutor::GameE
 {
   this->_service = _service;
 
-  connect(this->_service, SIGNAL(canExecuteCompleted(const Core::Service, bool)), 
-          this, SLOT(canExecuteCompleted(const Core::Service, bool)));
+  connect(this->_service, SIGNAL(canExecuteCompleted(const Core::Service)), 
+          this, SLOT(canExecuteCompleted(const Core::Service)));
 
-  connect(this->_service, SIGNAL(preExecuteCompleted(const Core::Service, bool)), 
-          this, SLOT(preExecuteCompleted(const Core::Service, bool)));
+  connect(this->_service, SIGNAL(preExecuteCompleted(const Core::Service)), 
+          this, SLOT(preExecuteCompleted(const Core::Service)));
 
   connect(this->_service, SIGNAL(started(const Core::Service)), 
           this, SLOT(started(const Core::Service)));

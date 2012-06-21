@@ -31,7 +31,7 @@ namespace GGS {
             QString::fromUtf8("Внимание!"), 
             QString::fromUtf8("Игра не может быть запущена. В вашей ОС включена система предотвращения выполнения данных (DEP). Необходимо отключить DEP вручную. Если у вас возникнут проблемы с отключением, обратитесь в службу поддержки GameNet: https://support.gamenet.ru/"));
 
-          emit this->preExecuteCompleted(false);
+          emit this->preExecuteCompleted(GGS::GameExecutor::PreExecutionHookBreak);
           return;
         }
 
@@ -40,7 +40,7 @@ namespace GGS {
           QSettings::NativeFormat);
         
         regLayer.setValue(serviceUrl.path().replace("/", "\\"), "DisableNXShowUI");
-        emit this->preExecuteCompleted(true);
+        emit this->preExecuteCompleted(GGS::GameExecutor::Success);
       }
     }
   }

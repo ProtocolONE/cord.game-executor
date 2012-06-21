@@ -20,7 +20,7 @@
 using namespace GGS;
 using namespace GGS::GameExecutor;
 
-typedef std::tr1::function<bool(const Core::Service &)> HookCanPreFunc;
+typedef std::tr1::function<GGS::GameExecutor::FinishState(const Core::Service &)> HookCanPreFunc;
 typedef std::tr1::function<void(const Core::Service &, GGS::GameExecutor::FinishState)> HookPostFunc;
 
 class HookMock : public GGS::GameExecutor::HookInterface
@@ -33,7 +33,7 @@ public:
 
   void CanExecute(Core::Service &service );
 
-  void PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state );
+  void PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state);
 
   void PreExecute(Core::Service &service );
 

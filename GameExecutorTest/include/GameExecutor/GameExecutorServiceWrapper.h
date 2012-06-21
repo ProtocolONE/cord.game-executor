@@ -18,7 +18,7 @@
 
 using namespace GGS;
 
-typedef std::tr1::function<void(const Core::Service &, bool)> CanPreFunc;
+typedef std::tr1::function<void(const Core::Service &)> CanPreFunc;
 typedef std::tr1::function<void(const Core::Service &)> StartedFunc;
 typedef std::tr1::function<void(const Core::Service &, GGS::GameExecutor::FinishState)> FinishedFunc;
 
@@ -39,8 +39,8 @@ public:
     void setFinished(FinishedFunc func);
     
 private slots:
-  void canExecuteCompleted(const Core::Service &service, bool result);
-  void preExecuteCompleted(const Core::Service &service, bool result);
+  void canExecuteCompleted(const Core::Service &service);
+  void preExecuteCompleted(const Core::Service &service);
   void started(const Core::Service &service);
   void finished(const Core::Service &service, GGS::GameExecutor::FinishState state);
 

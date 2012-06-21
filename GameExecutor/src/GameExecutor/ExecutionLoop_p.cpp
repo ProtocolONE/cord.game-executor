@@ -10,7 +10,6 @@ namespace GGS {
       : QObject(parent),
       _listIndex(0)
     {
-
     }
 
     ExecutionLoopPrivate::~ExecutionLoopPrivate()
@@ -22,36 +21,40 @@ namespace GGS {
       this->_listIndex = 0;
 
       Q_FOREACH(HookInterface *hook, this->_list) {
-        connect(hook, SIGNAL(canExecuteCompleted(bool)), this, SLOT(executeHookCanStep(bool)), Qt::QueuedConnection);
-        connect(hook, SIGNAL(preExecuteCompleted(bool)), this, SLOT(executeHookPreStep(bool)), Qt::QueuedConnection);
-        connect(hook, SIGNAL(postExecuteCompleted()), 
-                this, SLOT(executeHookPostStep()), Qt::QueuedConnection);
+        SIGNAL_CONNECT_CHECK(connect(hook, SIGNAL(canExecuteCompleted(GGS::GameExecutor::FinishState)), 
+          this, SLOT(executeHookCanStep(GGS::GameExecutor::FinishState)), Qt::QueuedConnection));
+        SIGNAL_CONNECT_CHECK(connect(hook, SIGNAL(preExecuteCompleted(GGS::GameExecutor::FinishState)), 
+          this, SLOT(executeHookPreStep(GGS::GameExecutor::FinishState)), Qt::QueuedConnection));
+        SIGNAL_CONNECT_CHECK(connect(hook, SIGNAL(postExecuteCompleted()), 
+          this, SLOT(executeHookPostStep()), Qt::QueuedConnection));
       }
 
-      connect(this->_executor.data(), SIGNAL(started(const Core::Service)), 
-              this, SIGNAL(started(const Core::Service)), Qt::QueuedConnection);
+      SIGNAL_CONNECT_CHECK(connect(this->_executor.data(), SIGNAL(started(const Core::Service)), 
+        this, SIGNAL(started(const Core::Service)), Qt::QueuedConnection));
 
-      connect(this->_executor.data(), 
-              SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)), 
-              this, 
-              SLOT(executorCompletedStep(const Core::Service, GGS::GameExecutor::FinishState)), 
-              Qt::QueuedConnection);
+      SIGNAL_CONNECT_CHECK(connect(this->_executor.data(), 
+        SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)), 
+        this, 
+        SLOT(executorCompletedStep(const Core::Service, GGS::GameExecutor::FinishState)), 
+        Qt::QueuedConnection));
 
-      this->executeHookCanStep(true);
+      this->executeHookCanStep(GGS::GameExecutor::Success);
     }
 
-    void ExecutionLoopPrivate::executeHookCanStep(bool result) 
+    void ExecutionLoopPrivate::executeHookCanStep(GGS::GameExecutor::FinishState result) 
     {
-      if (!result) {
-        emit this->finished(this->_service, GGS::GameExecutor::CanExecutionHookBreak);
+      if (GGS::GameExecutor::Success != result) {
+        emit this->finished(this->_service, result);
         return;
       }
 
       if (this->_listIndex == this->_list.size()) {
-        emit this->canExecuteCompleted(this->_service, true);
+        emit this->canExecuteCompleted(this->_service);
 
         this->_listIndex = 0;
-        QMetaObject::invokeMethod(this, "executeHookPreStep",  Qt::QueuedConnection, Q_ARG(bool, true));
+        QMetaObject::invokeMethod(this, "executeHookPreStep",  Qt::QueuedConnection, 
+          Q_ARG(GGS::GameExecutor::FinishState, GGS::GameExecutor::Success));
+
         return;
       }
 
@@ -59,15 +62,15 @@ namespace GGS {
       hook->CanExecute(this->_service);
     }
 
-    void ExecutionLoopPrivate::executeHookPreStep(bool result) 
+    void ExecutionLoopPrivate::executeHookPreStep(GGS::GameExecutor::FinishState result) 
     {
-      if (!result) {
-        emit this->finished(this->_service, GGS::GameExecutor::PreExecutionHookBreak);
+      if (GGS::GameExecutor::Success != result) {
+        emit this->finished(this->_service, result);
         return;
       }
 
       if (this->_listIndex == this->_list.size()) {
-        emit this->preExecuteCompleted(this->_service, true);
+        emit this->preExecuteCompleted(this->_service);
         this->_listIndex = 0;
 
         QMetaObject::invokeMethod(this, "executorStep", Qt::QueuedConnection);

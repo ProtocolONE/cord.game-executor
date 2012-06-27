@@ -3,6 +3,7 @@
 namespace GGS {
   namespace GameExecutor {
     ExecutorBase::ExecutorBase(QObject *parent /*= 0*/)
+			: QObject(parent)
     {
     }
 

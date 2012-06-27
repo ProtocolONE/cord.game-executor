@@ -23,7 +23,7 @@ namespace GGS {
           this, SLOT(launcherError(QProcess::ProcessError)));
 
         connect(&this->_ipcServer, SIGNAL(messageReceived(int, QString)), 
-          this, SLOT(launcerMessageReceived(int, QString)));
+          this, SLOT(launcherMessageReceived(int, QString)));
 
         connect(&this->_ipcServer, SIGNAL(clientConnected(int)), 
           this, SLOT(launcherConnected(int)));
@@ -162,7 +162,7 @@ namespace GGS {
         emit this->finished(this->_service, ExternalFatalError);
       }
 
-      void ExecutableFilePrivate::launcerMessageReceived(int id, QString message)
+      void ExecutableFilePrivate::launcherMessageReceived(int id, QString message)
       {
         Q_ASSERT(this->_processIpcId == id);
         DEBUG_LOG << "message from launcher" << message;

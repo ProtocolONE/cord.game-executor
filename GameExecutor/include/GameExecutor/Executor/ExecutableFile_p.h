@@ -49,7 +49,7 @@ namespace GGS {
         void launcherStarted();
         void launcherFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
-        void launcerMessageReceived(int id, QString message);
+        void launcherMessageReceived(int id, QString message);
         void launcherConnected(int id);
 
         void getUserServiceAccountResult(GGS::RestApi::CommandBase::CommandResults result);

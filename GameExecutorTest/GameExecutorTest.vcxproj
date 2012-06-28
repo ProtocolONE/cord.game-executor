@@ -99,6 +99,7 @@ del /F /S /Q "$(TargetDir)*d.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="RestoreFileModificationTest.cpp" />
     <ClCompile Include="src\DownloadCustomFileTest.cpp" />
     <ClCompile Include="src\GameExecutor\Executor\ExecutorWrapper.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_ExecutorWrapper.cpp">

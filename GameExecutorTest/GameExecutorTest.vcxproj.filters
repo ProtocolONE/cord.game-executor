@@ -103,6 +103,9 @@
     <ClCompile Include="src\ServiceInfoCounterTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RestoreFileModificationTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="include\GameExecutor\IPC\ClientTest.h">

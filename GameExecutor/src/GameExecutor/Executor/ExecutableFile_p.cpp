@@ -81,6 +81,7 @@ namespace GGS {
         }
 
         GetUserServiceAccount *cmd = new GetUserServiceAccount();
+        cmd->setVersion("2");
         cmd->setServiceId(service.id());
 
         connect(cmd, SIGNAL(result(GGS::RestApi::CommandBase::CommandResults)), 
@@ -189,15 +190,23 @@ namespace GGS {
         FinishState state;
 
         switch(errorCode) {
-        case 100:
-        case 101:
-        case 102:
-        case 103:
-        case 104:
+        case RestApi::CommandBase::AuthorizationFailed:
+        case RestApi::CommandBase::AccountNotExists:
+        case RestApi::CommandBase::ServiceAccountBlocked:
+        case RestApi::CommandBase::AuthorizationLimitExceed:
+        case RestApi::CommandBase::UnknownAccountStatus:
           state = AuthorizationError;
           break;
-        case 125:
+        case RestApi::CommandBase::ServiceAuthorizationImpossible:
           state = ServiceAccountBlockedError;
+          break;
+        case RestApi::CommandBase::PakkanenPermissionDenied:
+          state = PakkanenPermissionDenied;
+          break;
+        case RestApi::CommandBase::PakkanenPhoneVerification:
+        case RestApi::CommandBase::PakkanenVkVerification:
+        case RestApi::CommandBase::PakkanenVkPhoneVerification:
+          state = PakkanenPhoneVerification;
           break;
         default:
           state = UnhandledRestApiError;

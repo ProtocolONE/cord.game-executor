@@ -16,7 +16,7 @@
 namespace GGS {
   namespace GameExecutor {
     enum FinishState {
-      Success, 
+      Success = 0, 
       InvalidService,
       UnknownSchemeError, 
       InternalFatalError, 
@@ -27,6 +27,8 @@ namespace GGS {
       CanExecutionHookBreak,
       PreExecutionHookBreak,
       AlreadyStartedError,
+      PakkanenPermissionDenied = 601,
+      PakkanenPhoneVerification = 603,
     };
 
     Q_ENUMS(GGS::GameExecutor::FinishState);

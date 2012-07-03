@@ -40,8 +40,8 @@ class ExecutableFileTest : public ::testing::Test
 protected:
   virtual void SetUp() 
   {
-    auth.setAppKey(QString("e8d6b0a31b408946334f23355ee2a0297f2758ac"));
-    auth.setUserId(QString("400001000000065690"));
+    auth.setAppKey(QString("7c4a8d09ca3762af61e59520943dc26494f8941b"));
+    auth.setUserId(QString("400001000001634860"));
 
     restapi.setUri(QString("https://api.gamenet.ru/restapi"));
     restapi.setCache(&cache);

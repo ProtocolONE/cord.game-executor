@@ -16,6 +16,7 @@
 
 #include <QtCore/QUrl>
 #include <QtCore/QFile>
+#include <QtCore/QStringList>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QHostInfo>
 
@@ -28,6 +29,11 @@ namespace GGS {
       
         \brief Позволяет загрузить произвольный файл перед запуском игры. Это нужно например для игры BS и MW2 где
         подобным образом загружаюьтся файлы конфигурации игры.
+
+        \code
+          QUrl url;
+          url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,1,./config/lastlogin.xml,0");
+        \code
       */
       class GAMEEXECUTOR_EXPORT DownloadCustomFile : public HookInterface
       {
@@ -37,12 +43,19 @@ namespace GGS {
         ~DownloadCustomFile();
 
         virtual void CanExecute(Core::Service &service);
+      
       public slots:
         void requestFinished();
+      
       private:
-        void DownloadFile();
+        void downloadNextFile();
+        void downloadFile();
         
+        QStringList _args;
         QUrl _url;
+        QUrl _downloadUrl;
+        QString _baseFilePath;
+        QString _area;
         QHostInfo _info;
         qint32 _infoIndex;
         QFile _file;

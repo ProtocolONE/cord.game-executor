@@ -21,13 +21,18 @@
 #include <QtTest/QSignalSpy>
 
 #include <gtest/gtest.h>
-#include <Windows.h>
 
 using namespace GGS;
 
 class DownloadCustomFileTest : public ::testing::Test 
 {
 public:
+  void SetUp() {
+     srvHook.setArea(Core::Service::Live);
+     srvHook.setInstallPath(QCoreApplication::applicationDirPath());
+     srvHook.setTorrentUrl(QUrl("http://files.gamenet.ru/update/bs/"));
+  }
+
   GGS::GameExecutor::FinishState executeHookCanStep(Core::Service &service) 
   {
     GameExecutor::Hook::DownloadCustomFile hook1;
@@ -40,74 +45,80 @@ public:
     loop.exec();
     return spy.at(0).at(0).value<GGS::GameExecutor::FinishState>();
   }
+
+  Core::Service srvHook;
 };
 
 TEST_F(DownloadCustomFileTest, Success) 
 {
   QUrl url;
-  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml");
-  url.addQueryItem("downloadCustomFileOverride", "1");
-  url.addQueryItem("downloadCustomFileUrl", "http://files.gamenet.ru/update/bs/");
-  //http://files.gamenet.ru/update/bs/live/launcher/serverinfo_back.xml
-  Core::Service srvHook;
+  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,1,./config/lastlogin.xml,1");
+  
   srvHook.setUrl(url);
-  srvHook.setArea(Core::Service::Live);
-  srvHook.setTorrentUrl(QUrl("http://files.gamenet.ru/update/bs/"));
-  
-  QString basePath = QCoreApplication::applicationDirPath();
-  QDir().mkpath(basePath + "/launcher");
-  
-  srvHook.setInstallPath(basePath);
 
-  QFile file(basePath + "./live/launcher/serverinfo_back.xml");
-  file.remove();
+  QDir().mkpath(QCoreApplication::applicationDirPath() + "/live/launcher");
+  QDir().mkpath(QCoreApplication::applicationDirPath() + "/live/config");
 
+  QFile fileInfo(QCoreApplication::applicationDirPath() + "/live/launcher/serverinfo_back.xml");
+  fileInfo.open(QIODevice::WriteOnly);
+  fileInfo.resize(0);
+  fileInfo.close();
+
+  QFile fileLogin(QCoreApplication::applicationDirPath() + "/live/config/lastlogin.xml");
+  fileLogin.remove();
+  
   ASSERT_EQ(GGS::GameExecutor::Success, executeHookCanStep(srvHook));
-  ASSERT_TRUE(file.exists());
-  ASSERT_TRUE(file.size() > 0);
+  ASSERT_TRUE(fileInfo.exists());
+  ASSERT_TRUE(fileInfo.size() > 0);
+  ASSERT_TRUE(fileLogin.exists());
+  ASSERT_TRUE(fileLogin.size() > 0);
 }
+
+TEST_F(DownloadCustomFileTest, SuccessNotOverrideMode) 
+{
+  QUrl url;
+  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,0");
+
+  srvHook.setUrl(url);
+
+  QDir().mkpath(QCoreApplication::applicationDirPath() + "/live/launcher");
+
+  QFile fileInfo(QCoreApplication::applicationDirPath() + "/live/launcher/serverinfo_back.xml");
+  fileInfo.remove();
+  fileInfo.open(QIODevice::WriteOnly);
+  fileInfo.resize(0);
+  fileInfo.close();
+    
+  ASSERT_EQ(GGS::GameExecutor::Success, executeHookCanStep(srvHook));
+  ASSERT_TRUE(fileInfo.exists());
+  ASSERT_EQ(0, fileInfo.size());
+}
+
 
 TEST_F(DownloadCustomFileTest, UncorrectDomainFail) 
 {
   QUrl url;
-  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml");
-  url.addQueryItem("downloadCustomFileOverride", "1");
+  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,1");
 
-  Core::Service srvHook;
   srvHook.setUrl(url);
-  srvHook.setArea(Core::Service::Live);
   srvHook.setTorrentUrl(QUrl("http://someVeryBadDomain.yes/update/bs/"));
 
-  QString basePath = QCoreApplication::applicationDirPath();
-  QDir().mkpath(basePath + "/launcher");
-
-  srvHook.setInstallPath(basePath);
-
+  QDir().mkpath(QCoreApplication::applicationDirPath() + "/live/launcher");
+    
   ASSERT_EQ(GGS::GameExecutor::CanExecutionHookBreak, executeHookCanStep(srvHook));
 }
 
-TEST_F(DownloadCustomFileTest, LockedFileFail) 
+TEST_F(DownloadCustomFileTest, WrongArgsCount) 
 {
   QUrl url;
   url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml");
-  url.addQueryItem("downloadCustomFileOverride", "1");
 
-  Core::Service srvHook;
   srvHook.setUrl(url);
-  srvHook.setArea(Core::Service::Live);
-  srvHook.setTorrentUrl(QUrl("http://someVeryBadDomain.yes/update/bs/"));
 
-  QString basePath = QCoreApplication::applicationDirPath();
-  QDir().mkpath(basePath + "/launcher");
-
-  srvHook.setInstallPath(basePath);
-
-  QString finalFilePath = basePath + "./launcher/serverinfo_back.xml";
-
-  HANDLE hFile = CreateFile(finalFilePath.toStdWString().c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, 0, NULL);
-
-  GameExecutor::Hook::DownloadCustomFile hook1;
   ASSERT_EQ(GGS::GameExecutor::CanExecutionHookBreak, executeHookCanStep(srvHook));
 
-  CloseHandle(hFile);
+  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,1,someFile");
+  srvHook.setUrl(url);
+
+  ASSERT_EQ(GGS::GameExecutor::CanExecutionHookBreak, executeHookCanStep(srvHook));
 }

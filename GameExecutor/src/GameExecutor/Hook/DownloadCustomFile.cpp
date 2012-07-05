@@ -49,6 +49,9 @@ namespace GGS {
 
         QString relativeFilePath = this->_args.takeFirst();
 
+        if (this->_file.isOpen())
+          this->_file.close();
+
         this->_file.setFileName(
           QString("%1/%2/%3").arg(this->_baseFilePath, this->_area, relativeFilePath));
 

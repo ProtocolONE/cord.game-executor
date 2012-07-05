@@ -27,9 +27,7 @@ namespace GGS {
         QString systemOptions = reg.value("SystemStartOptions", "").toString();
         if (systemOptions.contains("NOEXECUTE=ALWAYSON")) {
           //UNDONE Локализация
-          Core::UI::Message::warning(
-            QString::fromUtf8("Внимание!"), 
-            QString::fromUtf8("Игра не может быть запущена. В вашей ОС включена система предотвращения выполнения данных (DEP). Необходимо отключить DEP вручную. Если у вас возникнут проблемы с отключением, обратитесь в службу поддержки GameNet: https://support.gamenet.ru/"));
+          Core::UI::Message::warning(QObject::tr("TITLE_ATTENTION"), QObject::tr("WARNING_DISABLEDEP"));
 
           emit this->preExecuteCompleted(GGS::GameExecutor::PreExecutionHookBreak);
           return;

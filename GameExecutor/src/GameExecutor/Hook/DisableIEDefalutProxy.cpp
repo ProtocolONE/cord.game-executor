@@ -34,8 +34,8 @@ namespace GGS {
 
         //UNDONE Локализация
         Message::StandardButton reply = Message::warning(
-          QString::fromUtf8("Внимание!"), 
-          QString::fromUtf8("Во избежание проблем с подключением к игровому серверу не рекомендуется использовать функции \"Автономная работа\" и \"Использовать прокси сервер для подключений LAN\" в браузере Internet Explorer. Вы хотите, чтобы GameNet автоматически отключил эти функции?"), 
+          QObject::tr("TITLE_ATTENTION"),
+          QObject::tr("WARNING_DISABLE_IE_DEFALUT_PROXY"),
           static_cast<Message::StandardButton>(Message::Yes | Message::No));
         
         if (reply == Message::No) {

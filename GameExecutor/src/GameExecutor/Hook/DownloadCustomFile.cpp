@@ -28,13 +28,12 @@ namespace GGS {
         
         this->_args = url.queryItemValue("downloadCustomFile").split(',');
 
-        if ((this->_args.count() % 2)) {
+        if ((this->_args.count() % 3)) {
           emit this->canExecuteCompleted(GGS::GameExecutor::CanExecutionHookBreak);
           return;
         }
 
         this->_baseFilePath = service.installPath();
-        this->_downloadUrl = service.torrentUrlWithArea();
         this->_area = service.areaString();
 
         this->downloadNextFile();
@@ -61,7 +60,9 @@ namespace GGS {
           emit this->canExecuteCompleted(GGS::GameExecutor::CanExecutionHookBreak);
           return;
         }
-                
+
+        this->_downloadUrl = QUrl(QString("%1/%2/").arg(this->_args.takeFirst(), this->_area));
+
         int mode = this->_args.takeFirst().toInt();
         if (mode == 0 && fileInfo.exists()) {
           this->downloadNextFile();

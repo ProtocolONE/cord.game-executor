@@ -52,7 +52,9 @@ public:
 TEST_F(DownloadCustomFileTest, Success) 
 {
   QUrl url;
-  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,1,./config/lastlogin.xml,1");
+  url.addQueryItem("downloadCustomFile", 
+    "./launcher/serverinfo_back.xml,http://files.gamenet.ru/update/bs/,1,"\
+    "./config/lastlogin.xml,http://files.gamenet.ru/update/bs/,1");
   
   srvHook.setUrl(url);
 
@@ -77,7 +79,7 @@ TEST_F(DownloadCustomFileTest, Success)
 TEST_F(DownloadCustomFileTest, SuccessNotOverrideMode) 
 {
   QUrl url;
-  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,0");
+  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,http://files.gamenet.ru/update/bs/,0");
 
   srvHook.setUrl(url);
 
@@ -98,10 +100,9 @@ TEST_F(DownloadCustomFileTest, SuccessNotOverrideMode)
 TEST_F(DownloadCustomFileTest, UncorrectDomainFail) 
 {
   QUrl url;
-  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,1");
+  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,http://someVeryBadDomain.yes/update/bs/,1");
 
   srvHook.setUrl(url);
-  srvHook.setTorrentUrl(QUrl("http://someVeryBadDomain.yes/update/bs/"));
 
   QDir().mkpath(QCoreApplication::applicationDirPath() + "/live/launcher");
     
@@ -111,13 +112,13 @@ TEST_F(DownloadCustomFileTest, UncorrectDomainFail)
 TEST_F(DownloadCustomFileTest, WrongArgsCount) 
 {
   QUrl url;
-  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml");
+  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,http://files.gamenet.ru/update/bs/");
 
   srvHook.setUrl(url);
 
   ASSERT_EQ(GGS::GameExecutor::CanExecutionHookBreak, executeHookCanStep(srvHook));
 
-  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,1,someFile");
+  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,1,someFile,3");
   srvHook.setUrl(url);
 
   ASSERT_EQ(GGS::GameExecutor::CanExecutionHookBreak, executeHookCanStep(srvHook));

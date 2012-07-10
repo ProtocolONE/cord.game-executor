@@ -56,6 +56,8 @@ namespace GGS {
 
       void execute(const Core::Service &service);
 
+      bool isAnyGameStarted();
+
     signals:
       void canExecuteCompleted(const Core::Service &service);
       void preExecuteCompleted(const Core::Service &service);

@@ -122,5 +122,11 @@ namespace GGS {
      
       emit this->finished(service, state);
     }
+
+    bool GameExecutorService::isAnyGameStarted()
+    {
+      return this->_startedServices.count() > 0;
+    }
+
   }
 }

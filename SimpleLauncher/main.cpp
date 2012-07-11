@@ -82,6 +82,7 @@ int main(int argc, char *argv[])
     restapi.setCache(&cache);
     restapi.setCridential(auth);
     restapi.setRequest(GGS::RestApi::RequestFactory::Http);
+    RestApi::RestApiManager::setCommonInstance(&restapi);
 
     WebLink cmd2;
     
@@ -90,7 +91,6 @@ int main(int argc, char *argv[])
     ExecutableFile cmd(&execService);
     cmd.setWorkingDirectory(QCoreApplication::applicationDirPath());
     
-    execService.setRestApiManager(&restapi);
     execService.registerExecutor(&cmd);
     execService.registerExecutor(&cmd2);
     /*

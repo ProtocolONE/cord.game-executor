@@ -15,16 +15,6 @@ namespace GGS {
     {
     }
 
-    void GameExecutorService::setRestApiManager(RestApi::RestApiManager *restApiManager )
-    {
-      this->_restApiManager = restApiManager; 
-    }
-
-    RestApi::RestApiManager *GameExecutorService::respApiManager()
-    {
-      return this->_restApiManager; 
-    }
-
     bool GameExecutorService::registerExecutor(ExecutorBase *executor)
     {
       QString scheme = executor->scheme();

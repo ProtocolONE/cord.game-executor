@@ -53,8 +53,7 @@ namespace GGS {
         this->_workingDir = url.queryItemValue("workingDir");
         this->_args = url.queryItemValue("args");
 
-        RestApi::RestApiManager *mgr = executorService->respApiManager();
-        RestApi::GameNetCredential credential = mgr->credential();
+        RestApi::GameNetCredential credential = RestApi::RestApiManager::commonInstance()->credential();
 
         this->_activityRequestArgs = 
           QString("%1|%2|%3").arg(credential.userId(), credential.appKey(), service.gameId());
@@ -87,7 +86,7 @@ namespace GGS {
         connect(cmd, SIGNAL(result(GGS::RestApi::CommandBase::CommandResults)), 
           this, SLOT(getUserServiceAccountResult(GGS::RestApi::CommandBase::CommandResults)), Qt::DirectConnection);
 
-        mgr->execute(cmd);
+        cmd->execute();
       }
 
       void ExecutableFilePrivate::getUserServiceAccountResult(CommandBase::CommandResults result)
@@ -115,7 +114,6 @@ namespace GGS {
           ? this->finishStateFromRestApiErrorCode(errorCode) : ExternalFatalError;
 
         CRITICAL_LOG << "with error code" << errorCode;
-
         this->finished(this->_service, state);
       }
 
@@ -140,7 +138,6 @@ namespace GGS {
         }
 
         DEBUG_LOG << "launcher process pid" << process->pid();
-
         emit this->started(this->_service);
       }
 

@@ -43,9 +43,6 @@ namespace GGS {
       explicit GameExecutorService(QObject *parent = 0);
       ~GameExecutorService();
 
-      void setRestApiManager(RestApi::RestApiManager *restApiManager);
-      RestApi::RestApiManager *respApiManager();
-
       bool registerExecutor(ExecutorBase *executor);
 
       bool hasExecutor(const QString &scheme) const;
@@ -68,7 +65,6 @@ namespace GGS {
       void privateFinished(const Core::Service &service, GGS::GameExecutor::FinishState state);
    
     private:
-      RestApi::RestApiManager *_restApiManager;
       QHash<QString, ExecutorBase*> _executors;
       QHash<QString, QMultiMap<int, HookInterface*>> _hooks;
       QSet<QString> _startedServices;

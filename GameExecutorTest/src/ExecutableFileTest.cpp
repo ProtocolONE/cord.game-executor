@@ -47,8 +47,7 @@ protected:
     restapi.setCache(&cache);
     restapi.setCridential(auth);
     restapi.setRequest(GGS::RestApi::RequestFactory::Http);
-
-    executorService.setRestApiManager(&restapi);
+    GGS::RestApi::RestApiManager::setCommonInstance(&restapi);
   }
 
   virtual void TearDown() 
@@ -185,7 +184,7 @@ TEST_F(ExecutableFileTest, ExternalFatalErrorIfLauncerExeFailed)
 TEST_F(ExecutableFileTest, AuthorizationError) 
 {
   GameNetCredential wrongAuth;
-  executorService.respApiManager()->setCridential(wrongAuth);
+  restapi.setCridential(wrongAuth);
 
   QUrl url;
   url.setScheme("exe");
@@ -207,7 +206,7 @@ TEST_F(ExecutableFileTest, ServiceAccountBlockedError)
   auth.setUserId("400001000025914750"); //gna_blocked_acc@unit.test
   auth.setAppKey("60472d5bc9f7dee91d0a113ff481a99a8091b503");
 
-  executorService.respApiManager()->setCridential(auth);
+  restapi.setCridential(auth);
 
   QUrl url;
   url.setScheme("exe");

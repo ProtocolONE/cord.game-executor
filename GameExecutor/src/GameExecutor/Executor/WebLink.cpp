@@ -27,9 +27,7 @@ namespace GGS {
         DEBUG_LOG;
 
         emit this->started(service);
-        
-        RestApi::RestApiManager *mgr = executorService->respApiManager();
-        RestApi::GameNetCredential cred = mgr->credential();
+        RestApi::GameNetCredential cred = RestApi::RestApiManager::commonInstance()->credential();
 
         QUrl finalUrl;
         QString cookie = cred.cookie();

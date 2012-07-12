@@ -2,6 +2,27 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="ru_RU">
 <context>
+    <name>GGS::GameExecutor::Hook::Mw2DownloadAndCheckXmlConfig</name>
+    <message>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="42"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="58"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="65"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="80"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="123"/>
+        <source>HOOK_CANEXECUTE_FAIL</source>
+        <translation>Ошибка</translation>
+    </message>
+    <message>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="42"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="58"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="65"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="80"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="123"/>
+        <source>MW2_DOWNLOAD_CUSTOM_FILE_INFO</source>
+        <translation>Не удалось корректно обновить файл настроек. Попробуйте запустить игру ещё раз или обратитесь в службу технической поддержки https://support.gamenet.ru</translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <location filename="../src/GameExecutor/Hook/DisableDEP.cpp" line="30"/>

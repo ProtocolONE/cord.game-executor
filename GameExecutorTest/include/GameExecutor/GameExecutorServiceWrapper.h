@@ -16,11 +16,9 @@
 #include <functional>
 #include <QObject>
 
-using namespace GGS;
-
-typedef std::tr1::function<void(const Core::Service &)> CanPreFunc;
-typedef std::tr1::function<void(const Core::Service &)> StartedFunc;
-typedef std::tr1::function<void(const Core::Service &, GGS::GameExecutor::FinishState)> FinishedFunc;
+typedef std::tr1::function<void(const GGS::Core::Service &)> CanPreFunc;
+typedef std::tr1::function<void(const GGS::Core::Service &)> StartedFunc;
+typedef std::tr1::function<void(const GGS::Core::Service &, GGS::GameExecutor::FinishState)> FinishedFunc;
 
 class GameExecutorServiceWrapper : public QObject
 {
@@ -39,10 +37,10 @@ public:
     void setFinished(FinishedFunc func);
     
 private slots:
-  void canExecuteCompleted(const Core::Service &service);
-  void preExecuteCompleted(const Core::Service &service);
-  void started(const Core::Service &service);
-  void finished(const Core::Service &service, GGS::GameExecutor::FinishState state);
+  void canExecuteCompleted(const GGS::Core::Service &service);
+  void preExecuteCompleted(const GGS::Core::Service &service);
+  void started(const GGS::Core::Service &service);
+  void finished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
 
 private:
   CanPreFunc _canExecuteCompletedFunc;

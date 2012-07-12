@@ -37,8 +37,8 @@ public:
   void setExecutor(GGS::GameExecutor::ExecutorBase *executor);
 
 private slots:
-  void started(const Core::Service &service);
-  void finished(const Core::Service &service, GGS::GameExecutor::FinishState state);
+  void started(const GGS::Core::Service &service);
+  void finished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
 
 private:
   ExecutorStartedFunc _startedFunc;

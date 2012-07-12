@@ -33,7 +33,7 @@ namespace GGS {
       {
       }
 
-      void ExecutableFilePrivate::execute(const Core::Service &service, GameExecutorService *executorService)
+      void ExecutableFilePrivate::execute(const GGS::Core::Service &service, GameExecutorService *executorService)
       {
         if (!this->_ipcServerStarted) {
           this->_ipcName = QString("QGNA_GAMEEXECUTOR_IPC_CHANNEL:%1").arg(service.id());

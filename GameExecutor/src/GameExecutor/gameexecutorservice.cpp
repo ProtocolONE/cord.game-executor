@@ -31,7 +31,7 @@ namespace GGS {
       return this->_executors.contains(scheme);
     }
 
-    bool GameExecutorService::addHook(const Core::Service &service, HookInterface *hook, int priority /*= 0*/)
+    bool GameExecutorService::addHook(const GGS::Core::Service &service, HookInterface *hook, int priority /*= 0*/)
     {
       QString id = service.id();
       if (id.isEmpty()) {
@@ -42,7 +42,7 @@ namespace GGS {
       return true;
     }
 
-    void GameExecutorService::clearHooks(const Core::Service &service)
+    void GameExecutorService::clearHooks(const GGS::Core::Service &service)
     {
       QString id = service.id();
       if (id.isEmpty()) {
@@ -52,7 +52,7 @@ namespace GGS {
       this->_hooks[id].clear();
     }
 
-    void GameExecutorService::execute(const Core::Service &service)
+    void GameExecutorService::execute(const GGS::Core::Service &service)
     {
       QString id = service.id();
       if (id.isEmpty()) {
@@ -88,22 +88,22 @@ namespace GGS {
       loop->setExecutor(this->_executors[scheme]);
       loop->setExecutorService(this);
 
-      SIGNAL_CONNECT_CHECK(connect(loop, SIGNAL(canExecuteCompleted(const Core::Service &)),
-        this, SIGNAL(canExecuteCompleted(const Core::Service &)), Qt::QueuedConnection));
+      SIGNAL_CONNECT_CHECK(connect(loop, SIGNAL(canExecuteCompleted(const GGS::Core::Service &)),
+        this, SIGNAL(canExecuteCompleted(const GGS::Core::Service &)), Qt::QueuedConnection));
 
-      SIGNAL_CONNECT_CHECK(connect(loop, SIGNAL(preExecuteCompleted(const Core::Service &)),
-        this, SIGNAL(preExecuteCompleted(const Core::Service &)), Qt::QueuedConnection));
+      SIGNAL_CONNECT_CHECK(connect(loop, SIGNAL(preExecuteCompleted(const GGS::Core::Service &)),
+        this, SIGNAL(preExecuteCompleted(const GGS::Core::Service &)), Qt::QueuedConnection));
 
-      SIGNAL_CONNECT_CHECK(connect(loop, SIGNAL(started(const Core::Service &)),
-        this, SIGNAL(started(const Core::Service &)), Qt::QueuedConnection));
+      SIGNAL_CONNECT_CHECK(connect(loop, SIGNAL(started(const GGS::Core::Service &)),
+        this, SIGNAL(started(const GGS::Core::Service &)), Qt::QueuedConnection));
 
-      SIGNAL_CONNECT_CHECK(connect(loop, SIGNAL(finished(const Core::Service &, GGS::GameExecutor::FinishState)),
-        this, SLOT(privateFinished(const Core::Service &, GGS::GameExecutor::FinishState)), Qt::QueuedConnection));
+      SIGNAL_CONNECT_CHECK(connect(loop, SIGNAL(finished(const GGS::Core::Service &, GGS::GameExecutor::FinishState)),
+        this, SLOT(privateFinished(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), Qt::QueuedConnection));
 
       loop->execute();
     }
 
-    void GameExecutorService::privateFinished(const Core::Service &service, GGS::GameExecutor::FinishState state)
+    void GameExecutorService::privateFinished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state)
     {
       QObject::sender()->deleteLater();
 

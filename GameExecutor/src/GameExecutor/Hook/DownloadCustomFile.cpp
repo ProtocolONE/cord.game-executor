@@ -18,7 +18,7 @@ namespace GGS {
       {
       }
 
-      void DownloadCustomFile::CanExecute(Core::Service &service)
+      void DownloadCustomFile::CanExecute(GGS::Core::Service &service)
       {
         QUrl url = service.url();
         if (!url.hasQueryItem("downloadCustomFile")) {

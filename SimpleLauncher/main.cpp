@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    qRegisterMetaType<Service>("Core::Service");
+    qRegisterMetaType<GGS::Core::Service>("GGS::Core::Service");
     qRegisterMetaType<GGS::GameExecutor::FinishState>("GGS::GameExecutor::FinishState");
        
 

@@ -33,8 +33,8 @@ namespace GGS {
       const QString &scheme() const;
     
     signals:
-      void started(const Core::Service &service);
-      void finished(const Core::Service &service, GGS::GameExecutor::FinishState state);
+      void started(const GGS::Core::Service &service);
+      void finished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
         
     protected:
       QString _scheme;

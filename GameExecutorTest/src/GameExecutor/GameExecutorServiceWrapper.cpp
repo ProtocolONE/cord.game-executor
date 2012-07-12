@@ -1,5 +1,5 @@
 #include <GameExecutor/GameExecutorServiceWrapper.h>
-
+using namespace GGS;
 GameExecutorServiceWrapper::GameExecutorServiceWrapper(QObject *parent /*= 0*/) : QObject(parent)
 {
 
@@ -64,17 +64,17 @@ void GameExecutorServiceWrapper::setGameExecutorService(GGS::GameExecutor::GameE
 {
   this->_service = _service;
 
-  connect(this->_service, SIGNAL(canExecuteCompleted(const Core::Service)), 
-          this, SLOT(canExecuteCompleted(const Core::Service)));
+  connect(this->_service, SIGNAL(canExecuteCompleted(const GGS::Core::Service)), 
+          this, SLOT(canExecuteCompleted(const GGS::Core::Service)));
 
-  connect(this->_service, SIGNAL(preExecuteCompleted(const Core::Service)), 
-          this, SLOT(preExecuteCompleted(const Core::Service)));
+  connect(this->_service, SIGNAL(preExecuteCompleted(const GGS::Core::Service)), 
+          this, SLOT(preExecuteCompleted(const GGS::Core::Service)));
 
-  connect(this->_service, SIGNAL(started(const Core::Service)), 
-          this, SLOT(started(const Core::Service)));
+  connect(this->_service, SIGNAL(started(const GGS::Core::Service)), 
+          this, SLOT(started(const GGS::Core::Service)));
 
-  connect(this->_service, SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)), 
-          this, SLOT(finished(const Core::Service, GGS::GameExecutor::FinishState)), Qt::QueuedConnection);
+  connect(this->_service, SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)), 
+          this, SLOT(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)), Qt::QueuedConnection);
 }
 
 

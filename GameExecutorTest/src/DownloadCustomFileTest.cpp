@@ -28,12 +28,12 @@ class DownloadCustomFileTest : public ::testing::Test
 {
 public:
   void SetUp() {
-     srvHook.setArea(Core::Service::Live);
+     srvHook.setArea(GGS::Core::Service::Live);
      srvHook.setInstallPath(QCoreApplication::applicationDirPath());
      srvHook.setTorrentUrl(QUrl("http://files.gamenet.ru/update/bs/"));
   }
 
-  GGS::GameExecutor::FinishState executeHookCanStep(Core::Service &service) 
+  GGS::GameExecutor::FinishState executeHookCanStep(GGS::Core::Service &service) 
   {
     GameExecutor::Hook::DownloadCustomFile hook1;
     QSignalSpy spy(&hook1, SIGNAL(canExecuteCompleted(GGS::GameExecutor::FinishState)));
@@ -46,7 +46,7 @@ public:
     return spy.at(0).at(0).value<GGS::GameExecutor::FinishState>();
   }
 
-  Core::Service srvHook;
+  GGS::Core::Service srvHook;
 };
 
 TEST_F(DownloadCustomFileTest, Success) 

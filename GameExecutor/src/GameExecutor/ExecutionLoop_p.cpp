@@ -29,13 +29,13 @@ namespace GGS {
           this, SLOT(executeHookPostStep()), Qt::QueuedConnection));
       }
 
-      SIGNAL_CONNECT_CHECK(connect(this->_executor.data(), SIGNAL(started(const Core::Service)), 
-        this, SIGNAL(started(const Core::Service)), Qt::QueuedConnection));
+      SIGNAL_CONNECT_CHECK(connect(this->_executor.data(), SIGNAL(started(const GGS::Core::Service)), 
+        this, SIGNAL(started(const GGS::Core::Service)), Qt::QueuedConnection));
 
       SIGNAL_CONNECT_CHECK(connect(this->_executor.data(), 
-        SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)), 
+        SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)), 
         this, 
-        SLOT(executorCompletedStep(const Core::Service, GGS::GameExecutor::FinishState)), 
+        SLOT(executorCompletedStep(const GGS::Core::Service, GGS::GameExecutor::FinishState)), 
         Qt::QueuedConnection));
 
       this->executeHookCanStep(GGS::GameExecutor::Success);
@@ -86,7 +86,7 @@ namespace GGS {
       this->_executor->execute(this->_service, this->_executorService);
     }
 
-    void ExecutionLoopPrivate::executorCompletedStep(const Core::Service &service, GGS::GameExecutor::FinishState state)
+    void ExecutionLoopPrivate::executorCompletedStep(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state)
     {
       this->_listIndex = 0;
       this->_state = state;

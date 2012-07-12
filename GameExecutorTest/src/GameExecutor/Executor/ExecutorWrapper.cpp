@@ -27,9 +27,9 @@ void ExecutorWrapper::setFinished( ExecutorFinishedFunc func )
 
 void ExecutorWrapper::setExecutor(GGS::GameExecutor::ExecutorBase *executor)
 {
-  connect(executor, SIGNAL(started(const Core::Service)), this, SLOT(started(const Core::Service)));
-  connect(executor, SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)), 
-          this, SLOT(finished(const Core::Service, GGS::GameExecutor::FinishState)));
+  connect(executor, SIGNAL(started(const GGS::Core::Service)), this, SLOT(started(const GGS::Core::Service)));
+  connect(executor, SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)), 
+          this, SLOT(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)));
 }
 
 void ExecutorWrapper::started(const Core::Service &service)

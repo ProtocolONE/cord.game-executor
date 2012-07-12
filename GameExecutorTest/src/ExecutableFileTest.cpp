@@ -54,15 +54,15 @@ protected:
   {
   }
 
-  void ExecutionFlow(const Core::Service &srv, int startCount, GGS::GameExecutor::FinishState finishState, const QString workingPath = "")
+  void ExecutionFlow(const GGS::Core::Service &srv, int startCount, GGS::GameExecutor::FinishState finishState, const QString workingPath = "")
   {
     GameExecutor::Executor::ExecutableFile executor;
 
-    QSignalSpy startExecute(&executor, SIGNAL(started(const Core::Service)));
-    QSignalSpy finishExecute(&executor, SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)));
+    QSignalSpy startExecute(&executor, SIGNAL(started(const GGS::Core::Service)));
+    QSignalSpy finishExecute(&executor, SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)));
 
     ExecutorWrapper wrapper(&executor);
-    wrapper.setFinished([&](const Core::Service &service, GGS::GameExecutor::FinishState state) {
+    wrapper.setFinished([&](const GGS::Core::Service &service, GGS::GameExecutor::FinishState state) {
       loop.exit();
     });;
 
@@ -79,7 +79,7 @@ protected:
     ASSERT_EQ(finishState, finishExecute.at(0).at(1).value<GGS::GameExecutor::FinishState>());
   }
 
-  Core::Service service;
+  GGS::Core::Service service;
   
   
   GameExecutor::GameExecutorService executorService;
@@ -106,7 +106,7 @@ TEST_F(ExecutableFileTest, Success)
   url.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
   url.addQueryItem("args", "%userId% %token% %login%");
   
-  Core::Service srv;
+  GGS::Core::Service srv;
   srv.setId("300003010000000000");
   srv.setGameId("71");
   srv.setUrl(url);
@@ -126,7 +126,7 @@ TEST_F(ExecutableFileTest, ArgumentParsing)
   url.addQueryItem("anotherKey", "anotherKeyValue");
   url.addQueryItem("Key with space", "value with space");
 
-  Core::Service srv;
+  GGS::Core::Service srv;
   srv.setId("300003010000000000");
   srv.setGameId("71");
   srv.setUrl(url);
@@ -157,7 +157,7 @@ TEST_F(ExecutableFileTest, ExternalFatalError)
   url.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
   url.addQueryItem("args", "%userId% %appKey% %token%");
 
-  Core::Service srv;
+  GGS::Core::Service srv;
   srv.setId("300003010000000000");
   srv.setGameId("71");
   srv.setUrl(url);
@@ -173,7 +173,7 @@ TEST_F(ExecutableFileTest, ExternalFatalErrorIfLauncerExeFailed)
   url.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
   url.addQueryItem("args", "%userId% %token%");
 
-  Core::Service srv;
+  GGS::Core::Service srv;
   srv.setId("300003010000000000");
   srv.setGameId("71");
   srv.setUrl(url);
@@ -192,7 +192,7 @@ TEST_F(ExecutableFileTest, AuthorizationError)
   url.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
   url.addQueryItem("args", "%userId% %appKey% %token%");
 
-  Core::Service srv;
+  GGS::Core::Service srv;
   srv.setId("300003010000000000");
   srv.setGameId("71");
   srv.setUrl(url);
@@ -214,7 +214,7 @@ TEST_F(ExecutableFileTest, ServiceAccountBlockedError)
   url.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
   url.addQueryItem("args", "%userId% %appKey% %token%");
 
-  Core::Service srv;
+  GGS::Core::Service srv;
   srv.setId("300007020000000000"); //GA TEST
   srv.setGameId("83");
   srv.setUrl(url);

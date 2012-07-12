@@ -35,13 +35,13 @@ namespace GGS {
         explicit ExecutableFilePrivate(QObject *parent);
         virtual ~ExecutableFilePrivate();
 
-        void execute(const Core::Service &service, GameExecutorService *executorService);
+        void execute(const GGS::Core::Service &service, GameExecutorService *executorService);
 
         void setWorkingDirectory(const QString &dir);
       
       signals:
-        void started(const Core::Service &service);
-        void finished(const Core::Service &service, GGS::GameExecutor::FinishState state);
+        void started(const GGS::Core::Service &service);
+        void finished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
 
       private slots:
         void launcherStart();
@@ -58,7 +58,7 @@ namespace GGS {
         void createAndExecuteLauncherProcess();
         FinishState finishStateFromRestApiErrorCode(int errorCode);
 
-        Core::Service _service;
+        GGS::Core::Service _service;
 
         QProcess _process;
         int _processIpcId;

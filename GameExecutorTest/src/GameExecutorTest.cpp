@@ -99,13 +99,13 @@ TEST_F(GameExecutorServiceTest, CanExecuteStopTheLoop)
   executorService.clearHooks(service);
   executorService.addHook(service, &hook);
 
-  QSignalSpy canExecute(&executorService, SIGNAL(canExecuteCompleted(const Core::Service)));
-  QSignalSpy preExecute(&executorService, SIGNAL(preExecuteCompleted(const Core::Service)));
-  QSignalSpy startExecute(&executorService, SIGNAL(started(const Core::Service)));
-  QSignalSpy finishExecute(&executorService, SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)));
+  QSignalSpy canExecute(&executorService, SIGNAL(canExecuteCompleted(const GGS::Core::Service)));
+  QSignalSpy preExecute(&executorService, SIGNAL(preExecuteCompleted(const GGS::Core::Service)));
+  QSignalSpy startExecute(&executorService, SIGNAL(started(const GGS::Core::Service)));
+  QSignalSpy finishExecute(&executorService, SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)));
 
   GameExecutorServiceWrapper wrapper(&executorService);
-  wrapper.setFinished([&](const Core::Service &service, GGS::GameExecutor::FinishState state) {
+  wrapper.setFinished([&](const GGS::Core::Service &service, GGS::GameExecutor::FinishState state) {
     loop.exit();
   });
 
@@ -130,13 +130,13 @@ TEST_F(GameExecutorServiceTest, PreExecuteStopTheLoop)
   executorService.clearHooks(service);
   executorService.addHook(service, &hook);
 
-  QSignalSpy canExecute(&executorService, SIGNAL(canExecuteCompleted(const Core::Service)));
-  QSignalSpy preExecute(&executorService, SIGNAL(preExecuteCompleted(const Core::Service)));
-  QSignalSpy startExecute(&executorService, SIGNAL(started(const Core::Service)));
-  QSignalSpy finishExecute(&executorService, SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)));
+  QSignalSpy canExecute(&executorService, SIGNAL(canExecuteCompleted(const GGS::Core::Service)));
+  QSignalSpy preExecute(&executorService, SIGNAL(preExecuteCompleted(const GGS::Core::Service)));
+  QSignalSpy startExecute(&executorService, SIGNAL(started(const GGS::Core::Service)));
+  QSignalSpy finishExecute(&executorService, SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)));
 
   GameExecutorServiceWrapper wrapper(&executorService);
-  wrapper.setFinished([&](const Core::Service &service, GGS::GameExecutor::FinishState state) {
+  wrapper.setFinished([&](const GGS::Core::Service &service, GGS::GameExecutor::FinishState state) {
     loop.exit();
   });
 
@@ -174,10 +174,10 @@ TEST_F(GameExecutorServiceTest, NormalFlowOfTheLoop)
 {
   QStringList check;
   
-  QSignalSpy canExecuteSpy(&executorService, SIGNAL(canExecuteCompleted(const Core::Service)));
-  QSignalSpy preExecuteSpy(&executorService, SIGNAL(preExecuteCompleted(const Core::Service)));
-  QSignalSpy startedSpy(&executorService, SIGNAL(started(const Core::Service)));
-  QSignalSpy finishedSpy(&executorService, SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)));
+  QSignalSpy canExecuteSpy(&executorService, SIGNAL(canExecuteCompleted(const GGS::Core::Service)));
+  QSignalSpy preExecuteSpy(&executorService, SIGNAL(preExecuteCompleted(const GGS::Core::Service)));
+  QSignalSpy startedSpy(&executorService, SIGNAL(started(const GGS::Core::Service)));
+  QSignalSpy finishedSpy(&executorService, SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)));
 
   executorService.clearHooks(service);
   NORMAL_FLOW_OF_THE_LOOP_HOOK(Hook1, 0);
@@ -185,7 +185,7 @@ TEST_F(GameExecutorServiceTest, NormalFlowOfTheLoop)
   NORMAL_FLOW_OF_THE_LOOP_HOOK(Hook3, 1);
   
   GameExecutorServiceWrapper wrapper(&executorService);
-  wrapper.setFinished([&](const Core::Service &service, GGS::GameExecutor::FinishState state) {
+  wrapper.setFinished([&](const GGS::Core::Service &service, GGS::GameExecutor::FinishState state) {
     loop.exit();
   });
 
@@ -211,11 +211,11 @@ TEST_F(GameExecutorServiceTest, NormalFlowOfTheLoop)
 
 TEST_F(GameExecutorServiceTest, InvalidServiceCase) 
 {
-  QSignalSpy startedSpy(&executorService, SIGNAL(started(const Core::Service)));
-  QSignalSpy finishedSpy(&executorService, SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)));
+  QSignalSpy startedSpy(&executorService, SIGNAL(started(const GGS::Core::Service)));
+  QSignalSpy finishedSpy(&executorService, SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)));
 
   GameExecutorServiceWrapper wrapper(&executorService);
-  wrapper.setFinished([&](const Core::Service &service, GGS::GameExecutor::FinishState state) {
+  wrapper.setFinished([&](const GGS::Core::Service &service, GGS::GameExecutor::FinishState state) {
     loop.exit();
   });
 
@@ -232,11 +232,11 @@ TEST_F(GameExecutorServiceTest, InvalidServiceCase)
 
 TEST_F(GameExecutorServiceTest, UnknownSchemeErrorCase) 
 {
-  QSignalSpy startedSpy(&executorService, SIGNAL(started(const Core::Service)));
-  QSignalSpy finishedSpy(&executorService, SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)));
+  QSignalSpy startedSpy(&executorService, SIGNAL(started(const GGS::Core::Service)));
+  QSignalSpy finishedSpy(&executorService, SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)));
  
   GameExecutorServiceWrapper wrapper(&executorService);
-  wrapper.setFinished([&](const Core::Service &service, GGS::GameExecutor::FinishState state) {
+  wrapper.setFinished([&](const GGS::Core::Service &service, GGS::GameExecutor::FinishState state) {
     loop.exit();
   });
 
@@ -253,8 +253,8 @@ TEST_F(GameExecutorServiceTest, UnknownSchemeErrorCase)
 
 TEST_F(GameExecutorServiceTest, MultiStartErrorCase) 
 {
-  QSignalSpy startedSpy(&executorService, SIGNAL(started(const Core::Service)));
-  QSignalSpy finishedSpy(&executorService, SIGNAL(finished(const Core::Service, GGS::GameExecutor::FinishState)));
+  QSignalSpy startedSpy(&executorService, SIGNAL(started(const GGS::Core::Service)));
+  QSignalSpy finishedSpy(&executorService, SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)));
 
   int count = 0;
   GameExecutorServiceWrapper wrapper(&executorService);

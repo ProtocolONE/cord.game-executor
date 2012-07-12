@@ -22,7 +22,7 @@ namespace GGS {
       {
       }
 
-      void WebLink::execute(const Core::Service &service, GameExecutor::GameExecutorService *executorService)
+      void WebLink::execute(const GGS::Core::Service &service, GameExecutor::GameExecutorService *executorService)
       {
         DEBUG_LOG;
 

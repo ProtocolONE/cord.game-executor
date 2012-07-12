@@ -47,22 +47,22 @@ namespace GGS {
 
       bool hasExecutor(const QString &scheme) const;
 
-      bool addHook(const Core::Service &service, HookInterface* hook, int priority = 0);
+      bool addHook(const GGS::Core::Service &service, HookInterface* hook, int priority = 0);
 
-      void clearHooks(const Core::Service &service);
+      void clearHooks(const GGS::Core::Service &service);
 
-      void execute(const Core::Service &service);
+      void execute(const GGS::Core::Service &service);
 
       bool isAnyGameStarted();
 
     signals:
-      void canExecuteCompleted(const Core::Service &service);
-      void preExecuteCompleted(const Core::Service &service);
-      void started(const Core::Service &service);
-      void finished(const Core::Service &service, GGS::GameExecutor::FinishState state);
+      void canExecuteCompleted(const GGS::Core::Service &service);
+      void preExecuteCompleted(const GGS::Core::Service &service);
+      void started(const GGS::Core::Service &service);
+      void finished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
 
     private slots:
-      void privateFinished(const Core::Service &service, GGS::GameExecutor::FinishState state);
+      void privateFinished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
    
     private:
       QHash<QString, ExecutorBase*> _executors;

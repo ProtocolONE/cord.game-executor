@@ -43,7 +43,7 @@ namespace GGS {
       signals:
         void messageReceived(int id, QString message);
         void clientConnected(int id);
-        void error(int id, Server::ServerError error);
+        void error(int id, GGS::GameExecutor::IPC::Server::ServerError error);
 
       public slots:
         void newConnection();

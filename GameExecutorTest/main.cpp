@@ -27,12 +27,7 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-
-    qRegisterMetaType<GGS::Core::Service>("Core::Service");
-    qRegisterMetaType<GGS::GameExecutor::FinishState>("GGS::GameExecutor::FinishState");
-    
     testing::InitGoogleTest(&argc, argv);
     int r = RUN_ALL_TESTS();
-    
     return r;
 }

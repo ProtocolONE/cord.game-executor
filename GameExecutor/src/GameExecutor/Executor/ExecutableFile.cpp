@@ -26,17 +26,17 @@ namespace GGS {
         ExecutableFilePrivate* executor = new ExecutableFilePrivate(this);
         executor->setWorkingDirectory(this->_appPath);
 
-        connect(executor, SIGNAL(started(const Core::Service &)), 
-          this, SIGNAL(started(const Core::Service &)), Qt::DirectConnection);
+        connect(executor, SIGNAL(started(const GGS::Core::Service &)), 
+          this, SIGNAL(started(const GGS::Core::Service &)), Qt::DirectConnection);
 
-        connect(executor, SIGNAL(finished(const Core::Service &, GGS::GameExecutor::FinishState)), 
-          this, SLOT(internalFinished(const Core::Service &, GGS::GameExecutor::FinishState)), Qt::DirectConnection);
+        connect(executor, SIGNAL(finished(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), 
+          this, SLOT(internalFinished(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), Qt::DirectConnection);
           
         executor->execute(service, executorService);
       }
 
 
-      void ExecutableFile::internalFinished( const Core::Service &service, GGS::GameExecutor::FinishState state )
+      void ExecutableFile::internalFinished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state)
       {
         QObject::sender()->deleteLater();
         emit this->finished(service, state);

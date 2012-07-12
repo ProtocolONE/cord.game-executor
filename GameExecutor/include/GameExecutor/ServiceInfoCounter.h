@@ -35,8 +35,8 @@ namespace GGS {
       static ServiceInfo queryInfo(const Core::Service &service);
 
     public slots:
-      void started(const Core::Service &service);
-      void finished(const Core::Service &service, GGS::GameExecutor::FinishState state);
+      void started(const GGS::Core::Service &service);
+      void finished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
 
     private:
       Settings::Settings _storage;

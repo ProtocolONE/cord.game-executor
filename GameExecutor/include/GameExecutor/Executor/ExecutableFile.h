@@ -55,11 +55,11 @@ namespace GGS {
         explicit ExecutableFile(QObject *parent = 0);
         ~ExecutableFile();
 
-        void execute(const Core::Service &service, GameExecutorService *executorService);
+        void execute(const GGS::Core::Service &service, GameExecutorService *executorService);
 
         void setWorkingDirectory(const QString &dir);
       private slots:
-        void internalFinished(const Core::Service &service, GGS::GameExecutor::FinishState state);
+        void internalFinished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
 
       private:
         QString _appPath;

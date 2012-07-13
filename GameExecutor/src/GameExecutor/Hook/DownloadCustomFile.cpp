@@ -89,7 +89,6 @@ namespace GGS {
         }
 
         this->_url.setHost(this->_info.addresses().at(this->_infoIndex).toString());
-
         QNetworkReply* reply = this->_manager.get(QNetworkRequest(this->_url));
         connect(reply, SIGNAL(finished()), this, SLOT(requestFinished()));
       }

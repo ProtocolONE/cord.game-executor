@@ -103,13 +103,13 @@
     <ClCompile Include="src\ServiceInfoCounterTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RestoreFileModificationTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mw2DownloadAndCheckXmlConfigTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\AikaDeleteFileHookTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RestoreFileModificationTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mw2DownloadAndCheckXmlConfigTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

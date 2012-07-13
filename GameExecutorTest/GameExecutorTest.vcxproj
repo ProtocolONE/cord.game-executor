@@ -99,8 +99,8 @@ del /F /S /Q "$(TargetDir)*d.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Mw2DownloadAndCheckXmlConfigTest.cpp" />
-    <ClCompile Include="RestoreFileModificationTest.cpp" />
+    <ClCompile Include="src\Mw2DownloadAndCheckXmlConfigTest.cpp" />
+    <ClCompile Include="src\RestoreFileModificationTest.cpp" />
     <ClCompile Include="src\AikaDeleteFileHookTest.cpp" />
     <ClCompile Include="src\DownloadCustomFileTest.cpp" />
     <ClCompile Include="src\GameExecutor\Executor\ExecutorWrapper.cpp" />

@@ -113,6 +113,7 @@ $(QTDIR)\bin\lupdate.exe "$(ProjectDir)\." -ts "$(ProjectDir)\i18n\$(ProjectName
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\GameExecutor\Hook\DisableAeroHook.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_AikaDeleteFileHook.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -241,6 +242,7 @@ $(QTDIR)\bin\lupdate.exe "$(ProjectDir)\." -ts "$(ProjectDir)\i18n\$(ProjectName
     <ClCompile Include="src\GameExecutor\IPC\Server.cpp" />
     <ClCompile Include="src\GameExecutor\Executor\WebLink.cpp" />
     <ClCompile Include="src\GameExecutor\HookInterface.cpp" />
+    <ClCompile Include="src\GameExecutor\Hook\UxsmsTurnOffHook.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="include\GameExecutor\Hook\DisableIEDefalutProxy.h">
@@ -313,6 +315,7 @@ $(QTDIR)\bin\lupdate.exe "$(ProjectDir)\." -ts "$(ProjectDir)\i18n\$(ProjectName
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DGAMEEXECUTOR_LIB -DQT_NETWORK_LIB -DQT_XML_LIB -D_WINDLL -D_UNICODE "-I." "-I.\GeneratedFiles" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtCore" "-I$(ProjectDir)include" "-I$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include" "-I$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include" "-I$(QTDIR)\include\QtNetwork" "-I$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include" "-I$(VLDDIR)\include" "-I$(QTDIR)\include\QtXml"</Command>
     </CustomBuild>
+    <ClInclude Include="include\GameExecutor\Hook\DisableAeroHook.h" />
     <ClInclude Include="resource.h" />
     <CustomBuild Include="include\GameExecutor\Hook\RestoreResolution.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
@@ -345,6 +348,7 @@ $(QTDIR)\bin\lupdate.exe "$(ProjectDir)\." -ts "$(ProjectDir)\i18n\$(ProjectName
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DGAMEEXECUTOR_LIB -DQT_NETWORK_LIB -DQT_XML_LIB -D_WINDLL -D_UNICODE  "-I." "-I.\GeneratedFiles" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtCore" "-I$(ProjectDir)include" "-I$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include" "-I$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include" "-I$(QTDIR)\include\QtNetwork" "-I$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include" "-I$(VLDDIR)\include" "-I$(QTDIR)\include\QtXml"</Command>
     </CustomBuild>
+    <ClInclude Include="include\GameExecutor\Hook\UxsmsTurnOffHook.h" />
     <ClInclude Include="version.h" />
     <CustomBuild Include="include\GameExecutor\Executor\WebLink.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

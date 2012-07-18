@@ -208,6 +208,12 @@
     <ClCompile Include="GeneratedFiles\Release\moc_AikaDeleteFileHook.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="src\GameExecutor\Hook\UxsmsTurnOffHook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameExecutor\Hook\DisableAeroHook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="include\GameExecutor\IPC\Client.h">
@@ -282,6 +288,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\GameExecutor\ServiceInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameExecutor\Hook\UxsmsTurnOffHook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameExecutor\Hook\DisableAeroHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

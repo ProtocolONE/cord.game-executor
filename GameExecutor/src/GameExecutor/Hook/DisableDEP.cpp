@@ -1,9 +1,13 @@
 #include <GameExecutor/Hook/DisableDEP.h>
 
 #include <Core/UI/Message>
+#include <Core/System/Registry/RegistryKey.h>
 
 #include <QtCore/QSettings>
 #include <QtCore/QDebug>
+#include <QtCore/QDir>
+
+using namespace GGS::Core::System::Registry;
 
 namespace GGS {
   namespace GameExecutor {
@@ -23,8 +27,10 @@ namespace GGS {
 
         QUrl serviceUrl = service.url();
 
-        QSettings reg("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control", QSettings::NativeFormat);
-        QString systemOptions = reg.value("SystemStartOptions", "").toString();
+        RegistryKey registry(RegistryKey::HKLM, "SYSTEM\\CurrentControlSet\\Control");
+        QString systemOptions;
+        registry.value("SystemStartOptions", systemOptions);
+
         if (systemOptions.contains("NOEXECUTE=ALWAYSON")) {
           //UNDONE Локализация
           Core::UI::Message::warning(QObject::tr("TITLE_ATTENTION"), QObject::tr("WARNING_DISABLEDEP"));
@@ -33,11 +39,9 @@ namespace GGS {
           return;
         }
 
-        QSettings regLayer(
-          "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Layers", 
-          QSettings::NativeFormat);
-        
-        regLayer.setValue(serviceUrl.path().replace("/", "\\"), "DisableNXShowUI");
+        RegistryKey registry2(RegistryKey::HKLM, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Layers");
+        QString path = QDir::toNativeSeparators(serviceUrl.path());
+        registry2.setValue(path, "DisableNXShowUI");
         emit this->preExecuteCompleted(GGS::GameExecutor::Success);
       }
     }

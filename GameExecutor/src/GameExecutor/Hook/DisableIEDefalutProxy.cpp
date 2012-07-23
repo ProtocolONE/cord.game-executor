@@ -1,12 +1,15 @@
 #include <GameExecutor/Hook/DisableIEDefalutProxy.h>
 
 #include <Core/UI/Message>
+#include <Core/System/Registry/RegistryKey.h>
 
 #include <QtCore/QSettings>
 #include <QtCore/QDebug>
 
 #include <Windows.h>
 #include <Wininet.h>
+
+using namespace GGS::Core::System::Registry;
 
 namespace GGS {
   namespace GameExecutor {
@@ -26,10 +29,17 @@ namespace GGS {
       {
         DEBUG_LOG << "for" << service.id();
 
-        QSettings reg("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", QSettings::NativeFormat);
-        if (0 == reg.value("ProxyEnable", "0").toInt() && 0 == reg.value("GlobalUserOffline", "0").toInt()) {
-          emit this->preExecuteCompleted(GGS::GameExecutor::Success);
-          return;
+        RegistryKey registry(RegistryKey::HKCU, "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings");
+
+        DWORD proxyEnable = 0;
+        DWORD globalUserOffline = 0;
+        registry.value("ProxyEnable", proxyEnable);
+        registry.value("GlobalUserOffline", globalUserOffline);
+
+        if (proxyEnable == 0
+          && globalUserOffline == 0) {
+            emit this->preExecuteCompleted(GGS::GameExecutor::Success);
+            return;
         }
 
         //UNDONE Локализация
@@ -43,8 +53,8 @@ namespace GGS {
            return;
         } 
 
-        reg.setValue("ProxyEnable", 0);
-        reg.setValue("GlobalUserOffline", 0);
+        registry.setValue("ProxyEnable", 0);
+        registry.setValue("GlobalUserOffline", 0);
 
         // These lines implement the Interface in the beginning of program 
         // They cause the OS to refresh the settings, causing IP to realy update

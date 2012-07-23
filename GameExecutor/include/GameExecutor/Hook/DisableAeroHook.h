@@ -24,8 +24,6 @@ namespace GGS {
         ~DisableAeroHook();
 
         virtual void CanExecute(Core::Service &service);
-      private:
-        void writeRegValue(const QString& key, const QString& paramName, const QString& value);
       };
 
     }

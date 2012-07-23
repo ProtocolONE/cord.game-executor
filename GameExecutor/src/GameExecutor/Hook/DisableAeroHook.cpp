@@ -9,14 +9,15 @@
 ****************************************************************************/
 
 #include <GameExecutor/Hook/DisableAeroHook.h>
+
 #include <QtCore/QDir>
 #include <QtCore/QDebug>
 
 #include <Windows.h>
+
 namespace GGS {
   namespace GameExecutor {
     namespace Hook {
-
 
       DisableAeroHook::DisableAeroHook(QObject *parent) : HookInterface(parent)
       {

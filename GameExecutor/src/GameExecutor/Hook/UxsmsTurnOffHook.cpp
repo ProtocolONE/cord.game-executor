@@ -1,6 +1,8 @@
 #include <GameExecutor/Hook/UxsmsTurnOffHook.h>
-#include <Windows.h>
+
 #include <QtCore/QDebug>
+
+#include <Windows.h>
 
 namespace GGS {
   namespace GameExecutor {
@@ -9,7 +11,6 @@ namespace GGS {
       UxsmsTurnOffHook::UxsmsTurnOffHook(QObject *parent) : HookInterface(parent)
       {
       }
-
 
       UxsmsTurnOffHook::~UxsmsTurnOffHook()
       {

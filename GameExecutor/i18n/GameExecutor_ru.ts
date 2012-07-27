@@ -38,7 +38,7 @@
     <message>
         <location filename="../src/GameExecutor/Hook/DisableIEDefalutProxy.cpp" line="48"/>
         <source>WARNING_DISABLE_IE_DEFALUT_PROXY</source>
-        <translation>Во избежание проблем с подключением к игровому серверу не рекомендуется использовать функции \&amp;quot;Автономная работа\&amp;quot; и \&amp;quot;Использовать прокси сервер для подключений LAN\&amp;quot; в браузере Internet Explorer. Вы хотите, чтобы GameNet автоматически отключил эти функции?</translation>
+        <translation>Во избежание проблем с подключением к игровому серверу не рекомендуется использовать функции «Автономная работа» и «Использовать прокси сервер для подключений LAN»; в браузере Internet Explorer. Вы хотите, чтобы GameNet автоматически отключил эти функции?</translation>
     </message>
 </context>
 </TS>

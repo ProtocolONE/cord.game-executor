@@ -1,8 +1,20 @@
+/****************************************************************************
+** This file is a part of Syncopate Limited GameNet Application or it parts.
+**
+** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
+** All rights reserved.
+**
+** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+****************************************************************************/
 #include <GameExecutor/ExecutionLoop_p.h>
 
 #include <GameExecutor/HookInterface.h>
 #include <GameExecutor/ExecutorBase.h>
 #include <GameExecutor/GameExecutorService.h>
+
+#include <Core/Marketing.h>
+using GGS::Core::Marketing;
 
 namespace GGS {
   namespace GameExecutor {
@@ -83,6 +95,8 @@ namespace GGS {
 
     void ExecutionLoopPrivate::executorStep()
     {
+      Marketing::sendOnceByService(Marketing::FirstRunService, this->_service.id());
+      Marketing::send(Marketing::StartService, this->_service.id());
       this->_executor->execute(this->_service, this->_executorService);
     }
 
@@ -96,6 +110,7 @@ namespace GGS {
     void ExecutionLoopPrivate::executeHookPostStep()
     {
       if (this->_listIndex == this->_list.size()) {
+        Marketing::send(Marketing::CloseService, this->_service.id());
         emit this->finished(this->_service, this->_state);
         return;
       }

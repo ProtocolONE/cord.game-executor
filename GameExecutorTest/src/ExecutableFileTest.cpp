@@ -22,7 +22,7 @@
 #include <RestApi/GameNetCredential>
 #include <RestApi/HttpCommandRequest>
 #include <RestApi/FakeCache>
-
+#include <RestApi/Auth/GenericAuth>
 #include <gtest/gtest.h>
 
 #include <QtCore/QMetaType>
@@ -40,7 +40,7 @@ class ExecutableFileTest : public ::testing::Test
 protected:
   virtual void SetUp() 
   {
-    auth.setAppKey(QString("7c4a8d09ca3762af61e59520943dc26494f8941b"));
+    auth.setAppKey(QString("c99ebc84714c0c316dd891602dc916d238ef73ed"));
     auth.setUserId(QString("400001000001634860"));
 
     restapi.setUri(QString("https://api.gamenet.ru/restapi"));
@@ -80,7 +80,6 @@ protected:
   }
 
   GGS::Core::Service service;
-  
   
   GameExecutor::GameExecutorService executorService;
 

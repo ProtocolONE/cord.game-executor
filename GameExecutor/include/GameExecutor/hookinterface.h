@@ -70,9 +70,9 @@ namespace GGS {
       virtual void PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state);
 
     signals:
-      void canExecuteCompleted(GGS::GameExecutor::FinishState result);
-      void preExecuteCompleted(GGS::GameExecutor::FinishState result);
-      void postExecuteCompleted();
+      void canExecuteCompleted(const GGS::Core::Service &service, GGS::GameExecutor::FinishState result);
+      void preExecuteCompleted(const GGS::Core::Service &service, GGS::GameExecutor::FinishState result);
+      void postExecuteCompleted(const GGS::Core::Service &service);
     };
   }
 }

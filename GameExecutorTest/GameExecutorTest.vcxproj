@@ -102,7 +102,6 @@ del /F /S /Q "$(TargetDir)*d.dll"</Command>
     <ClCompile Include="src\DisableAeroHookTest.cpp" />
     <ClCompile Include="src\Mw2DownloadAndCheckXmlConfigTest.cpp" />
     <ClCompile Include="src\RestoreFileModificationTest.cpp" />
-    <ClCompile Include="src\AikaDeleteFileHookTest.cpp" />
     <ClCompile Include="src\DownloadCustomFileTest.cpp" />
     <ClCompile Include="src\GameExecutor\Executor\ExecutorWrapper.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_ExecutorWrapper.cpp">
@@ -151,7 +150,6 @@ del /F /S /Q "$(TargetDir)*d.dll"</Command>
     <ClCompile Include="src\GameExecutor\IPC\ClientServerPingPongTest.cpp" />
     <ClCompile Include="src\IPCTest.cpp" />
     <ClCompile Include="src\ServiceInfoCounterTest.cpp" />
-    <ClCompile Include="src\UxsmsTurnOffHookTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="include\GameExecutor\IPC\ClientServerPingPongTest.h">

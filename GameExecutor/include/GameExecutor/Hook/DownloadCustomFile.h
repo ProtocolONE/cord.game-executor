@@ -60,6 +60,8 @@ namespace GGS {
         qint32 _infoIndex;
         QFile _file;
         QNetworkAccessManager _manager;
+
+        GGS::Core::Service _service;
       };
     }
   }

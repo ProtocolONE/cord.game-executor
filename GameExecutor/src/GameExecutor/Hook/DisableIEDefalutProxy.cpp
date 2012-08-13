@@ -38,7 +38,7 @@ namespace GGS {
 
         if (proxyEnable == 0
           && globalUserOffline == 0) {
-            emit this->preExecuteCompleted(GGS::GameExecutor::Success);
+            emit this->preExecuteCompleted(service, GGS::GameExecutor::Success);
             return;
         }
 
@@ -49,7 +49,7 @@ namespace GGS {
           static_cast<Message::StandardButton>(Message::Yes | Message::No));
         
         if (reply == Message::No) {
-           emit this->preExecuteCompleted(GGS::GameExecutor::Success);
+           emit this->preExecuteCompleted(service, GGS::GameExecutor::Success);
            return;
         } 
 
@@ -62,7 +62,7 @@ namespace GGS {
         InternetSetOption(NULL, INTERNET_OPTION_SETTINGS_CHANGED, NULL, 0);
         InternetSetOption(NULL, INTERNET_OPTION_REFRESH, NULL, 0);
 
-        emit this->preExecuteCompleted(GGS::GameExecutor::Success);
+        emit this->preExecuteCompleted(service, GGS::GameExecutor::Success);
       }
     }
   }

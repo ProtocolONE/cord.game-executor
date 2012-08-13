@@ -19,9 +19,9 @@ public:
 
   void executeCanHook()
   {
-    QSignalSpy spy(&hook, SIGNAL(canExecuteCompleted(GGS::GameExecutor::FinishState)));
+    QSignalSpy spy(&hook, SIGNAL(canExecuteCompleted(const GGS::Core::Service &, GGS::GameExecutor::FinishState)));
     QEventLoop loop;
-    QObject::connect(&hook, SIGNAL(canExecuteCompleted(GGS::GameExecutor::FinishState)), &loop, SLOT(quit()), Qt::QueuedConnection);
+    QObject::connect(&hook, SIGNAL(canExecuteCompleted(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), &loop, SLOT(quit()), Qt::QueuedConnection);
 
     hook.CanExecute(service);
     loop.exec();
@@ -32,7 +32,7 @@ public:
   void executePostHook()
   {
     QEventLoop loop;
-    QObject::connect(&hook, SIGNAL(postExecuteCompleted()), &loop, SLOT(quit()), Qt::QueuedConnection);
+    QObject::connect(&hook, SIGNAL(postExecuteCompleted(const GGS::Core::Service &)), &loop, SLOT(quit()), Qt::QueuedConnection);
     hook.PostExecute(service, GGS::GameExecutor::FinishState::Success);
     loop.exec();
   }

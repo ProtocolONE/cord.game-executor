@@ -91,7 +91,7 @@ namespace GGS {
           }
         }
 
-        emit this->preExecuteCompleted(GGS::GameExecutor::Success);
+        emit this->preExecuteCompleted(service, GGS::GameExecutor::Success);
       }
 
       void RestoreFileModification::PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state)
@@ -116,7 +116,7 @@ namespace GGS {
           }
         }
 
-        emit this->postExecuteCompleted();
+        emit this->postExecuteCompleted(service);
       }
 
     }

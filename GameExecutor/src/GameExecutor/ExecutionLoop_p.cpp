@@ -33,16 +33,16 @@ namespace GGS {
       this->_listIndex = 0;
 
       Q_FOREACH(HookInterface *hook, this->_list) {
-        SIGNAL_CONNECT_CHECK(connect(hook, SIGNAL(canExecuteCompleted(GGS::GameExecutor::FinishState)), 
-          this, SLOT(executeHookCanStep(GGS::GameExecutor::FinishState)), Qt::QueuedConnection));
-        SIGNAL_CONNECT_CHECK(connect(hook, SIGNAL(preExecuteCompleted(GGS::GameExecutor::FinishState)), 
-          this, SLOT(executeHookPreStep(GGS::GameExecutor::FinishState)), Qt::QueuedConnection));
-        SIGNAL_CONNECT_CHECK(connect(hook, SIGNAL(postExecuteCompleted()), 
-          this, SLOT(executeHookPostStep()), Qt::QueuedConnection));
+        SIGNAL_CONNECT_CHECK(connect(hook, SIGNAL(canExecuteCompleted(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), 
+          this, SLOT(executeHookCanStep(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), Qt::QueuedConnection));
+        SIGNAL_CONNECT_CHECK(connect(hook, SIGNAL(preExecuteCompleted(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), 
+          this, SLOT(executeHookPreStep(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), Qt::QueuedConnection));
+        SIGNAL_CONNECT_CHECK(connect(hook, SIGNAL(postExecuteCompleted(const GGS::Core::Service &)), 
+          this, SLOT(executeHookPostStep(const GGS::Core::Service &)), Qt::QueuedConnection));
       }
 
       SIGNAL_CONNECT_CHECK(connect(this->_executor.data(), SIGNAL(started(const GGS::Core::Service)), 
-        this, SIGNAL(started(const GGS::Core::Service)), Qt::QueuedConnection));
+        this, SLOT(startedStep(const GGS::Core::Service)), Qt::QueuedConnection));
 
       SIGNAL_CONNECT_CHECK(connect(this->_executor.data(), 
         SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)), 
@@ -50,11 +50,14 @@ namespace GGS {
         SLOT(executorCompletedStep(const GGS::Core::Service, GGS::GameExecutor::FinishState)), 
         Qt::QueuedConnection));
 
-      this->executeHookCanStep(GGS::GameExecutor::Success);
+      this->executeHookCanStep(this->_service, GGS::GameExecutor::Success);
     }
 
-    void ExecutionLoopPrivate::executeHookCanStep(GGS::GameExecutor::FinishState result) 
+    void ExecutionLoopPrivate::executeHookCanStep(const GGS::Core::Service &service, GGS::GameExecutor::FinishState result) 
     {
+      if (this->_service.id() != service.id())
+        return;
+
       if (GGS::GameExecutor::Success != result) {
         emit this->finished(this->_service, result);
         return;
@@ -65,6 +68,7 @@ namespace GGS {
 
         this->_listIndex = 0;
         QMetaObject::invokeMethod(this, "executeHookPreStep",  Qt::QueuedConnection, 
+          Q_ARG(const GGS::Core::Service&, this->_service),
           Q_ARG(GGS::GameExecutor::FinishState, GGS::GameExecutor::Success));
 
         return;
@@ -74,8 +78,11 @@ namespace GGS {
       hook->CanExecute(this->_service);
     }
 
-    void ExecutionLoopPrivate::executeHookPreStep(GGS::GameExecutor::FinishState result) 
+    void ExecutionLoopPrivate::executeHookPreStep(const GGS::Core::Service &service, GGS::GameExecutor::FinishState result) 
     {
+      if (this->_service.id() != service.id())
+        return;
+
       if (GGS::GameExecutor::Success != result) {
         emit this->finished(this->_service, result);
         return;
@@ -102,13 +109,19 @@ namespace GGS {
 
     void ExecutionLoopPrivate::executorCompletedStep(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state)
     {
+      if (this->_service.id() != service.id())
+        return;
+
       this->_listIndex = 0;
       this->_state = state;
-      this->executeHookPostStep();
+      this->executeHookPostStep(this->_service);
     }
 
-    void ExecutionLoopPrivate::executeHookPostStep()
+    void ExecutionLoopPrivate::executeHookPostStep(const GGS::Core::Service &service)
     {
+      if (this->_service.id() != service.id())
+        return;
+
       if (this->_listIndex == this->_list.size()) {
         Marketing::send(Marketing::CloseService, this->_service.id());
         emit this->finished(this->_service, this->_state);
@@ -138,5 +151,14 @@ namespace GGS {
     {
       this->_executor = val;
     }
+
+    void ExecutionLoopPrivate::startedStep(const GGS::Core::Service &service)
+    {
+      if (this->_service.id() != service.id())
+        return;
+
+      emit this->started(service);
+    }
+
   }
 }

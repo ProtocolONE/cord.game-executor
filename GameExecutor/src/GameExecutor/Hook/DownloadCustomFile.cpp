@@ -22,27 +22,28 @@ namespace GGS {
       {
         QUrl url = service.url();
         if (!url.hasQueryItem("downloadCustomFile")) {
-          emit this->canExecuteCompleted(GGS::GameExecutor::Success);
+          emit this->canExecuteCompleted(service, GGS::GameExecutor::Success);
           return;
         }
         
         this->_args = url.queryItemValue("downloadCustomFile").split(',');
 
         if ((this->_args.count() % 3)) {
-          emit this->canExecuteCompleted(GGS::GameExecutor::CanExecutionHookBreak);
+          emit this->canExecuteCompleted(service, GGS::GameExecutor::CanExecutionHookBreak);
           return;
         }
 
         this->_baseFilePath = service.installPath();
         this->_area = service.areaString();
 
+        this->_service = service;
         this->downloadNextFile();
       }
 
       void DownloadCustomFile::downloadNextFile()
       {
         if (this->_args.isEmpty()) {
-           emit this->canExecuteCompleted(GGS::GameExecutor::Success);
+           emit this->canExecuteCompleted(this->_service, GGS::GameExecutor::Success);
            return;
         }
 
@@ -57,7 +58,7 @@ namespace GGS {
         QFileInfo fileInfo(this->_file);
 
         if (!fileInfo.absoluteDir().mkpath(fileInfo.absoluteDir().absolutePath())) {
-          emit this->canExecuteCompleted(GGS::GameExecutor::CanExecutionHookBreak);
+          emit this->canExecuteCompleted(this->_service, GGS::GameExecutor::CanExecutionHookBreak);
           return;
         }
 
@@ -74,7 +75,7 @@ namespace GGS {
         this->_infoIndex = this->_info.addresses().size();
         
         if (!this->_file.open(QIODevice::ReadWrite)) {
-          emit this->canExecuteCompleted(GGS::GameExecutor::CanExecutionHookBreak);
+          emit this->canExecuteCompleted(this->_service, GGS::GameExecutor::CanExecutionHookBreak);
           return ;
         }
 
@@ -84,7 +85,7 @@ namespace GGS {
       void DownloadCustomFile::downloadFile()
       {
         if (--this->_infoIndex < 0) {
-          emit this->canExecuteCompleted(GGS::GameExecutor::CanExecutionHookBreak);
+          emit this->canExecuteCompleted(this->_service, GGS::GameExecutor::CanExecutionHookBreak);
           return;
         }
 

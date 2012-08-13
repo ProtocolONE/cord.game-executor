@@ -40,7 +40,7 @@ namespace GGS {
           DEBUG_LOG << "DisableAeroHook failed";
         }
 
-        emit this->canExecuteCompleted(GGS::GameExecutor::Success);
+        emit this->canExecuteCompleted(service, GGS::GameExecutor::Success);
       }
     }
   }

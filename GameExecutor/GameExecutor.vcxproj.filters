@@ -199,18 +199,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_Mw2DownloadAndCheckXmlConfig.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameExecutor\Hook\AikaDeleteFileHook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_AikaDeleteFileHook.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_AikaDeleteFileHook.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GameExecutor\Hook\UxsmsTurnOffHook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\GameExecutor\Hook\DisableAeroHook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -267,9 +255,6 @@
     <CustomBuild Include="include\GameExecutor\Hook\Mw2DownloadAndCheckXmlConfig.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="include\GameExecutor\Hook\AikaDeleteFileHook.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\GameExecutor\ExecutorInterface.h">
@@ -288,9 +273,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\GameExecutor\ServiceInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\GameExecutor\Hook\UxsmsTurnOffHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\GameExecutor\Hook\DisableAeroHook.h">

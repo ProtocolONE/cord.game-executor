@@ -36,14 +36,14 @@ public:
   GGS::GameExecutor::FinishState executeHookCanStep(GGS::Core::Service &service) 
   {
     GameExecutor::Hook::DownloadCustomFile hook1;
-    QSignalSpy spy(&hook1, SIGNAL(canExecuteCompleted(GGS::GameExecutor::FinishState)));
+    QSignalSpy spy(&hook1, SIGNAL(canExecuteCompleted(const GGS::Core::Service &, GGS::GameExecutor::FinishState)));
     
     QEventLoop loop;
-    QObject::connect(&hook1, SIGNAL(canExecuteCompleted(GGS::GameExecutor::FinishState)), &loop, SLOT(quit()), Qt::QueuedConnection);
+    QObject::connect(&hook1, SIGNAL(canExecuteCompleted(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), &loop, SLOT(quit()), Qt::QueuedConnection);
 
     hook1.CanExecute(service);
     loop.exec();
-    return spy.at(0).at(0).value<GGS::GameExecutor::FinishState>();
+    return spy.at(0).at(1).value<GGS::GameExecutor::FinishState>();
   }
 
   GGS::Core::Service srvHook;

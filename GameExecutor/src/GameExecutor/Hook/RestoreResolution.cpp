@@ -18,7 +18,7 @@ namespace GGS {
 
         //http://msdn.microsoft.com/en-us/library/dd162611(v=vs.85).aspx
         this->_enabled = EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &this->_beforeExecuteDisplay);
-        emit this->preExecuteCompleted(GGS::GameExecutor::Success);
+        emit this->preExecuteCompleted(service, GGS::GameExecutor::Success);
       }
 
       void RestoreResolution::PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state)
@@ -26,32 +26,32 @@ namespace GGS {
         DEBUG_LOG << "for" << service.id();
 
         if (!this->_enabled) {
-          emit this->postExecuteCompleted();
+          emit this->postExecuteCompleted(service);
           return;
         }
 
         DEVMODE afterExecuteDisplay;
         bool result = EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &afterExecuteDisplay);
         if (!result) {
-          emit this->postExecuteCompleted();
+          emit this->postExecuteCompleted(service);
           return;
         }
 
         if (afterExecuteDisplay.dmPelsHeight == this->_beforeExecuteDisplay.dmPelsHeight 
           && afterExecuteDisplay.dmPelsWidth == this->_beforeExecuteDisplay.dmPelsWidth
           && afterExecuteDisplay.dmBitsPerPel == this->_beforeExecuteDisplay.dmBitsPerPel) {
-            emit this->postExecuteCompleted();
+            emit this->postExecuteCompleted(service);
             return;
         }
 
         //http://msdn.microsoft.com/en-us/library/dd183411(v=vs.85).aspx
         if (DISP_CHANGE_FAILED == ChangeDisplaySettings(&this->_beforeExecuteDisplay, CDS_RESET)) {
-           emit this->postExecuteCompleted();
+           emit this->postExecuteCompleted(service);
            return;
         }
 
         ChangeDisplaySettings(&this->_beforeExecuteDisplay, CDS_UPDATEREGISTRY);
-        emit this->postExecuteCompleted();
+        emit this->postExecuteCompleted(service);
       }
     }
   }

@@ -5,19 +5,19 @@
     <name>GGS::GameExecutor::Hook::Mw2DownloadAndCheckXmlConfig</name>
     <message>
         <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="52"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="68"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="75"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="90"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="133"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="70"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="77"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="92"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="135"/>
         <source>HOOK_CANEXECUTE_FAIL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="52"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="68"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="75"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="90"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="133"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="70"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="77"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="92"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="135"/>
         <source>MW2_DOWNLOAD_CUSTOM_FILE_INFO</source>
         <translation type="unfinished"></translation>
     </message>

@@ -103,9 +103,6 @@
     <ClCompile Include="src\ServiceInfoCounterTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\AikaDeleteFileHookTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\RestoreFileModificationTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -113,9 +110,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\DisableAeroHookTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UxsmsTurnOffHookTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

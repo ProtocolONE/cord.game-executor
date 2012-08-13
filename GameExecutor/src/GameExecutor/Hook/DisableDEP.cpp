@@ -35,14 +35,14 @@ namespace GGS {
           //UNDONE Локализация
           Core::UI::Message::warning(QObject::tr("TITLE_ATTENTION"), QObject::tr("WARNING_DISABLEDEP"));
 
-          emit this->preExecuteCompleted(GGS::GameExecutor::PreExecutionHookBreak);
+          emit this->preExecuteCompleted(service, GGS::GameExecutor::PreExecutionHookBreak);
           return;
         }
 
         RegistryKey registry2(RegistryKey::HKLM, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Layers");
         QString path = QDir::toNativeSeparators(serviceUrl.path());
         registry2.setValue(path, "DisableNXShowUI");
-        emit this->preExecuteCompleted(GGS::GameExecutor::Success);
+        emit this->preExecuteCompleted(service, GGS::GameExecutor::Success);
       }
     }
   }

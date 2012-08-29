@@ -194,6 +194,9 @@ namespace GGS {
         case RestApi::CommandBase::UnknownAccountStatus:
           state = AuthorizationError;
           break;
+        case RestApi::CommandBase::GuestExpired:
+          state = GuestAccountExpired;
+          break;
         case RestApi::CommandBase::ServiceAuthorizationImpossible:
           state = ServiceAccountBlockedError;
           break;

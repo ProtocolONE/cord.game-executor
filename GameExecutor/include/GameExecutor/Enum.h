@@ -23,6 +23,7 @@ namespace GGS {
       ExternalFatalError, 
       AuthorizationError, 
       ServiceAccountBlockedError,
+      GuestAccountExpired,
       UnhandledRestApiError,
       CanExecutionHookBreak,
       PreExecutionHookBreak,

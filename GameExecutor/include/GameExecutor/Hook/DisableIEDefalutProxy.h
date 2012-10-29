@@ -14,7 +14,7 @@
 #include <GameExecutor/gameexecutor_global.h>
 #include <GameExecutor/HookInterface.h>
 
-#include <QObject>
+#include <QtCore/QObject>
 
 namespace GGS {
   namespace GameExecutor {

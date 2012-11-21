@@ -113,6 +113,13 @@ $(QTDIR)\bin\lupdate.exe "$(ProjectDir)\." -ts "$(ProjectDir)\i18n\$(ProjectName
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DefaultAikaSettings.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DefaultAikaSettings.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="src\GameExecutor\Hook\DefaultAikaSettings.cpp" />
     <ClCompile Include="src\GameExecutor\Hook\DisableAeroHook.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_Mw2DownloadAndCheckXmlConfig.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -296,6 +303,16 @@ $(QTDIR)\bin\lupdate.exe "$(ProjectDir)\." -ts "$(ProjectDir)\i18n\$(ProjectName
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing Mw2DownloadAndCheckXmlConfig.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DGAMEEXECUTOR_LIB -DQT_NETWORK_LIB -DQT_XML_LIB -D_WINDLL -D_UNICODE  "-I." "-I.\GeneratedFiles" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtCore" "-I$(ProjectDir)include" "-I$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include" "-I$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include" "-I$(QTDIR)\include\QtNetwork" "-I$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include" "-I$(VLDDIR)\include" "-I$(QTDIR)\include\QtXml"</Command>
+    </CustomBuild>
+    <CustomBuild Include="include\GameExecutor\Hook\DefaultAikaSettings.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing DefaultAikaSettings.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DGAMEEXECUTOR_LIB -DQT_NETWORK_LIB -DQT_XML_LIB -D_WINDLL -D_UNICODE "-I." "-I.\GeneratedFiles" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtCore" "-I$(ProjectDir)include" "-I$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include" "-I$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include" "-I$(QTDIR)\include\QtNetwork" "-I$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include" "-I$(VLDDIR)\include" "-I$(QTDIR)\include\QtXml"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing DefaultAikaSettings.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DGAMEEXECUTOR_LIB -DQT_NETWORK_LIB -DQT_XML_LIB -D_WINDLL -D_UNICODE "-I." "-I.\GeneratedFiles" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtCore" "-I$(ProjectDir)include" "-I$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include" "-I$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include" "-I$(QTDIR)\include\QtNetwork" "-I$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include" "-I$(VLDDIR)\include" "-I$(QTDIR)\include\QtXml"</Command>
     </CustomBuild>
     <ClInclude Include="include\GameExecutor\Hook\DisableAeroHook.h" />
     <ClInclude Include="resource.h" />

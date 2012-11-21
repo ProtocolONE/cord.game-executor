@@ -102,7 +102,9 @@ xcopy /Y /I /R "$(QGNACOMMONDIR)\OpenSSL\0.9.8r\bin\*.dll" "$(TargetDir)"</Comma
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\DefaultAikaSettingsTest.cpp" />
     <ClCompile Include="src\DisableAeroHookTest.cpp" />
+    <ClCompile Include="src\FileUtils.cpp" />
     <ClCompile Include="src\Mw2DownloadAndCheckXmlConfigTest.cpp" />
     <ClCompile Include="src\RestoreFileModificationTest.cpp" />
     <ClCompile Include="src\DownloadCustomFileTest.cpp" />
@@ -235,6 +237,9 @@ xcopy /Y /I /R "$(QGNACOMMONDIR)\OpenSSL\0.9.8r\bin\*.dll" "$(TargetDir)"</Comma
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_SQL_LIB -DQT_XML_LIB  "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtCore" "-I." "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(ProjectDir)include" "-I$(QGNACOMMONDIR)\Google\gtest\1.6.0\include" "-I$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include" "-I$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include" "-I$(ProjectDir)..\GameExecutor\include" "-I$(VLDDIR)\include" "-I$(QTDIR)\include\QtTest" "-I$(QTDIR)\include\QtSql" "-I$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include" "-I$(QTDIR)\include\QtXml" "-I$(QGNACOMMONDIR)\GGS\CASettings\$(CASettingsArea)\include"</Command>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\FileUtils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

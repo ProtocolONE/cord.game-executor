@@ -199,7 +199,7 @@ TEST_F(ExecutableFileTest, AuthorizationError)
   ExecutionFlow(srv, 0, GGS::GameExecutor::AuthorizationError);
 }
 
-TEST_F(ExecutableFileTest, ServiceAccountBlockedError) 
+TEST_F(ExecutableFileTest, ServiceAuthorizationImpossibleError) 
 {
   GameNetCredential auth; 
   auth.setUserId("400001000025914750"); //gna_blocked_acc@unit.test
@@ -215,6 +215,28 @@ TEST_F(ExecutableFileTest, ServiceAccountBlockedError)
 
   GGS::Core::Service srv;
   srv.setId("300007020000000000"); //GA TEST
+  srv.setGameId("83");
+  srv.setUrl(url);
+
+  ExecutionFlow(srv, 0, GGS::GameExecutor::ServiceAuthorizationImpossible);
+}
+
+TEST_F(ExecutableFileTest, ServiceAccountBlockedError) 
+{
+  GameNetCredential auth; 
+  auth.setUserId("400001000025914750"); //gna_blocked_acc@unit.test
+  auth.setAppKey("60472d5bc9f7dee91d0a113ff481a99a8091b503");
+
+  restapi.setCridential(auth);
+
+  QUrl url;
+  url.setScheme("exe");
+  url.setPath(QCoreApplication::applicationDirPath() + "/fixtures/success.bat");
+  url.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
+  url.addQueryItem("args", "%userId% %appKey% %token%");
+
+  GGS::Core::Service srv;
+  srv.setId("300007010000000000"); //GA TEST
   srv.setGameId("83");
   srv.setUrl(url);
 

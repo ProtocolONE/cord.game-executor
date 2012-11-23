@@ -189,7 +189,6 @@ namespace GGS {
         switch(errorCode) {
         case RestApi::CommandBase::AuthorizationFailed:
         case RestApi::CommandBase::AccountNotExists:
-        case RestApi::CommandBase::ServiceAccountBlocked:
         case RestApi::CommandBase::AuthorizationLimitExceed:
         case RestApi::CommandBase::UnknownAccountStatus:
           state = AuthorizationError;
@@ -197,8 +196,11 @@ namespace GGS {
         case RestApi::CommandBase::GuestExpired:
           state = GuestAccountExpired;
           break;
-        case RestApi::CommandBase::ServiceAuthorizationImpossible:
+        case RestApi::CommandBase::ServiceAccountBlocked:
           state = ServiceAccountBlockedError;
+          break;
+        case RestApi::CommandBase::ServiceAuthorizationImpossible:
+          state = ServiceAuthorizationImpossible;
           break;
         case RestApi::CommandBase::PakkanenPermissionDenied:
           state = PakkanenPermissionDenied;

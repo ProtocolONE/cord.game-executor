@@ -102,12 +102,13 @@ xcopy /Y /I /R "$(QGNACOMMONDIR)\OpenSSL\0.9.8r\bin\*.dll" "$(TargetDir)"</Comma
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\BannerDownloadTest.cpp" />
     <ClCompile Include="src\DefaultAikaSettingsTest.cpp" />
     <ClCompile Include="src\DisableAeroHookTest.cpp" />
-    <ClCompile Include="src\FileUtils.cpp" />
-    <ClCompile Include="src\Mw2DownloadAndCheckXmlConfigTest.cpp" />
-    <ClCompile Include="src\RestoreFileModificationTest.cpp" />
     <ClCompile Include="src\DownloadCustomFileTest.cpp" />
+    <ClCompile Include="src\ExecutableFileTest.cpp" />
+    <ClCompile Include="src\FileUtils.cpp" />
+    <ClCompile Include="src\GameExecutorTest.cpp" />
     <ClCompile Include="src\GameExecutor\Executor\ExecutorWrapper.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_ExecutorWrapper.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -121,7 +122,6 @@ xcopy /Y /I /R "$(QGNACOMMONDIR)\OpenSSL\0.9.8r\bin\*.dll" "$(TargetDir)"</Comma
     <ClCompile Include="GeneratedFiles\Release\moc_HookMock.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="src\ExecutableFileTest.cpp" />
     <ClCompile Include="src\GameExecutor\Hooks\HookMock.cpp" />
     <ClCompile Include="src\GameExecutor\Executor\ExecutorMock.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_ExecutorMock.cpp">
@@ -130,7 +130,6 @@ xcopy /Y /I /R "$(QGNACOMMONDIR)\OpenSSL\0.9.8r\bin\*.dll" "$(TargetDir)"</Comma
     <ClCompile Include="GeneratedFiles\Release\moc_ExecutorMock.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="src\GameExecutorTest.cpp" />
     <ClCompile Include="src\GameExecutor\GameExecutorServiceWrapper.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_ClientServerPingPongTest.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -154,6 +153,8 @@ xcopy /Y /I /R "$(QGNACOMMONDIR)\OpenSSL\0.9.8r\bin\*.dll" "$(TargetDir)"</Comma
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\GameExecutor\IPC\ClientServerPingPongTest.cpp" />
     <ClCompile Include="src\IPCTest.cpp" />
+    <ClCompile Include="src\Mw2DownloadAndCheckXmlConfigTest.cpp" />
+    <ClCompile Include="src\RestoreFileModificationTest.cpp" />
     <ClCompile Include="src\ServiceInfoCounterTest.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -53,10 +53,11 @@ namespace GGS {
         this->_workingDir = url.queryItemValue("workingDir");
         this->_args = url.queryItemValue("args");
 
+        QString injectDll = url.queryItemValue("injectDll");
         RestApi::GameNetCredential credential = RestApi::RestApiManager::commonInstance()->credential();
 
         this->_activityRequestArgs = 
-          QString("%1|%2|%3").arg(credential.userId(), credential.appKey(), service.gameId());
+          QString("%1|%2|%3|%4").arg(credential.userId(), credential.appKey(), service.gameId(), injectDll);
 
         QRegExp rx("%(.+)%");
         rx.setMinimal(true);

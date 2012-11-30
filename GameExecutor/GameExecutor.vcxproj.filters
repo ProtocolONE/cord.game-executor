@@ -211,6 +211,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_DefaultAikaSettings.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="src\GameExecutor\Hook\BannerDownload.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_BannerDownload.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_BannerDownload.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="include\GameExecutor\IPC\Client.h">
@@ -265,6 +274,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="include\GameExecutor\Hook\DefaultAikaSettings.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="include\GameExecutor\Hook\BannerDownload.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

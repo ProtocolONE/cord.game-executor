@@ -17,8 +17,9 @@
 #include <RestApi/RestApiManager>
 #include <RestApi/CommandBase>
 
-#include <QObject>
-#include <QtCore/QProcess>
+#include <QtCore/QObject>
+#include <QtCore/QFuture>
+#include <QtCore/QFutureWatcher>
 
 using GGS::RestApi::CommandBase;
 using namespace GGS::GameExecutor;
@@ -29,7 +30,6 @@ namespace GGS{
 
       /*!
       \class ExecutableFileClient
-
       \brief Executable file client. 
       */
       class GAMEEXECUTOR_EXPORT ExecutableFileClient : public QObject
@@ -57,38 +57,26 @@ namespace GGS{
         void disconnectedOrError();
         void messageFromServer(QString message);
 
-        void processError(QProcess::ProcessError error);
-        void processStarted();
-        void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
-
-        /*!
-        \fn void ExecutableFileClient::checkProcessIsAlive();
-
-        \brief Проверяет, что запущенный процесс по прежнему находится в списке запущенных.
-
-        Система безопасности некоторых игр, например MW2 портит handle запущенного приложение и слот processFinished
-        уже не будут вызван. Для этого случая и используется эта функция. 
-        */
-        void checkProcessIsAlive();
+        void processFinished();
 
         void setUserActivity();
         void setUserActivityResult(GGS::RestApi::CommandBase::CommandResults result);
         void setUserActivityLogoutResult(GGS::RestApi::CommandBase::CommandResults result);
+
       private:
         void setUserActivityLogout(int code);
+        unsigned int startProcess(const QString& pathToExe, const QString& workDirectory, const QString& args, const QString& dllPath = QString());
 
         RestApi::RestApiManager *_restApiManager;
-
         QString _ipcName;
-
         IPC::Client _client;
-        QProcess _gameProcess;
-        Q_PID _pid;
         int _gameId;
         int _code;
-        bool _finishPassed;
+        QFuture<unsigned int> _executeFeature;
+        QFutureWatcher<unsigned int> _executeFeatureWatcher;
       };
     }
   }
 }
+
 #endif // _GGS_GAMEEXECUTOR_EXECUTOR_EXECUTABLEFILECLIENT_H

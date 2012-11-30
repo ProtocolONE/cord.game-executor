@@ -3,13 +3,13 @@
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QtConcurrentRun>
+#include <QtCore/QStringList>
 
 #include <RestApi/GameNetCredential>
 #include <RestApi/Commands/User/SetUserActivity>
 
 #include <windows.h>
-#include <tchar.h>
-#include <psapi.h>
 
 using GGS::RestApi::GameNetCredential;
 using GGS::RestApi::Commands::User::SetUserActivity;
@@ -17,30 +17,44 @@ using GGS::RestApi::Commands::User::SetUserActivity;
 namespace GGS{
   namespace GameExecutor{
     namespace Executor {
-      ExecutableFileClient::ExecutableFileClient(QObject *parent) : QObject(parent), _finishPassed(false)
+
+      class QStringToWChar {
+      public:
+        QStringToWChar(const QString& str) : _data(NULL)
+        {
+          this->_size = str.size();
+          this->_data = new wchar_t[this->_size + 1]();
+          str.toWCharArray(this->_data);
+        }
+
+        ~QStringToWChar() {
+          delete [] _data;
+        }
+
+        wchar_t* data() { return this->_data; }
+        size_t size() { return this->_size; }
+
+      private:
+        wchar_t *_data;
+        size_t _size;
+      };
+
+      ExecutableFileClient::ExecutableFileClient(QObject *parent) : QObject(parent)
       {
         DEBUG_LOG;
+        SIGNAL_CONNECT_CHECK(connect(&this->_client, SIGNAL(connected()), this, SLOT(connectedToServer())));
+        SIGNAL_CONNECT_CHECK(connect(&this->_client, SIGNAL(disconnected()), this, SLOT(disconnectedOrError())));
+        SIGNAL_CONNECT_CHECK(connect(&this->_client, SIGNAL(error(QLocalSocket::LocalSocketError)), this, SLOT(disconnectedOrError())));
+        SIGNAL_CONNECT_CHECK(connect(&this->_client, SIGNAL(messageReceived(QString)), this, SLOT(messageFromServer(QString))));
 
-        connect(&this->_client, SIGNAL(connected()), this, SLOT(connectedToServer()));
-
-        connect(&this->_client, SIGNAL(disconnected()), this, SLOT(disconnectedOrError()));
-        connect(&this->_client, SIGNAL(error(QLocalSocket::LocalSocketError)), this, SLOT(disconnectedOrError()));
-
-        connect(&this->_client, SIGNAL(messageReceived(QString)), this, SLOT(messageFromServer(QString)));
-
-        connect(&this->_gameProcess, SIGNAL(started()), this, SLOT(processStarted()));
-        connect(&this->_gameProcess, SIGNAL(finished(int, QProcess::ExitStatus)), 
-                this, SLOT(processFinished(int, QProcess::ExitStatus)));
-        connect(&this->_gameProcess, SIGNAL(error(QProcess::ProcessError)), 
-                this, SLOT(processError(QProcess::ProcessError)));
+        SIGNAL_CONNECT_CHECK(connect(&this->_executeFeatureWatcher, SIGNAL(finished()), this, SLOT(processFinished())));
       }
 
       ExecutableFileClient::~ExecutableFileClient()
       {
-
       }
 
-      void ExecutableFileClient::setRestApiManager( RestApi::RestApiManager *restApiManager )
+      void ExecutableFileClient::setRestApiManager(RestApi::RestApiManager *restApiManager)
       {
         this->_restApiManager = restApiManager;
       }
@@ -62,7 +76,7 @@ namespace GGS{
         DEBUG_LOG;
       }
 
-      void ExecutableFileClient::messageFromServer( QString message )
+      void ExecutableFileClient::messageFromServer(QString message)
       {
         DEBUG_LOG << "'" << message << "'";
 
@@ -72,7 +86,7 @@ namespace GGS{
           emit this->exit(Fail);
           return;
         }
-        
+
         QString exeFile = params.at(1);
 
         if (!QFile::exists(exeFile)) {
@@ -89,91 +103,31 @@ namespace GGS{
           emit this->exit(Fail);
           return;
         }
-        
+
         GameNetCredential credential;
         credential.setUserId(params.at(4));
         credential.setAppKey(params.at(5));
 
         this->respApiManager()->setCridential(credential);
 
-        this->_gameProcess.setWorkingDirectory(params.at(2));
-
+        QString dir = params.at(2);
         QString args = params.at(3);
-        this->_gameProcess.start(exeFile, args.split(" "));
-
-        this->_client.sendMessage("Starting");  
-      }
-
-      void ExecutableFileClient::processError(QProcess::ProcessError error)
-      {
-        if (this->_finishPassed) 
-          return;
-
-        this->_finishPassed = true;
-
-        DEBUG_LOG << "with error" << error << "and exitCode" << this->_gameProcess.exitCode();
-
-        this->setUserActivityLogout(Fail);
-      }
-
-      void ExecutableFileClient::processStarted()
-      {
-        DEBUG_LOG << "with process id" << this->_gameProcess.pid()->dwProcessId;
-
-        this->_pid = this->_gameProcess.pid();
+        
+        QString injectedDll;
+        if (params.length() > 7)
+          injectedDll = params.at(7);
 
         QTimer::singleShot(1000, this, SLOT(setUserActivity()));
-        QTimer::singleShot(1000, this, SLOT(checkProcessIsAlive()));
-      }
 
-      void ExecutableFileClient::checkProcessIsAlive()
-      {
-        DWORD processIdArray[1024];
-        DWORD bytesReturned ;
-        
-        //UNDONE Есть непроверенная проблема. Возможно, функция EnumProcesses не будет возвращать PID для х64 
-        //процессов, если она вызывается из х32 процесса. С другой стороны у нас нет сейчас х64 игр.
-        //http://msdn.microsoft.com/en-us/library/windows/desktop/ms682629(v=vs.85).aspx
-        if (!EnumProcesses(processIdArray, sizeof(processIdArray), &bytesReturned)) {
-          qFatal("EnumProcesses fail");
-          return;
-        }
+        this->_executeFeature = QtConcurrent::run(
+          this, 
+          &ExecutableFileClient::startProcess, 
+          exeFile, 
+          params.at(2), 
+          params.at(3), 
+          injectedDll);
 
-        bool processExists = false;
-        DWORD processCount = bytesReturned / sizeof(DWORD);
-        for (unsigned int i = 0; i < processCount; i++) {
-          if(processIdArray[i] == this->_pid->dwProcessId ) {
-            processExists = true;
-            break;
-          }
-        }
-
-        if (processExists) {
-          QTimer::singleShot(5000, this, SLOT(checkProcessIsAlive()));
-          return;
-        } 
-
-        if (this->_finishPassed) 
-          return;
-
-        this->_finishPassed = true;
-
-        this->setUserActivityLogout(Success);
-      }
-
-      void ExecutableFileClient::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
-      {
-        if (this->_finishPassed) 
-          return;
-
-        this->_finishPassed = true;
-
-        int realExitCode = 
-          (exitStatus == QProcess::CrashExit && static_cast<unsigned int>(exitCode) != 0xC0000005) ? Fail : Success;
-
-        DEBUG_LOG << "with exit status" << exitStatus << static_cast<unsigned int>(exitCode) << realExitCode;
-
-        this->setUserActivityLogout(realExitCode);
+        this->_executeFeatureWatcher.setFuture(this->_executeFeature);
       }
 
       void ExecutableFileClient::setUserActivity()
@@ -185,9 +139,9 @@ namespace GGS{
         cmd->setGameId(this->_gameId);  
         cmd->setLogout(0);
 
-        connect(cmd, SIGNAL(result(GGS::RestApi::CommandBase::CommandResults)), 
-                this, SLOT(setUserActivityResult(GGS::RestApi::CommandBase::CommandResults)));
-        
+        SIGNAL_CONNECT_CHECK(connect(cmd, SIGNAL(result(GGS::RestApi::CommandBase::CommandResults)), 
+          this, SLOT(setUserActivityResult(GGS::RestApi::CommandBase::CommandResults))));
+
         this->respApiManager()->execute(cmd);
       }
 
@@ -203,7 +157,7 @@ namespace GGS{
 
         if (result != CommandBase::NoError) {
           WARNING_LOG << "error" << result << cmd->getGenericErrorMessageCode();
-          QTimer::singleShot(300000, this, SLOT(setUserActivity())); //default timeOut is 5 minutes;
+          QTimer::singleShot(300000, this, SLOT(setUserActivity())); // default timeOut is 5 minutes;
           return;
         }
 
@@ -228,35 +182,106 @@ namespace GGS{
         cmd->setGameId(this->_gameId);
         cmd->setLogout(1);
 
-        connect(cmd, SIGNAL(result(GGS::RestApi::CommandBase::CommandResults)), 
-                this, SLOT(setUserActivityLogoutResult(GGS::RestApi::CommandBase::CommandResults)));
+        SIGNAL_CONNECT_CHECK(connect(cmd, SIGNAL(result(GGS::RestApi::CommandBase::CommandResults)), 
+          this, SLOT(setUserActivityLogoutResult(GGS::RestApi::CommandBase::CommandResults))));
 
         this->respApiManager()->execute(cmd);
       }
 
       void ExecutableFileClient::setUserActivityLogoutResult(GGS::RestApi::CommandBase::CommandResults result)
       {
-         DEBUG_LOG << "with result" << result;
+        DEBUG_LOG << "with result" << result;
 
-         SetUserActivity *cmd = qobject_cast<SetUserActivity *>(QObject::sender());
-         if (!cmd) {
-           WARNING_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
-           return;
-         }
+        SetUserActivity *cmd = qobject_cast<SetUserActivity *>(QObject::sender());
+        if (!cmd) {
+          WARNING_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
+          return;
+        }
 
-         cmd->deleteLater();
+        cmd->deleteLater();
 
-         emit this->exit(this->_code);
+        emit this->exit(this->_code);
       }
 
       void ExecutableFileClient::disconnectedOrError()
       {
-         emit this->exit(1);
+        emit this->exit(1);
       }
 
       void ExecutableFileClient::setIpcName(const QString& name)
       {
         this->_ipcName = name;
+      }
+
+      unsigned int ExecutableFileClient::startProcess(
+        const QString& pathToExe, 
+        const QString& workDirectory, 
+        const QString& args, 
+        const QString& dllPath /*= QString()*/)
+      {
+        QString commandLine = QString("\"%1\" %2").arg(pathToExe, args);
+
+        QStringToWChar exe(pathToExe);
+        QStringToWChar cmd(commandLine);
+        QStringToWChar dir(workDirectory);
+
+        STARTUPINFO si;
+        PROCESS_INFORMATION pi;
+        ZeroMemory(&si, sizeof(STARTUPINFO));
+        si.cb=sizeof(STARTUPINFO);
+
+        if (!CreateProcessW(exe.data(), cmd.data(), 0, 0, FALSE, CREATE_SUSPENDED, NULL, dir.data(), &si, &pi))  {
+          DEBUG_LOG << "Create process failed" << GetLastError();
+          return 0xFFFFFFFF;
+        }
+
+        if (pi.hProcess == INVALID_HANDLE_VALUE) {
+          DEBUG_LOG << "Create process invalid handle" << GetLastError();
+          return 0xFFFFFFFE;
+        }
+
+        if (!dllPath.isEmpty()) {
+          HMODULE hModule = GetModuleHandleW(L"Kernel32");
+          QStringToWChar dll(dllPath);
+
+          size_t len = (dll.size() + 1) * sizeof(wchar_t);
+          void* pLibRemote = ::VirtualAllocEx(pi.hProcess, NULL, len, MEM_COMMIT, PAGE_READWRITE);
+          DWORD iLen = 0;
+          WriteProcessMemory(pi.hProcess, pLibRemote, static_cast<void*>(dll.data()), len, &iLen);
+
+          HANDLE waitHandle = CreateEvent(NULL, FALSE, FALSE, L"Local\\QGNA_OVERLAY_EVENT");
+
+          HANDLE hThread = CreateRemoteThread(
+            pi.hProcess, 
+            NULL, 
+            0, 
+            (LPTHREAD_START_ROUTINE)GetProcAddress(hModule, "LoadLibraryW"), 
+            pLibRemote, 
+            0, 
+            &iLen);
+
+          WaitForSingleObject(hThread, INFINITE);
+          CloseHandle(hThread);
+
+          WaitForSingleObject(waitHandle, 5000);
+          CloseHandle(waitHandle);
+        }
+
+        ResumeThread(pi.hThread);
+        WaitForSingleObject(pi.hProcess, INFINITE);
+
+        DWORD exitCode = 0;
+        GetExitCodeProcess(pi.hProcess, &exitCode);
+        return exitCode;
+      }
+
+      void ExecutableFileClient::processFinished()
+      {
+        unsigned int result = this->_executeFeatureWatcher.result();
+        int realExitCode = (result != 0xC0000005 && result != 0) ? Fail : Success;
+        DEBUG_LOG << "with exit code" << result << "real result" << realExitCode;
+
+        this->setUserActivityLogout(realExitCode);
       }
     }
   }

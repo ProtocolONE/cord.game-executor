@@ -61,7 +61,9 @@
       <AdditionalDependencies>qtmaind.lib;QtCored4.lib;RestApiX86d.lib;CoreX86d.lib;Psapi.lib;QtNetworkd4.lib;Wininet.lib;SettingsX86d.lib;QtXmld4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>IF NOT "$(QGNACOMMONDIR)"=="" (
+      <Command>copy /b "$(ProjectDir)main.cpp" +,,
+
+IF NOT "$(QGNACOMMONDIR)"=="" (
 xcopy /Y /I /R "$(TargetDir)*.dll" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\bin"
 xcopy /Y /I /R "$(TargetDir)*.lib" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\lib"
 xcopy /Y /I /R "$(TargetDir)*.pdb" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\pdb"
@@ -113,6 +115,13 @@ $(QTDIR)\bin\lupdate.exe "$(ProjectDir)\." -ts "$(ProjectDir)\i18n\$(ProjectName
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GeneratedFiles\Debug\moc_BannerDownload.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_BannerDownload.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="src\GameExecutor\Hook\BannerDownload.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_DefaultAikaSettings.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -311,6 +320,16 @@ $(QTDIR)\bin\lupdate.exe "$(ProjectDir)\." -ts "$(ProjectDir)\i18n\$(ProjectName
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DGAMEEXECUTOR_LIB -DQT_NETWORK_LIB -DQT_XML_LIB -D_WINDLL -D_UNICODE "-I." "-I.\GeneratedFiles" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtCore" "-I$(ProjectDir)include" "-I$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include" "-I$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include" "-I$(QTDIR)\include\QtNetwork" "-I$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include" "-I$(VLDDIR)\include" "-I$(QTDIR)\include\QtXml"</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing DefaultAikaSettings.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DGAMEEXECUTOR_LIB -DQT_NETWORK_LIB -DQT_XML_LIB -D_WINDLL -D_UNICODE "-I." "-I.\GeneratedFiles" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtCore" "-I$(ProjectDir)include" "-I$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include" "-I$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include" "-I$(QTDIR)\include\QtNetwork" "-I$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include" "-I$(VLDDIR)\include" "-I$(QTDIR)\include\QtXml"</Command>
+    </CustomBuild>
+    <CustomBuild Include="include\GameExecutor\Hook\BannerDownload.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing BannerDownload.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DGAMEEXECUTOR_LIB -DQT_NETWORK_LIB -DQT_XML_LIB -D_WINDLL -D_UNICODE "-I." "-I.\GeneratedFiles" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtCore" "-I$(ProjectDir)include" "-I$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include" "-I$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include" "-I$(QTDIR)\include\QtNetwork" "-I$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include" "-I$(VLDDIR)\include" "-I$(QTDIR)\include\QtXml"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing BannerDownload.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DGAMEEXECUTOR_LIB -DQT_NETWORK_LIB -DQT_XML_LIB -D_WINDLL -D_UNICODE "-I." "-I.\GeneratedFiles" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtCore" "-I$(ProjectDir)include" "-I$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include" "-I$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include" "-I$(QTDIR)\include\QtNetwork" "-I$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include" "-I$(VLDDIR)\include" "-I$(QTDIR)\include\QtXml"</Command>
     </CustomBuild>

@@ -29,6 +29,7 @@ public:
   ~Launcher();
 
   void exec(QCoreApplication &app);
+  GGS::GameExecutor::Executor::ExecutableFileClient client;
 
 private slots:
   void exit(int code);
@@ -37,7 +38,7 @@ private:
   GGS::RestApi::HttpCommandRequest request;
   GGS::RestApi::FakeCache cache;
   GGS::RestApi::RestApiManager restapi;
-  GGS::GameExecutor::Executor::ExecutableFileClient client;
+  
 };
 
 #endif // LAUNCHER_LAUNCHER_H

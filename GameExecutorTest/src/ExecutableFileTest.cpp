@@ -43,7 +43,7 @@ protected:
     auth.setAppKey(QString("599fd1beed859639ba44e7100383bb735f606c89"));
     auth.setUserId(QString("400001000001890150"));
 
-    restapi.setUri(QString("https://api.gamenet.ru/restapi"));
+    restapi.setUri(QString("https://gnapi.com/restapi"));
     restapi.setCache(&cache);
     restapi.setCridential(auth);
     restapi.setRequest(GGS::RestApi::RequestFactory::Http);

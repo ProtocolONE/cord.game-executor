@@ -67,7 +67,7 @@ TEST_F(ServiceInfoCounterTest, BasicTest)
   ASSERT_EQ(0, info.failedCount());
   //К сожалению у QDateTime/QTime нет правостороннего `=`
   ASSERT_EQ(-1, info.lastExecutionTime().toTime_t());
-  ASSERT_EQ(0, info.playedTime().second());
+  ASSERT_EQ(0, info.playedTime());
 
   GameExecutor::ServiceInfoCounter counter;
   counter.started(srv);
@@ -82,5 +82,5 @@ TEST_F(ServiceInfoCounterTest, BasicTest)
   ASSERT_EQ(1, info.failedCount());
   // Машина с тестами выполняет 1 секунду за 8 
   ASSERT_GE(info.lastExecutionTime().toTime_t(), QDateTime::currentDateTime().toTime_t() - 15);
-  ASSERT_GE(info.playedTime().second(), 1);
+  ASSERT_GE(info.playedTime(), 1);
 }

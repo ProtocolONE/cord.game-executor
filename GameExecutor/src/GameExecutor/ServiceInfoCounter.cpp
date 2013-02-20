@@ -39,13 +39,13 @@ namespace GGS {
       QDateTime currentTime = QDateTime::currentDateTime();
       QDateTime startedTime = this->_storage.value("lastExecutionTime", currentTime).toDateTime();
       
-      QTime playedTime = this->_storage.value("playedTime", QTime()).toTime();
+      int playedTime = this->_storage.value("playedTime", 0).toInt();
 
       int diff = startedTime.secsTo(currentTime);
       if (diff < 0)
         diff = 0;
 
-      this->_storage.setValue("playedTime", playedTime.addSecs(diff));
+      this->_storage.setValue("playedTime", playedTime + diff);
 
       this->_storage.endGroup();
     }
@@ -60,7 +60,7 @@ namespace GGS {
       ServiceInfo info(
         storage.value("successCount", 0).toInt(),
         storage.value("failedCount", 0).toInt(),
-        storage.value("playedTime", 0).toTime(),
+        storage.value("playedTime", 0).toInt(),
         storage.value("lastExecutionTime", 0).toDateTime()
       );
       

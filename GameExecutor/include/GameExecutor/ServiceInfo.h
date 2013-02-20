@@ -21,18 +21,18 @@ namespace GGS {
     class GAMEEXECUTOR_EXPORT ServiceInfo
     {
     public:
-      ServiceInfo(int successCount, int failedCount, const QTime &playedTime, const QDateTime &lastExecutionTime);
+      ServiceInfo(int successCount, int failedCount, int playedTime, const QDateTime &lastExecutionTime);
       ~ServiceInfo();
 
       int successCount() const;
       int failedCount() const;
-      const QTime &playedTime() const;
+      int playedTime() const;
       const QDateTime &lastExecutionTime() const;
     
     private:
       int _successCount;
       int _failedCount;
-      QTime _playedTime;
+      int _playedTime;
       QDateTime _lastExecutionTime;
     };
   }

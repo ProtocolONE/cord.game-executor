@@ -241,6 +241,7 @@ namespace GGS{
         }
 
         if (!dllPath.isEmpty()) {
+          DEBUG_LOG << "Start inject";
           HMODULE hModule = GetModuleHandleW(L"Kernel32");
           QStringToWChar dll(dllPath);
 

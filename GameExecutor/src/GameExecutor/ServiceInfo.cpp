@@ -2,7 +2,7 @@
 
 namespace GGS {
   namespace GameExecutor {
-    ServiceInfo::ServiceInfo(int successCount, int failedCount, const QTime &playedTime, const QDateTime &lastExecutionTime)
+    ServiceInfo::ServiceInfo(int successCount, int failedCount, int playedTime, const QDateTime &lastExecutionTime)
       : _successCount(successCount), 
         _failedCount(failedCount), 
         _playedTime(playedTime), 
@@ -24,7 +24,7 @@ namespace GGS {
       return this->_failedCount;
     }
 
-    const QTime& ServiceInfo::playedTime() const
+    int ServiceInfo::playedTime() const
     {
       return this->_playedTime;
     }

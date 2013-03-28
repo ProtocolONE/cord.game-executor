@@ -9,7 +9,7 @@
 ****************************************************************************/
 
 #include <gtest/gtest.h>
-#include <QtCore/QCoreApplication>
+#include <QApplication>
 
 #include <GameExecutor/Enum.h>
 #include <GameExecutor/IPC/ClientTest.h>
@@ -26,7 +26,7 @@
 
 int main(int argc, char *argv[])
 {
-  QCoreApplication a(argc, argv);
+  QApplication app(argc, argv);
   testing::InitGoogleTest(&argc, argv);
   int r = RUN_ALL_TESTS();
   return r;

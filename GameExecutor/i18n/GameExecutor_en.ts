@@ -4,20 +4,22 @@
 <context>
     <name>GGS::GameExecutor::Hook::Mw2DownloadAndCheckXmlConfig</name>
     <message>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="52"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="70"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="77"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="92"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="135"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="55"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="73"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="80"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="95"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="156"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="179"/>
         <source>HOOK_CANEXECUTE_FAIL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="52"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="70"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="77"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="92"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="135"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="55"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="73"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="80"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="95"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="156"/>
+        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="179"/>
         <source>MW2_DOWNLOAD_CUSTOM_FILE_INFO</source>
         <translation type="unfinished"></translation>
     </message>

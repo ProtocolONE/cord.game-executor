@@ -10,6 +10,14 @@ Launcher::Launcher(QObject *parent) : QObject(parent)
   connect(&this->client, SIGNAL(exit(int)), 
           this, SLOT(exit(int)));
   
+  //Port selection due to https://jira.gamenet.ru:8443/browse/QGNA-285
+
+  QStringList ports = (QStringList() << "443" << "7443" << "8443" << "9443" << "10443" << "11443");
+  QString apiUrl = "https://gnapi.com:" + ports.takeAt(qrand() % ports.count()) + "/restapi";
+
+  qDebug() << "Using rest api url " << apiUrl;
+
+  this->restapi.setUri(apiUrl);
   this->restapi.setCache(&this->cache);
   this->restapi.setRequest(GGS::RestApi::RequestFactory::Http);
 

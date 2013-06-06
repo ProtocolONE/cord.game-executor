@@ -1,7 +1,7 @@
 /****************************************************************************
 ** This file is a part of Syncopate Limited GameNet Application or it parts.
 **
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
+** Copyright (ï¿½) 2011 - 2012, Syncopate Limited and/or affiliates. 
 ** All rights reserved.
 **
 ** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
@@ -165,25 +165,24 @@ namespace GGS {
         _PROCESS_INFORMATION* pi = process->pid();
         DEBUG_LOG << "launcher process pid" << (pi ? pi->dwProcessId : 0);
         
-        // 22.07.2013 Îòêëþ÷èë ïî òðåáîâàíèþ.
-        //this->_syncJob = CreateJobObject(NULL, NULL);
-        //if (this->_syncJob) {
-        //  JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
-        //  jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
-        //  if (!SetInformationJobObject(this->_syncJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli))) {
-        //    DWORD res = GetLastError();
-        //    DEBUG_LOG << "SetInformationJobObject error " << res;
-        //  }
+        this->_syncJob = CreateJobObject(NULL, NULL);
+        if (this->_syncJob) {
+          JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
+          jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+          if (!SetInformationJobObject(this->_syncJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli))) {
+            DWORD res = GetLastError();
+            DEBUG_LOG << "SetInformationJobObject error " << res;
+          }
 
-        //  if (!AssignProcessToJobObject(this->_syncJob, process->pid()->hProcess)) {
-        //    DWORD res = GetLastError();
-        //    DEBUG_LOG << "AssignProcessToJobObject error " << res;
-        //  }
+          if (!AssignProcessToJobObject(this->_syncJob, process->pid()->hProcess)) {
+            DWORD res = GetLastError();
+            DEBUG_LOG << "AssignProcessToJobObject error " << res;
+          }
 
-        //} else {
-        //  DWORD res = GetLastError();
-        //  DEBUG_LOG << "Create job error " << res;
-        //}
+        } else {
+          DWORD res = GetLastError();
+          DEBUG_LOG << "Create job error " << res;
+        }
 
         emit this->started(this->_service);
       }
@@ -310,7 +309,11 @@ namespace GGS {
         if (!this->_data)
           return;
 
+<<<<<<< HEAD
         QByteArray serviceId = service.id().toLatin1();
+=======
+        QByteArray serviceId = service.id().toAscii();
+>>>>>>> c737ca4... QGNA-260 Ð”Ð¾Ð±Ð°Ð²Ð¸Ð» Ð·Ð°Ð¿Ð¸ÑÑŒ Ð² Ð¼ÐµÐ¼Ð¾Ñ€Ð¸ Ñ„Ð°Ð¹Ð» serviceId
         memcpy_s(this->_data, SERVICE_ID_SIZE_MAX, serviceId.data(), serviceId.size());
         reinterpret_cast<char *>(this->_data)[serviceId.size()] = '\0';
       }

@@ -231,10 +231,27 @@ namespace GGS{
         const QString& dllPath /*= QString()*/)
       {
         // HACK ППц нашел XP где обратные слешы не работают.!
+<<<<<<< HEAD
+<<<<<<< HEAD
         QString path = QDir::toNativeSeparators(pathToExe);
         QString commandLine = QString("\"%1\" %2").arg(path, args);
 
         QStringToWChar exe(path);
+=======
+        QString pathToExe = pathToExe2;
+        QString commandLine = QString("\"%1\" %2").arg(pathToExe, args);
+
+        pathToExe = pathToExe.replace('/', '\\');
+        commandLine = commandLine.replace('/', '\\');
+
+        QStringToWChar exe(pathToExe);
+>>>>>>> ce39433... QGNA-0 HACK РґРѕР±Р°РІРёР» СЃР»РµС€С‹
+=======
+        QString path = QDir::toNativeSeparators(pathToExe);
+        QString commandLine = QString("\"%1\" %2").arg(path, args);
+
+        QStringToWChar exe(path);
+>>>>>>> 4174ee1... QGNA-0 РџРѕС‡РёСЃС‚РёР» РєРѕРґ С‡С‚СѓРєР°
         QStringToWChar cmd(commandLine);
         QStringToWChar dir(workDirectory);
         

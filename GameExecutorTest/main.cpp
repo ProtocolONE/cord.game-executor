@@ -9,7 +9,7 @@
 ****************************************************************************/
 
 #include <gtest/gtest.h>
-#include <QApplication>
+#include <QtWidgets/QApplication>
 
 #include <GameExecutor/Enum.h>
 #include <GameExecutor/IPC/ClientTest.h>

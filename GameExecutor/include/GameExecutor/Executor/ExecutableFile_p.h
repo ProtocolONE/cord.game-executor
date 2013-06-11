@@ -20,6 +20,8 @@
 
 #include <QtCore/QProcess>
 
+#include <Windows.h>
+
 using namespace GGS;
 using namespace RestApi;
 
@@ -36,7 +38,6 @@ namespace GGS {
         virtual ~ExecutableFilePrivate();
 
         void execute(const GGS::Core::Service &service, GameExecutorService *executorService);
-
         void setWorkingDirectory(const QString &dir);
       
       signals:
@@ -57,6 +58,10 @@ namespace GGS {
       private:
         void createAndExecuteLauncherProcess();
         FinishState finishStateFromRestApiErrorCode(int errorCode);
+        void shareServiceId(const GGS::Core::Service &service);
+
+        HANDLE _serviceMapFileHandle;
+        LPVOID _data;
 
         GGS::Core::Service _service;
 
@@ -74,6 +79,8 @@ namespace GGS {
 
         IPC::Server _ipcServer;
         bool _ipcServerStarted;
+        HANDLE _syncJob;
+
       };
     }
   }

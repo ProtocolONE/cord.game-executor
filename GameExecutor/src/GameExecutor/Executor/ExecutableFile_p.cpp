@@ -1,20 +1,39 @@
+/****************************************************************************
+** This file is a part of Syncopate Limited GameNet Application or it parts.
+**
+** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
+** All rights reserved.
+**
+** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+****************************************************************************/
+
 #include <GameExecutor/GameExecutorService.h>
 #include <GameExecutor/Executor/ExecutableFile_p.h>
 
+#include <Core/System/HardwareId.h>
 #include <RestApi/Commands/User/GetUserServiceAccount>
 
 #include <QtCore/QCoreApplication>
-#include <QMetaObject>
+#include <QtCore/QUrl>
+#include <QtCore/QUrlQuery>
+#include <QtCore/QMetaObject>
 
 using RestApi::Commands::User::GetUserServiceAccount;
 using RestApi::Commands::User::Response::UserServiceAccountResponse;
+
+#define SERVICE_ID_SIZE_MAX 20
 
 namespace GGS {
   namespace GameExecutor {
     namespace Executor {
 
       ExecutableFilePrivate::ExecutableFilePrivate(QObject *parent) 
-        : QObject(parent), _ipcServerStarted(false)
+        : QObject(parent)
+        , _ipcServerStarted(false)
+        , _serviceMapFileHandle(0)
+        , _data(0)
+        , _syncJob(INVALID_HANDLE_VALUE)
       {
         connect(&this->_process, SIGNAL(started()), this, SLOT(launcherStarted()));
         connect(&this->_process, SIGNAL(finished(int, QProcess::ExitStatus)), 
@@ -31,6 +50,7 @@ namespace GGS {
 
       ExecutableFilePrivate::~ExecutableFilePrivate()
       {
+        this->_process.close();
       }
 
       void ExecutableFilePrivate::execute(const GGS::Core::Service &service, GameExecutorService *executorService)
@@ -46,14 +66,17 @@ namespace GGS {
           }
         }
 
+        this->shareServiceId(service);
+
         this->_service = service;
         QUrl url = this->_service.url();
+        QUrlQuery urlQuery(url);
 
         this->_path = url.path();
-        this->_workingDir = url.queryItemValue("workingDir");
-        this->_args = url.queryItemValue("args");
+        this->_workingDir = urlQuery.queryItemValue("workingDir");
+        this->_args = urlQuery.queryItemValue("args");
 
-        QString injectDll = url.queryItemValue("injectDll");
+        QString injectDll = urlQuery.queryItemValue("injectDll");
         RestApi::GameNetCredential credential = RestApi::RestApiManager::commonInstance()->credential();
 
         this->_activityRequestArgs = 
@@ -66,8 +89,8 @@ namespace GGS {
         while ((pos = rx.indexIn(this->_args, pos)) != -1) {
           pos += rx.matchedLength();
           QString entry = rx.cap(1);
-          if (url.hasQueryItem(entry)) {
-            this->_args.replace("%" + entry + "%", url.queryItemValue(entry), Qt::CaseInsensitive);
+          if (urlQuery.hasQueryItem(entry)) {
+            this->_args.replace("%" + entry + "%", urlQuery.queryItemValue(entry), Qt::CaseInsensitive);
           }
         }
 
@@ -83,6 +106,7 @@ namespace GGS {
         GetUserServiceAccount *cmd = new GetUserServiceAccount();
         cmd->setVersion("2");
         cmd->setServiceId(service.id());
+        cmd->setHwid(GGS::Core::System::HardwareId::value());
 
         connect(cmd, SIGNAL(result(GGS::RestApi::CommandBase::CommandResults)), 
           this, SLOT(getUserServiceAccountResult(GGS::RestApi::CommandBase::CommandResults)), Qt::DirectConnection);
@@ -138,7 +162,29 @@ namespace GGS {
           return;
         }
 
-        DEBUG_LOG << "launcher process pid" << process->pid();
+        _PROCESS_INFORMATION* pi = process->pid();
+        DEBUG_LOG << "launcher process pid" << (pi ? pi->dwProcessId : 0);
+        
+        // 22.07.2013 Отключил по требованию.
+        //this->_syncJob = CreateJobObject(NULL, NULL);
+        //if (this->_syncJob) {
+        //  JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
+        //  jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+        //  if (!SetInformationJobObject(this->_syncJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli))) {
+        //    DWORD res = GetLastError();
+        //    DEBUG_LOG << "SetInformationJobObject error " << res;
+        //  }
+
+        //  if (!AssignProcessToJobObject(this->_syncJob, process->pid()->hProcess)) {
+        //    DWORD res = GetLastError();
+        //    DEBUG_LOG << "AssignProcessToJobObject error " << res;
+        //  }
+
+        //} else {
+        //  DWORD res = GetLastError();
+        //  DEBUG_LOG << "Create job error " << res;
+        //}
+
         emit this->started(this->_service);
       }
 
@@ -150,7 +196,17 @@ namespace GGS {
           return;
         }
 
-        DEBUG_LOG << "launcher with pid" << process->pid() << "finished";
+        if (this->_syncJob && this->_syncJob != INVALID_HANDLE_VALUE)
+          CloseHandle(this->_syncJob);
+
+        if (this->_data)
+          UnmapViewOfFile(this->_data);
+        
+        if (this->_serviceMapFileHandle)
+          CloseHandle(this->_serviceMapFileHandle);
+
+        _PROCESS_INFORMATION* pi = process->pid();
+        DEBUG_LOG << "launcher with pid" << (pi ? pi->dwProcessId : 0) << "finished";
 
         if (QProcess::NormalExit == exitStatus && exitCode == 0) {
           emit this->finished(this->_service, Success);
@@ -158,6 +214,12 @@ namespace GGS {
         }
 
         CRITICAL_LOG << "with error code" << exitCode;
+
+        QUrl url = this->_service.url();
+        QUrlQuery urlQuery;
+        urlQuery.addQueryItem("exitCode", QString::number(exitCode));
+        url.setQuery(urlQuery);
+        this->_service.setUrl(url);
         emit this->finished(this->_service, ExternalFatalError);
       }
 
@@ -227,6 +289,32 @@ namespace GGS {
         this->_process.start(QCoreApplication::applicationDirPath() + "/Launcher.exe", QStringList() << this->_ipcName);
 #endif
       }
+
+      void ExecutableFilePrivate::shareServiceId(const GGS::Core::Service &service)
+      {
+        if (service.id().size() + 1 >= SERVICE_ID_SIZE_MAX) 
+          return;
+
+        this->_serviceMapFileHandle = CreateFileMappingA(
+          INVALID_HANDLE_VALUE, 
+          NULL, 
+          PAGE_READWRITE, 
+          0, 
+          sizeof(unsigned int), 
+          "Local\\GGSOverlayServiceId");
+
+        if (!this->_serviceMapFileHandle)
+          return;
+         
+        this->_data = MapViewOfFile(this->_serviceMapFileHandle, FILE_MAP_ALL_ACCESS, 0, 0, SERVICE_ID_SIZE_MAX);
+        if (!this->_data)
+          return;
+
+        QByteArray serviceId = service.id().toLatin1();
+        memcpy_s(this->_data, SERVICE_ID_SIZE_MAX, serviceId.data(), serviceId.size());
+        reinterpret_cast<char *>(this->_data)[serviceId.size()] = '\0';
+      }
+
     }
   }
 }

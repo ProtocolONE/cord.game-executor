@@ -62,7 +62,7 @@ namespace GGS{
         void setUserActivity();
         void setUserActivityResult(GGS::RestApi::CommandBase::CommandResults result);
         void setUserActivityLogoutResult(GGS::RestApi::CommandBase::CommandResults result);
-
+        
       private:
         void setUserActivityLogout(int code);
         unsigned int startProcess(const QString& pathToExe, const QString& workDirectory, const QString& args, const QString& dllPath = QString());
@@ -74,6 +74,7 @@ namespace GGS{
         int _code;
         QFuture<unsigned int> _executeFeature;
         QFutureWatcher<unsigned int> _executeFeatureWatcher;
+        
       };
     }
   }

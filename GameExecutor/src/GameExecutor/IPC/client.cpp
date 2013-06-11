@@ -1,4 +1,5 @@
 #include <GameExecutor/IPC/Client.h>
+#include <QtCore/QDataStream>
 
 namespace GGS {
   namespace GameExecutor {

@@ -11,6 +11,7 @@
 #include <GameExecutor/gameexecutorservice.h>
 
 #include <QtCore/QList>
+#include <QtCore/QDebug>
 #include <QtCore/QMutexLocker>
 
 namespace GGS {
@@ -65,6 +66,7 @@ namespace GGS {
     {
       QString id = service.id();
       if (id.isEmpty()) {
+        DEBUG_LOG << "Can't start game. Id is empty";
         emit this->finished(service, InvalidService);
         return;
       }
@@ -72,12 +74,13 @@ namespace GGS {
       QUrl url = service.url();
       QString scheme = url.scheme();
 
+      QMutexLocker lock(&this->_lock);
+
       if (!this->hasExecutor(scheme)) {
+        DEBUG_LOG << "Unknown executor scheme" << scheme;
         emit this->finished(service, UnknownSchemeError);
         return;
       }
-
-      QMutexLocker lock(&this->_lock);
 
       if (this->_startedServices.contains(id)) {
         emit this->finished(service, AlreadyStartedError);
@@ -125,6 +128,17 @@ namespace GGS {
     bool GameExecutorService::isAnyGameStarted()
     {
       return this->_startedServices.count() > 0;
+    }
+
+    void GameExecutorService::shutdown()
+    {
+      QMutexLocker lock(&this->_lock);
+
+      Q_FOREACH(ExecutorBase* executor, this->_executors) {
+        delete executor;
+      }
+
+      this->_executors.clear();
     }
 
   }

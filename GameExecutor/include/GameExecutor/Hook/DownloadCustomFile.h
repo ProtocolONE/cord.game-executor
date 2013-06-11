@@ -19,6 +19,7 @@
 #include <QtCore/QStringList>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QHostInfo>
+#include <QtNetwork/QNetworkReply>
 
 namespace GGS {
   namespace GameExecutor {
@@ -46,16 +47,25 @@ namespace GGS {
       
       public slots:
         void requestFinished();
-      
+
+    private slots:
+      void slotError(QNetworkReply::NetworkError error);
+      void slotReplyDownloadFinished();
+
       private:
         void downloadNextFile();
         void downloadFile();
+		QString loadLastModifiedDate(const QString& url) const;
+		void saveLoadLastModifiedDate(const QString& url, const QString& value);
         
+		int _mode;
         QStringList _args;
         QUrl _url;
         QUrl _downloadUrl;
+		QString _lastModified;
         QString _baseFilePath;
         QString _area;
+		QString _downloadFilePath;
         QHostInfo _info;
         qint32 _infoIndex;
         QFile _file;

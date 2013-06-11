@@ -114,6 +114,7 @@ namespace GGS {
 
       this->_listIndex = 0;
       this->_state = state;
+      this->_service = service;
       this->executeHookPostStep(this->_service);
     }
 

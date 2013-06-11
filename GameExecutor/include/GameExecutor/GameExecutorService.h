@@ -55,6 +55,8 @@ namespace GGS {
 
       bool isAnyGameStarted();
 
+      void shutdown();
+
     signals:
       void canExecuteCompleted(const GGS::Core::Service &service);
       void preExecuteCompleted(const GGS::Core::Service &service);

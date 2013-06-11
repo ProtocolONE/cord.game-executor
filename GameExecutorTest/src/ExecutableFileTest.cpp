@@ -25,11 +25,12 @@
 #include <RestApi/Auth/GenericAuth>
 #include <gtest/gtest.h>
 
+#include <QtCore/QUrlQuery>
 #include <QtCore/QMetaType>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 #include <QtCore/QCoreApplication>
-#include <QtCore/QtConcurrentRun>
+#include <QtConcurrent/QtConcurrentRun>
 #include <QtTest/QSignalSpy>
 
 using namespace GGS;
@@ -117,14 +118,16 @@ TEST_F(ExecutableFileTest, Scheme)
 TEST_F(ExecutableFileTest, ArgumentParsing) 
 {
   QUrl url;
+  QUrlQuery query;
   url.setScheme("exe");
   url.setPath(QCoreApplication::applicationDirPath() + "/fixtures/success.exe");
-  url.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
-  url.addQueryItem("args", "%userId% %appKey% %specialKey% %anotherKey% %Key with space%");
-  url.addQueryItem("userId", "override");
-  url.addQueryItem("specialKey", "specialKeyValue");
-  url.addQueryItem("anotherKey", "anotherKeyValue");
-  url.addQueryItem("Key with space", "value with space");
+  query.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
+  query.addQueryItem("args", "%userId% %appKey% %specialKey% %anotherKey% %Key with space%");
+  query.addQueryItem("userId", "override");
+  query.addQueryItem("specialKey", "specialKeyValue");
+  query.addQueryItem("anotherKey", "anotherKeyValue");
+  query.addQueryItem("Key with space", "value with space");
+  url.setQuery(query);
 
   GGS::Core::Service srv;
   srv.setId("300003010000000000");
@@ -152,10 +155,12 @@ TEST_F(ExecutableFileTest, ArgumentParsing)
 TEST_F(ExecutableFileTest, ExternalFatalError)
 {
   QUrl url;
+  QUrlQuery query;
   url.setScheme("exe");
   url.setPath(QCoreApplication::applicationDirPath() + "/fixtures/fail.exe");
-  url.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
-  url.addQueryItem("args", "%userId% %appKey% %token%");
+  query.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
+  query.addQueryItem("args", "%userId% %appKey% %token%");
+  url.setQuery(query);
 
   GGS::Core::Service srv;
   srv.setId("300003010000000000");
@@ -168,10 +173,12 @@ TEST_F(ExecutableFileTest, ExternalFatalError)
 TEST_F(ExecutableFileTest, ExternalFatalErrorIfLauncerExeFailed) 
 {
   QUrl url;
+  QUrlQuery query;
   url.setScheme("exe");
   url.setPath(QCoreApplication::applicationDirPath() + "/fixtures/success.bat");
-  url.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
-  url.addQueryItem("args", "%userId% %token%");
+  query.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
+  query.addQueryItem("args", "%userId% %token%");
+  url.setQuery(query);
 
   GGS::Core::Service srv;
   srv.setId("300003010000000000");
@@ -187,10 +194,12 @@ TEST_F(ExecutableFileTest, AuthorizationError)
   restapi.setCridential(wrongAuth);
 
   QUrl url;
+  QUrlQuery query;
   url.setScheme("exe");
   url.setPath(QCoreApplication::applicationDirPath() + "/fixtures/success.bat");
-  url.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
-  url.addQueryItem("args", "%userId% %appKey% %token%");
+  query.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
+  query.addQueryItem("args", "%userId% %appKey% %token%");
+  url.setQuery(query);
 
   GGS::Core::Service srv;
   srv.setId("300003010000000000");
@@ -209,10 +218,12 @@ TEST_F(ExecutableFileTest, ServiceAuthorizationImpossibleError)
   restapi.setCridential(auth);
 
   QUrl url;
+  QUrlQuery query;
   url.setScheme("exe");
   url.setPath(QCoreApplication::applicationDirPath() + "/fixtures/success.bat");
-  url.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
-  url.addQueryItem("args", "%userId% %appKey% %token%");
+  query.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
+  query.addQueryItem("args", "%userId% %appKey% %token%");
+  url.setQuery(query);
 
   GGS::Core::Service srv;
   srv.setId("300007020000000000"); //GA TEST
@@ -231,10 +242,12 @@ TEST_F(ExecutableFileTest, ServiceAccountBlockedError)
   restapi.setCridential(auth);
 
   QUrl url;
+  QUrlQuery query;
   url.setScheme("exe");
   url.setPath(QCoreApplication::applicationDirPath() + "/fixtures/success.bat");
-  url.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
-  url.addQueryItem("args", "%userId% %appKey% %token%");
+  query.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
+  query.addQueryItem("args", "%userId% %appKey% %token%");
+  url.setQuery(query);
 
   GGS::Core::Service srv;
   srv.setId("300007010000000000"); //GA TEST

@@ -1,10 +1,21 @@
+/****************************************************************************
+** This file is a part of Syncopate Limited GameNet Application or it parts.
+**
+** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
+** All rights reserved.
+**
+** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+****************************************************************************/
+
 #include <GameExecutor/Executor/ExecutableFileClient.h>
 
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
 #include <QtCore/QCoreApplication>
-#include <QtCore/QtConcurrentRun>
+#include <QtConcurrent/QtConcurrentRun>
 #include <QtCore/QStringList>
+#include <QtCore/QDir>
 
 #include <RestApi/GameNetCredential>
 #include <RestApi/Commands/User/SetUserActivity>
@@ -112,7 +123,7 @@ namespace GGS{
 
         QString dir = params.at(2);
         QString args = params.at(3);
-        
+       
         QString injectedDll;
         if (params.length() > 7)
           injectedDll = params.at(7);
@@ -219,12 +230,14 @@ namespace GGS{
         const QString& args, 
         const QString& dllPath /*= QString()*/)
       {
-        QString commandLine = QString("\"%1\" %2").arg(pathToExe, args);
+        // HACK ѕѕц нашел XP где обратные слешы не работают.!
+        QString path = QDir::toNativeSeparators(pathToExe);
+        QString commandLine = QString("\"%1\" %2").arg(path, args);
 
-        QStringToWChar exe(pathToExe);
+        QStringToWChar exe(path);
         QStringToWChar cmd(commandLine);
         QStringToWChar dir(workDirectory);
-
+        
         STARTUPINFO si;
         PROCESS_INFORMATION pi;
         ZeroMemory(&si, sizeof(STARTUPINFO));
@@ -273,6 +286,7 @@ namespace GGS{
 
         DWORD exitCode = 0;
         GetExitCodeProcess(pi.hProcess, &exitCode);
+
         return exitCode;
       }
 

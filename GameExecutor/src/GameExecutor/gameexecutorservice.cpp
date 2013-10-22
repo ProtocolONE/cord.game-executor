@@ -135,10 +135,15 @@ namespace GGS {
       QMutexLocker lock(&this->_lock);
 
       Q_FOREACH(ExecutorBase* executor, this->_executors) {
-        delete executor;
+          delete executor;
       }
 
       this->_executors.clear();
+    }
+
+    bool GameExecutorService::isGameStarted(const QString& serviceId)
+    {
+      return this->_startedServices.contains(serviceId);
     }
 
   }

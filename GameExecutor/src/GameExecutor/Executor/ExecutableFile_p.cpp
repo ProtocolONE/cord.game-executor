@@ -100,17 +100,23 @@ namespace GGS {
             return;
         }
 
+        this->_executorService = executorService;
+        this->_authSalt = executorService->authSalt();
+
         GetUserServiceAccount *cmd = new GetUserServiceAccount();
         cmd->setVersion("2");
         cmd->setServiceId(service.id());
         cmd->setHwid(GGS::Core::System::HardwareId::value());
+        
+        if (this->_authSalt.size() > 0)
+          cmd->appendParameter("salt", this->_authSalt);
 
         connect(cmd, SIGNAL(result(GGS::RestApi::CommandBase::CommandResults)), 
           this, SLOT(getUserServiceAccountResult(GGS::RestApi::CommandBase::CommandResults)), Qt::DirectConnection);
 
         cmd->execute();
       }
-
+      
       void ExecutableFilePrivate::getUserServiceAccountResult(CommandBase::CommandResults result)
       {
         GetUserServiceAccount *cmd = qobject_cast<GetUserServiceAccount*>(QObject::sender());
@@ -124,7 +130,8 @@ namespace GGS {
         if (result == CommandBase::NoError) {
           UserServiceAccountResponse *response = cmd->response();
 
-          this->_args.replace("%token%", response->getToken(), Qt::CaseInsensitive);
+          QString token = this->_executorService->authToken(this->_authSalt, response->getToken());
+          this->_args.replace("%token%", token, Qt::CaseInsensitive);
           this->_args.replace("%login%", response->getLogin(), Qt::CaseInsensitive);
           QMetaObject::invokeMethod(this, "launcherStart");
           return;

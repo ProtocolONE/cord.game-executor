@@ -146,5 +146,32 @@ namespace GGS {
       return this->_startedServices.contains(serviceId);
     }
 
+    void GameExecutorService::setAuthSaltCallback(std::function<QString ()> value)
+    {
+      this->_authSalt = value;
+    }
+
+    void GameExecutorService::setAuthTokenTransformCallback(std::function<QString (const QString&, const QString&)> value)
+    {
+      this->_authToken = value;
+    }
+
+    QString GameExecutorService::authSalt()
+    {
+      QString result;
+      if (this->_authSalt)
+        result = this->_authSalt();
+
+      return result;
+    }
+
+    QString GameExecutorService::authToken(const QString& salt, const QString& token)
+    {
+      QString result = token;
+      if (this->_authToken && salt.size() > 0)
+        result = this->_authToken(salt, token);
+
+      return result;
+    }
   }
 }

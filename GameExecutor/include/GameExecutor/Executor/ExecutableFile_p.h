@@ -27,6 +27,9 @@ using namespace RestApi;
 
 namespace GGS {
   namespace GameExecutor {
+
+    class GameExecutorService;
+
     namespace Executor {
 
       class ExecutableFilePrivate : public QObject
@@ -63,6 +66,7 @@ namespace GGS {
         HANDLE _serviceMapFileHandle;
         LPVOID _data;
 
+        GameExecutorService *_executorService;
         GGS::Core::Service _service;
 
         QProcess _process;
@@ -80,6 +84,7 @@ namespace GGS {
         IPC::Server _ipcServer;
         bool _ipcServerStarted;
         HANDLE _syncJob;
+        QString _authSalt;
 
       };
     }

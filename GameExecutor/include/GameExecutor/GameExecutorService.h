@@ -24,6 +24,8 @@
 #include <QtCore/QSet>
 #include <QtCore/QMultiMap>
 
+#include <functional>
+
 namespace GGS {
   namespace GameExecutor {
     
@@ -59,6 +61,12 @@ namespace GGS {
 
       bool isGameStarted(const QString& serviceId);
 
+      void setAuthSaltCallback(std::function<QString ()> value);
+      void setAuthTokenTransformCallback(std::function<QString (const QString&, const QString&)> value);
+
+      QString authSalt();
+      QString authToken(const QString& salt, const QString& token);
+
     signals:
       void canExecuteCompleted(const GGS::Core::Service &service);
       void preExecuteCompleted(const GGS::Core::Service &service);
@@ -73,6 +81,9 @@ namespace GGS {
       QHash<QString, QMultiMap<int, HookInterface*>> _hooks;
       QSet<QString> _startedServices;
       QMutex _lock;
+
+      std::function<QString ()> _authSalt;
+      std::function<QString (const QString&, const QString&)> _authToken;
     };
   }
 }

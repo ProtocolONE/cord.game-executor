@@ -45,7 +45,11 @@ namespace GGS {
         explicit WebLink(QObject *parent = 0);
         ~WebLink();
 
-        void execute(const GGS::Core::Service &service, GameExecutorService *executorService);
+        virtual void execute(
+          const GGS::Core::Service &service, 
+          GameExecutorService *executorService,
+          const GGS::RestApi::GameNetCredential& credential) override;
+
       };
     }
   }

@@ -54,7 +54,12 @@ protected:
   {
   }
 
-  void ExecutionFlow(const GGS::Core::Service &srv, int startCount, GGS::GameExecutor::FinishState finishState, const QString workingPath = "")
+  void ExecutionFlow(
+    const GGS::Core::Service &srv, 
+    int startCount, 
+    GGS::GameExecutor::FinishState finishState, 
+    const QString workingPath = "",
+    GGS::RestApi::GameNetCredential credential = GGS::RestApi::GameNetCredential())
   {
     GameExecutor::Executor::ExecutableFile executor;
 
@@ -69,7 +74,7 @@ protected:
     if (workingPath.length()) 
       executor.setWorkingDirectory(workingPath);
 
-    executor.execute(srv, &executorService);
+    executor.execute(srv, &executorService, credential);
 
     loop.exec();
     //такая конструкция нужна, чтобы "доработать" события deleteLater
@@ -242,4 +247,38 @@ TEST_F(ExecutableFileTest, ServiceAccountBlockedError)
   srv.setUrl(url);
 
   ExecutionFlow(srv, 0, GGS::GameExecutor::ServiceAccountBlockedError);
+}
+
+
+TEST_F(ExecutableFileTest, DISABLED_ArgumentParsingSecondAccount) 
+{
+  RestApi::GameNetCredential secondAuth;
+  secondAuth.setUserId("400001000001709240");
+  secondAuth.setAppKey("570e3c3e59c7c4d7a1b322a0e25f231752814dc6");
+
+  QUrl url;
+  url.setScheme("exe");
+  url.setPath(QCoreApplication::applicationDirPath() + "/fixtures/success.exe");
+  url.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
+  url.addQueryItem("args", "%userId% %appKey% %token%");
+
+  GGS::Core::Service srv;
+  srv.setId("300003010000000000");
+  srv.setGameId("71");
+  srv.setUrl(url);
+
+  QFile successOutput(QCoreApplication::applicationDirPath() + "/output.txt");
+  successOutput.remove();
+
+  ExecutionFlow(srv, 1, GGS::GameExecutor::Success, "", secondAuth);
+
+  QString output;
+  if (successOutput.open(QIODevice::ReadOnly)) {
+    QTextStream in(&successOutput);
+    output = in.readAll();
+  }
+
+  QString correctOutput = QString("%1 %2").arg(secondAuth.userId(), secondAuth.appKey());
+
+  ASSERT_TRUE(output.trimmed().startsWith(correctOutput));
 }

@@ -220,6 +220,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_BannerDownload.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="src\GameExecutor\Hook\ExternalDependency.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ExternalDependency.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ExternalDependency.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="include\GameExecutor\IPC\Client.h">
@@ -279,6 +288,9 @@
     <CustomBuild Include="include\GameExecutor\Hook\BannerDownload.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="include\GameExecutor\Hook\ExternalDependency.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\GameExecutor\ExecutorInterface.h">
@@ -300,6 +312,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\GameExecutor\Hook\DisableAeroHook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameExecutor\Extension.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

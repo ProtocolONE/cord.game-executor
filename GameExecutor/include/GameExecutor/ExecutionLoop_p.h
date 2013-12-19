@@ -5,6 +5,8 @@
 
 #include <Core/Service>
 
+#include <RestApi/RestApiManager>
+
 #include <QtCore/QObject>
 #include <QtCore/QList>
 #include <QtCore/QPointer>
@@ -27,6 +29,7 @@ namespace GGS {
       void setHookList(QList<HookInterface*> &val);
       void setExecutorService(GGS::GameExecutor::GameExecutorService *val);
       void setExecutor(GGS::GameExecutor::ExecutorBase *val);
+      void setCredential(const GGS::RestApi::GameNetCredential& value);
       
       void execute();
 
@@ -52,6 +55,8 @@ namespace GGS {
       QPointer<GGS::GameExecutor::GameExecutorService> _executorService;
       QPointer<GGS::GameExecutor::ExecutorBase> _executor;
       GGS::GameExecutor::FinishState _state;
+      GGS::RestApi::GameNetCredential _credential;
+      
     };
   }
 }

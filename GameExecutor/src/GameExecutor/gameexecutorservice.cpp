@@ -17,7 +17,8 @@
 namespace GGS {
   namespace GameExecutor {
 
-    GameExecutorService::GameExecutorService(QObject *parent) : QObject(parent)
+    GameExecutorService::GameExecutorService(QObject *parent) 
+      : QObject(parent)
     {
     }
 
@@ -64,6 +65,11 @@ namespace GGS {
 
     void GameExecutorService::execute(const GGS::Core::Service &service)
     {
+      this->execute(service, RestApi::GameNetCredential());
+    }
+
+    void GameExecutorService::execute(const GGS::Core::Service &service, const GGS::RestApi::GameNetCredential &credential)
+    {
       QString id = service.id();
       if (id.isEmpty()) {
         DEBUG_LOG << "Can't start game. Id is empty";
@@ -99,6 +105,7 @@ namespace GGS {
       loop->setHookList(list);
       loop->setExecutor(this->_executors[scheme]);
       loop->setExecutorService(this);
+      loop->setCredential(credential);
 
       SIGNAL_CONNECT_CHECK(connect(loop, SIGNAL(canExecuteCompleted(const GGS::Core::Service &)),
         this, SIGNAL(canExecuteCompleted(const GGS::Core::Service &)), Qt::QueuedConnection));
@@ -134,44 +141,32 @@ namespace GGS {
     {
       QMutexLocker lock(&this->_lock);
 
-      Q_FOREACH(ExecutorBase* executor, this->_executors) {
-          delete executor;
-      }
+      Q_FOREACH(ExecutorBase* executor, this->_executors)
+        delete executor;
 
       this->_executors.clear();
+
+      Q_FOREACH(void* extension, this->_extensionsMap)
+        delete extension;
     }
 
     bool GameExecutorService::isGameStarted(const QString& serviceId)
     {
       return this->_startedServices.contains(serviceId);
     }
-
-    void GameExecutorService::setAuthSaltCallback(std::function<QString ()> value)
+    void GameExecutorService::setExtension(ExtensionTypes::Values type, void* extension)
     {
-      this->_authSalt = value;
+      Q_ASSERT(!this->_extensionsMap.contains(type));
+      this->_extensionsMap[type] = extension;
     }
 
-    void GameExecutorService::setAuthTokenTransformCallback(std::function<QString (const QString&, const QString&)> value)
+    void* GameExecutorService::extension(ExtensionTypes::Values type)
     {
-      this->_authToken = value;
+      if (!this->_extensionsMap.contains(type))
+        return nullptr;
+
+      return this->_extensionsMap[type];
     }
 
-    QString GameExecutorService::authSalt()
-    {
-      QString result;
-      if (this->_authSalt)
-        result = this->_authSalt();
-
-      return result;
-    }
-
-    QString GameExecutorService::authToken(const QString& salt, const QString& token)
-    {
-      QString result = token;
-      if (this->_authToken && salt.size() > 0)
-        result = this->_authToken(salt, token);
-
-      return result;
-    }
   }
 }

@@ -10,7 +10,10 @@ ExecutorMock::~ExecutorMock()
 
 }
 
-void ExecutorMock::execute(const Core::Service &service, GameExecutorService *executorService)
+void ExecutorMock::execute(
+  const GGS::Core::Service &service, 
+  GameExecutorService *executorService,
+  const GGS::RestApi::GameNetCredential& credential)
 {
   emit this->started(service);
   emit this->finished(service, GGS::GameExecutor::Success);

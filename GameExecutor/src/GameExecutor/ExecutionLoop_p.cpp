@@ -104,7 +104,7 @@ namespace GGS {
     {
       Marketing::sendOnceByService(Marketing::FirstRunService, this->_service.id());
       Marketing::send(Marketing::StartService, this->_service.id());
-      this->_executor->execute(this->_service, this->_executorService);
+      this->_executor->execute(this->_service, this->_executorService, this->_credential);
     }
 
     void ExecutionLoopPrivate::executorCompletedStep(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state)
@@ -159,6 +159,11 @@ namespace GGS {
         return;
 
       emit this->started(service);
+    }
+
+    void ExecutionLoopPrivate::setCredential(const GGS::RestApi::GameNetCredential& value)
+    {
+      this->_credential = value;
     }
 
   }

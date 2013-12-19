@@ -8,12 +8,12 @@
 ** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 ****************************************************************************/
 
-#ifndef _GGS_GAMEEXECUTOR_GAMEEXECUTORSERVICE_H
-#define _GGS_GAMEEXECUTOR_GAMEEXECUTORSERVICE_H
+#pragma once
 
 #include <GameExecutor/gameexecutor_global.h>
 #include <GameExecutor/ExecutorBase.h>
 #include <GameExecutor/HookInterface.h>
+#include <GameExecutor/Extension.h>
 
 #include <Core/Service>
 #include <RestApi/RestApiManager>
@@ -28,7 +28,7 @@
 
 namespace GGS {
   namespace GameExecutor {
-    
+
     /*!
       \class GameExecutorService
       \brief Управляет запуском игр.
@@ -46,26 +46,21 @@ namespace GGS {
       ~GameExecutorService();
 
       bool registerExecutor(ExecutorBase *executor);
-
       bool hasExecutor(const QString &scheme) const;
 
       bool addHook(const GGS::Core::Service &service, HookInterface* hook, int priority = 0);
-
       void clearHooks(const GGS::Core::Service &service);
 
       void execute(const GGS::Core::Service &service);
+      void execute(const GGS::Core::Service &service, const GGS::RestApi::GameNetCredential &credential);
 
       bool isAnyGameStarted();
+      bool isGameStarted(const QString& serviceId);
 
       void shutdown();
 
-      bool isGameStarted(const QString& serviceId);
-
-      void setAuthSaltCallback(std::function<QString ()> value);
-      void setAuthTokenTransformCallback(std::function<QString (const QString&, const QString&)> value);
-
-      QString authSalt();
-      QString authToken(const QString& salt, const QString& token);
+      void setExtension(ExtensionTypes::Values type, void* extension);
+      void* extension(ExtensionTypes::Values type);
 
     signals:
       void canExecuteCompleted(const GGS::Core::Service &service);
@@ -82,9 +77,7 @@ namespace GGS {
       QSet<QString> _startedServices;
       QMutex _lock;
 
-      std::function<QString ()> _authSalt;
-      std::function<QString (const QString&, const QString&)> _authToken;
+      QHash<int, void*> _extensionsMap;
     };
   }
 }
-#endif // _GGS_GAMEEXECUTOR_GAMEEXECUTORSERVICE_H

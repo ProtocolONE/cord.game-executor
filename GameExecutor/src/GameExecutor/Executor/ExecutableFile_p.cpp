@@ -1,7 +1,7 @@
 /****************************************************************************
 ** This file is a part of Syncopate Limited GameNet Application or it parts.
 **
-** Copyright (�) 2011 - 2012, Syncopate Limited and/or affiliates. 
+** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
 ** All rights reserved.
 **
 ** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
@@ -9,6 +9,8 @@
 ****************************************************************************/
 
 #include <GameExecutor/GameExecutorService.h>
+#include <GameExecutor/Extension.h>
+
 #include <GameExecutor/Executor/ExecutableFile_p.h>
 
 #include <Core/System/HardwareId.h>
@@ -51,7 +53,10 @@ namespace GGS {
         this->_process.close();
       }
 
-      void ExecutableFilePrivate::execute(const GGS::Core::Service &service, GameExecutorService *executorService)
+      void ExecutableFilePrivate::execute(
+        const GGS::Core::Service &service, 
+        GameExecutorService *executorService,
+        const GGS::RestApi::GameNetCredential& credential)
       {
         if (!this->_ipcServerStarted) {
           this->_ipcName = QString("QGNA_GAMEEXECUTOR_IPC_CHANNEL:%1").arg(service.id());
@@ -74,10 +79,17 @@ namespace GGS {
         this->_args = url.queryItemValue("args");
 
         QString injectDll = url.queryItemValue("injectDll");
-        RestApi::GameNetCredential credential = RestApi::RestApiManager::commonInstance()->credential();
+        RestApi::GameNetCredential baseCredential = RestApi::RestApiManager::commonInstance()->credential();
 
-        this->_activityRequestArgs = 
-          QString("%1|%2|%3|%4").arg(credential.userId(), credential.appKey(), service.gameId(), injectDll);
+        bool isSecondAccount = !credential.userId().isEmpty();
+
+        if (isSecondAccount)
+          this->_activityRequestArgs = 
+            QString("%1|%2|%3|%4").arg(credential.userId(), credential.appKey(), service.gameId(), injectDll);
+        else
+          this->_activityRequestArgs = 
+            QString("%1|%2|%3|%4").arg(baseCredential.userId(), baseCredential.appKey(), service.gameId(), injectDll);
+
 
         QRegExp rx("%(.+)%");
         rx.setMinimal(true);
@@ -91,8 +103,14 @@ namespace GGS {
           }
         }
 
-        this->_args.replace("%userId%", credential.userId(), Qt::CaseInsensitive);
-        this->_args.replace("%appKey%", credential.appKey(), Qt::CaseInsensitive);
+        if (isSecondAccount) {
+          this->_args.replace("%userId%", credential.userId(), Qt::CaseInsensitive);
+          this->_args.replace("%appKey%", credential.appKey(), Qt::CaseInsensitive);
+        } else {
+          this->_args.replace("%userId%", baseCredential.userId(), Qt::CaseInsensitive);
+          this->_args.replace("%appKey%", baseCredential.appKey(), Qt::CaseInsensitive);
+        }
+
         
         if (-1 == this->_args.indexOf("%token%", 0, Qt::CaseInsensitive)
           && -1 == this->_args.indexOf("%login%", 0, Qt::CaseInsensitive)) {
@@ -101,15 +119,26 @@ namespace GGS {
         }
 
         this->_executorService = executorService;
-        this->_authSalt = executorService->authSalt();
+        
+        GetSaltExtension *extension = reinterpret_cast<GetSaltExtension *>(
+          this->_executorService->extension(ExtensionTypes::GetSalt));
+
+        if (extension) 
+          this->_authSalt = extension->get()();
 
         GetUserServiceAccount *cmd = new GetUserServiceAccount();
         cmd->setVersion("2");
         cmd->setServiceId(service.id());
         cmd->setHwid(GGS::Core::System::HardwareId::value());
-        
+
+        // UNDONE поидее когда запретим стартовать без драйвера эту проверку убрать надо
         if (this->_authSalt.size() > 0)
           cmd->appendParameter("salt", this->_authSalt);
+
+        if (isSecondAccount) {
+          cmd->appendParameter("secondUserId", credential.userId());
+          cmd->appendParameter("secondAppKey", credential.appKey());
+        }
 
         connect(cmd, SIGNAL(result(GGS::RestApi::CommandBase::CommandResults)), 
           this, SLOT(getUserServiceAccountResult(GGS::RestApi::CommandBase::CommandResults)), Qt::DirectConnection);
@@ -130,7 +159,14 @@ namespace GGS {
         if (result == CommandBase::NoError) {
           UserServiceAccountResponse *response = cmd->response();
 
-          QString token = this->_executorService->authToken(this->_authSalt, response->getToken());
+          QString token = response->getToken();
+
+          GetTokenExtension *extension = reinterpret_cast<GetTokenExtension *>(
+            this->_executorService->extension(ExtensionTypes::GetToken));
+
+          if (extension) 
+            token = extension->get()(this->_authSalt, token);
+
           this->_args.replace("%token%", token, Qt::CaseInsensitive);
           this->_args.replace("%login%", response->getLogin(), Qt::CaseInsensitive);
           QMetaObject::invokeMethod(this, "launcherStart");
@@ -169,7 +205,7 @@ namespace GGS {
         _PROCESS_INFORMATION* pi = process->pid();
         DEBUG_LOG << "launcher process pid" << (pi ? pi->dwProcessId : 0);
         
-        // 22.07.2013 �������� �� ����������.
+        // 22.07.2013 Отключил по требованию.
         //this->_syncJob = CreateJobObject(NULL, NULL);
         //if (this->_syncJob) {
         //  JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };

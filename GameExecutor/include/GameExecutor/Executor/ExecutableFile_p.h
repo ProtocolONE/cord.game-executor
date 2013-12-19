@@ -40,7 +40,10 @@ namespace GGS {
         explicit ExecutableFilePrivate(QObject *parent);
         virtual ~ExecutableFilePrivate();
 
-        void execute(const GGS::Core::Service &service, GameExecutorService *executorService);
+        void execute(const GGS::Core::Service &service, 
+          GameExecutorService *executorService,
+          const GGS::RestApi::GameNetCredential& credential);
+
         void setWorkingDirectory(const QString &dir);
       
       signals:

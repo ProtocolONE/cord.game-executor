@@ -59,6 +59,7 @@
       <AdditionalLibraryDirectories>$(QTDIR)\lib;$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\lib;$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\lib;$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\lib;$(VLDDIR)\lib\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>qtmaind.lib;QtCored4.lib;QtGuid4.lib;RestApiX86d.lib;CoreX86d.lib;Psapi.lib;QtNetworkd4.lib;Wininet.lib;SettingsX86d.lib;QtXmld4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateMapFile>true</GenerateMapFile>
     </Link>
     <PostBuildEvent>
       <Command>copy /b "$(ProjectDir)main.cpp" +,,
@@ -67,9 +68,11 @@ IF NOT "$(QGNACOMMONDIR)"=="" (
 xcopy /Y /I /R "$(TargetDir)*.dll" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\bin"
 xcopy /Y /I /R "$(TargetDir)*.lib" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\lib"
 xcopy /Y /I /R "$(TargetDir)*.pdb" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\pdb"
+xcopy /Y /I /R "$(TargetDir)*.map" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\pdb"
 xcopy /Y /I /R /E "$(ProjectDir)include\*.h" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\include"
 xcopy /Y /I /R /E "$(ProjectDir)include\*" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\include"
 xcopy /Y /I /R /E "$(ProjectDir)i18n\*" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\i18n"
+copy /Y /B "$(SolutionDir)GameExecutorX86d.vmp" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\bin"
 ) else (
 ECHO QGNACOMMONDIR not defined!
 EXIT /B 1
@@ -95,15 +98,17 @@ $(QTDIR)\bin\lupdate.exe "$(ProjectDir)\." -ts "$(ProjectDir)\i18n\$(ProjectName
       <AdditionalLibraryDirectories>$(QTDIR)\lib;$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\lib;$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\lib;$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\lib;$(VLDDIR)\lib\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>qtmain.lib;QtCore4.lib;QtGui4.lib;QtNetwork4.lib;RestApiX86.lib;CoreX86.lib;Psapi.lib;Wininet.lib;SettingsX86.lib;QtXml4.lib;QtGuid4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateMapFile>true</GenerateMapFile>
     </Link>
     <PostBuildEvent>
       <Command>IF NOT "$(QGNACOMMONDIR)"=="" (
 xcopy /Y /I /R "$(TargetDir)*.dll" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\bin"
 xcopy /Y /I /R "$(TargetDir)*.lib" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\lib"
 xcopy /Y /I /R "$(TargetDir)*.pdb" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\pdb"
+xcopy /Y /I /R "$(TargetDir)*.map" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\pdb"
 xcopy /Y /I /R /E "$(ProjectDir)include\*.h" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\include"
 xcopy /Y /I /R /E "$(ProjectDir)include\*" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\include"
-xcopy /Y /I /R /E "$(ProjectDir)i18n\*" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\i18n"
+copy /Y /B "$(SolutionDir)GameExecutorX86.vmp" "$(QGNACOMMONDIR)\GGS\$(SolutionName)\$(CommonArea)\bin"
 ) else (
 ECHO QGNACOMMONDIR not defined!
 EXIT /B 1
@@ -350,6 +355,7 @@ $(QTDIR)\bin\lupdate.exe "$(ProjectDir)\." -ts "$(ProjectDir)\i18n\$(ProjectName
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DGAMEEXECUTOR_LIB -DQT_NETWORK_LIB -DQT_XML_LIB -DQT_GUI_LIB -D_WINDLL -D_UNICODE "-I." "-I.\GeneratedFiles" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtCore" "-I$(ProjectDir)include" "-I$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include" "-I$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include" "-I$(QTDIR)\include\QtNetwork" "-I$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include" "-I$(VLDDIR)\include" "-I$(QTDIR)\include\QtXml" "-I$(QTDIR)\include\QtGui"</Command>
     </CustomBuild>
+    <ClInclude Include="include\GameExecutor\Extension.h" />
     <ClInclude Include="include\GameExecutor\Hook\DisableAeroHook.h" />
     <ClInclude Include="resource.h" />
     <CustomBuild Include="include\GameExecutor\Hook\RestoreResolution.h">

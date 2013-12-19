@@ -36,6 +36,8 @@ protected:
 
     service.setId("id");
     service.setUrl(QUrl("test://"));
+
+    GGS::RestApi::RestApiManager::setCommonInstance(&this->restapiManger);
   }
 
   virtual void TearDown() 
@@ -43,6 +45,7 @@ protected:
   }
 
   ExecutorMock mockExecutor;
+  GGS::RestApi::RestApiManager restapiManger;
   GameExecutorService executorService;
   Core::Service service;
 

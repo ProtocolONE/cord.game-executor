@@ -8,8 +8,7 @@
 ** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 ****************************************************************************/
 
-#ifndef _GGS_GAMEEXECUTOR_EXECUTOR_EXECUTABLEFILECLIENT_H
-#define _GGS_GAMEEXECUTOR_EXECUTOR_EXECUTABLEFILECLIENT_H
+#pragma once
 
 #include <GameExecutor/gameexecutor_global.h>
 #include <GameExecutor/IPC/Client.h>
@@ -79,5 +78,3 @@ namespace GGS{
     }
   }
 }
-
-#endif // _GGS_GAMEEXECUTOR_EXECUTOR_EXECUTABLEFILECLIENT_H

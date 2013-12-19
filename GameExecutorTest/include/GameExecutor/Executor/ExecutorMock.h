@@ -27,7 +27,10 @@ public:
     ExecutorMock(QObject *parent = 0);
     ~ExecutorMock();
 
-    void execute(const Core::Service &service, GameExecutorService *executorService);
+    virtual void execute(
+      const GGS::Core::Service &service, 
+      GameExecutorService *executorService,
+      const GGS::RestApi::GameNetCredential& credential) override;
 };
 
 #endif // EXECUTORMOCK_H

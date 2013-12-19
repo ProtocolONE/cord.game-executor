@@ -9,6 +9,7 @@
 ****************************************************************************/
 
 #include <GameExecutor/GameExecutorService.h>
+#include <GameExecutor/Extension.h>
 #include <GameExecutor/Executor/WebLink.h>
 
 #include <RestApi/RestApiManager>
@@ -23,6 +24,7 @@
 namespace GGS {
   namespace GameExecutor {
     namespace Executor {
+
       WebLink::WebLink(QObject *parent) : ExecutorBase(parent)
       {
         this->_scheme = QString("http");
@@ -32,15 +34,24 @@ namespace GGS {
       {
       }
 
-      void WebLink::execute(const GGS::Core::Service &service, GameExecutor::GameExecutorService *executorService)
+      void WebLink::execute(
+        const GGS::Core::Service &service, 
+        GameExecutorService *executorService,
+        const GGS::RestApi::GameNetCredential& credential)
       {
         DEBUG_LOG;
 
         emit this->started(service);
-        RestApi::GameNetCredential cred = RestApi::RestApiManager::commonInstance()->credential();
 
         QUrl finalUrl;
-        QString cookie = cred.cookie();
+        QString cookie;
+        RestApi::GameNetCredential baseCredential = RestApi::RestApiManager::commonInstance()->credential();
+
+        if (credential.cookie().isEmpty())
+          cookie = baseCredential.cookie();
+        else
+          cookie = credential.cookie();
+
         if (!cookie.isEmpty()) {
           finalUrl.setPath("https://gnlogin.ru");
           finalUrl.addQueryItem("auth", cookie);
@@ -49,6 +60,15 @@ namespace GGS {
           finalUrl = service.url();
         }
         
+        OpenBrowserExtension *extension = reinterpret_cast<OpenBrowserExtension *>(
+          executorService->extension(ExtensionTypes::OpenBrowser));
+
+        if (extension) {
+          extension->get()(finalUrl.toString());
+          emit this->finished(service, GGS::GameExecutor::Success);
+          return;
+        }
+
         HINSTANCE result = 
           ShellExecute(0, 0, reinterpret_cast<const WCHAR*>(finalUrl.toString().utf16()), 0, 0, SW_NORMAL);
            

@@ -8,13 +8,15 @@
 ** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 ****************************************************************************/
 
-#ifndef _GGS_GAMEEXECUTOR_EXECUTORBASE_H
-#define _GGS_GAMEEXECUTOR_EXECUTORBASE_H
+#pragma once
 
 #include <GameExecutor/gameexecutor_global.h>
 #include <GameExecutor/Enum.h>
 
 #include <Core/Service>
+
+#include <RestApi/RestApiManager>
+
 #include <QtCore/QObject>
 
 namespace GGS {
@@ -29,7 +31,11 @@ namespace GGS {
       ExecutorBase(const QString &scheme, QObject *parent = 0);
       virtual ~ExecutorBase();
 
-      virtual void execute(const Core::Service &service, GameExecutorService *executorService) = 0;
+      virtual void execute(
+        const Core::Service &service, 
+        GameExecutorService *executorService, 
+        const GGS::RestApi::GameNetCredential& credential) = 0;
+
       const QString &scheme() const;
     
     signals:
@@ -41,6 +47,4 @@ namespace GGS {
     };
   }
 }
-
-#endif //_GGS_GAMEEXECUTOR_EXECUTORBASE_H
 

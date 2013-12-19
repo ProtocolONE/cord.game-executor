@@ -29,10 +29,12 @@ namespace GGS {
         this->_appPath = dir;
       }
 
-      void ExecutableFile::execute(const Core::Service &service, GameExecutorService *executorService)
+      void ExecutableFile::execute(
+        const GGS::Core::Service &service, 
+        GameExecutorService *executorService,
+        const GGS::RestApi::GameNetCredential& credential)
       {
         QString id = service.id();
-
         ExecutableFilePrivate* executor = new ExecutableFilePrivate(this);
         executor->setWorkingDirectory(this->_appPath);
 
@@ -42,7 +44,7 @@ namespace GGS {
         connect(executor, SIGNAL(finished(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), 
           this, SLOT(internalFinished(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), Qt::DirectConnection);
           
-        executor->execute(service, executorService);
+        executor->execute(service, executorService, credential);
       }
 
       void ExecutableFile::internalFinished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state)

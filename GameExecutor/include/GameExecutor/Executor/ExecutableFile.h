@@ -8,8 +8,7 @@
 ** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 ****************************************************************************/
 
-#ifndef _GGS_GAMEEXECUTOR_EXECUTOR_EXECUTABLEFILE_H
-#define _GGS_GAMEEXECUTOR_EXECUTOR_EXECUTABLEFILE_H
+#pragma once
 
 #include <GameExecutor/gameexecutor_global.h>
 #include <GameExecutor/ExecutorBase.h>
@@ -55,9 +54,13 @@ namespace GGS {
         explicit ExecutableFile(QObject *parent = 0);
         ~ExecutableFile();
 
-        void execute(const GGS::Core::Service &service, GameExecutorService *executorService);
+        virtual void execute(
+          const GGS::Core::Service &service, 
+          GameExecutorService *executorService,
+          const GGS::RestApi::GameNetCredential& credential) override;
 
         void setWorkingDirectory(const QString &dir);
+
       private slots:
         void internalFinished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
 
@@ -69,4 +72,3 @@ namespace GGS {
   }
 }
 
-#endif // _GGS_GAMEEXECUTOR_EXECUTOR_EXECUTABLEFILE_H

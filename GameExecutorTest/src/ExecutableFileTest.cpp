@@ -62,6 +62,7 @@ protected:
     GGS::RestApi::GameNetCredential credential = GGS::RestApi::GameNetCredential())
   {
     GameExecutor::Executor::ExecutableFile executor;
+    executor.setRestApiManager(GGS::RestApi::RestApiManager::commonInstance());
 
     QSignalSpy startExecute(&executor, SIGNAL(started(const GGS::Core::Service)));
     QSignalSpy finishExecute(&executor, SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)));
@@ -70,9 +71,6 @@ protected:
     wrapper.setFinished([&](const GGS::Core::Service &service, GGS::GameExecutor::FinishState state) {
       loop.exit();
     });;
-
-    if (workingPath.length()) 
-      executor.setWorkingDirectory(workingPath);
 
     executor.execute(srv, &executorService, credential);
 
@@ -168,22 +166,6 @@ TEST_F(ExecutableFileTest, ExternalFatalError)
   srv.setUrl(url);
 
   ExecutionFlow(srv, 1, GGS::GameExecutor::ExternalFatalError);
-}
-
-TEST_F(ExecutableFileTest, ExternalFatalErrorIfLauncerExeFailed) 
-{
-  QUrl url;
-  url.setScheme("exe");
-  url.setPath(QCoreApplication::applicationDirPath() + "/fixtures/success.bat");
-  url.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
-  url.addQueryItem("args", "%userId% %token%");
-
-  GGS::Core::Service srv;
-  srv.setId("300003010000000000");
-  srv.setGameId("71");
-  srv.setUrl(url);
-
-  ExecutionFlow(srv, 0, GGS::GameExecutor::ExternalFatalError, "WrongPathToLauncer.Exe");
 }
 
 TEST_F(ExecutableFileTest, AuthorizationError) 

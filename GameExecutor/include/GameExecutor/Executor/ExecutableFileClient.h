@@ -11,7 +11,6 @@
 #pragma once
 
 #include <GameExecutor/gameexecutor_global.h>
-#include <GameExecutor/IPC/Client.h>
 
 #include <RestApi/RestApiManager>
 #include <RestApi/CommandBase>
@@ -21,7 +20,6 @@
 #include <QtCore/QFutureWatcher>
 
 using GGS::RestApi::CommandBase;
-using namespace GGS::GameExecutor;
 
 namespace GGS{
   namespace GameExecutor{
@@ -43,19 +41,15 @@ namespace GGS{
 
         void setRestApiManager(RestApi::RestApiManager *restApiManager);
         RestApi::RestApiManager *respApiManager();
-
-        void setIpcName(const QString& name);;
-
-        void exec();
+        
+        void sendMessage(QString message);
 
       signals:
         void exit(int code);
+        void finished(int exitCode);
+        void started();
 
       private slots:
-        void connectedToServer();
-        void disconnectedOrError();
-        void messageFromServer(QString message);
-
         void processFinished();
 
         void setUserActivity();
@@ -67,8 +61,6 @@ namespace GGS{
         unsigned int startProcess(const QString& pathToExe, const QString& workDirectory, const QString& args, const QString& dllPath = QString());
 
         RestApi::RestApiManager *_restApiManager;
-        QString _ipcName;
-        IPC::Client _client;
         int _gameId;
         int _code;
         QFuture<unsigned int> _executeFeature;

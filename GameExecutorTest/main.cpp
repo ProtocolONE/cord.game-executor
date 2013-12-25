@@ -12,9 +12,6 @@
 #include <QApplication>
 
 #include <GameExecutor/Enum.h>
-#include <GameExecutor/IPC/ClientTest.h>
-#include <GameExecutor/IPC/ClientServerPingPongTest.h>
-
 #include <Core/Service>
 #include <QMetaType>
 

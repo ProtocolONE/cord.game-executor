@@ -24,9 +24,9 @@ namespace GGS {
       {
       }
 
-      void ExecutableFile::setWorkingDirectory(const QString &dir)
+      void ExecutableFile::setRestApiManager(GGS::RestApi::RestApiManager* manager) 
       {
-        this->_appPath = dir;
+        this->_restapiManager = manager;
       }
 
       void ExecutableFile::execute(
@@ -36,7 +36,7 @@ namespace GGS {
       {
         QString id = service.id();
         ExecutableFilePrivate* executor = new ExecutableFilePrivate(this);
-        executor->setWorkingDirectory(this->_appPath);
+        executor->setRestApiManager(this->_restapiManager);
 
         connect(executor, SIGNAL(started(const GGS::Core::Service &)), 
           this, SIGNAL(started(const GGS::Core::Service &)), Qt::DirectConnection);

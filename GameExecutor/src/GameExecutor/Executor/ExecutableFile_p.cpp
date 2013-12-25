@@ -30,27 +30,19 @@ namespace GGS {
 
       ExecutableFilePrivate::ExecutableFilePrivate(QObject *parent) 
         : QObject(parent)
-        , _ipcServerStarted(false)
         , _serviceMapFileHandle(0)
         , _data(0)
-        , _syncJob(INVALID_HANDLE_VALUE)
       {
-        connect(&this->_process, SIGNAL(started()), this, SLOT(launcherStarted()));
-        connect(&this->_process, SIGNAL(finished(int, QProcess::ExitStatus)), 
-          this, SLOT(launcherFinished(int, QProcess::ExitStatus)));
-        connect(&this->_process, SIGNAL(error(QProcess::ProcessError)), 
-          this, SLOT(launcherError(QProcess::ProcessError)));
-
-        connect(&this->_ipcServer, SIGNAL(messageReceived(int, QString)), 
-          this, SLOT(launcherMessageReceived(int, QString)));
-
-        connect(&this->_ipcServer, SIGNAL(clientConnected(int)), 
-          this, SLOT(launcherConnected(int)));
+        connect(&this->_client, SIGNAL(started()), this, SLOT(launcherStarted()));
+        connect(&this->_client, SIGNAL(finished(int)), this, SLOT(launcherFinished(int)));
       }
 
       ExecutableFilePrivate::~ExecutableFilePrivate()
       {
-        this->_process.close();
+      }
+
+      void ExecutableFilePrivate::setRestApiManager(GGS::RestApi::RestApiManager* manager) {
+        this->_client.setRestApiManager(manager);
       }
 
       void ExecutableFilePrivate::execute(
@@ -58,18 +50,7 @@ namespace GGS {
         GameExecutorService *executorService,
         const GGS::RestApi::GameNetCredential& credential)
       {
-        if (!this->_ipcServerStarted) {
-          this->_ipcName = QString("QGNA_GAMEEXECUTOR_IPC_CHANNEL:%1").arg(service.id());
-          this->_ipcServer.setName(this->_ipcName);
-          this->_ipcServerStarted = this->_ipcServer.start();
-          
-          if (!this->_ipcServerStarted) {
-            emit this->finished(this->_service, InternalFatalError);
-            return;
-          }
-        }
-
-        this->shareServiceId(service);
+        this->shareServiceId(service);        
 
         this->_service = service;
         QUrl url = this->_service.url();
@@ -89,7 +70,6 @@ namespace GGS {
         else
           this->_activityRequestArgs = 
             QString("%1|%2|%3|%4").arg(baseCredential.userId(), baseCredential.appKey(), service.gameId(), injectDll);
-
 
         QRegExp rx("%(.+)%");
         rx.setMinimal(true);
@@ -111,7 +91,6 @@ namespace GGS {
           this->_args.replace("%appKey%", baseCredential.appKey(), Qt::CaseInsensitive);
         }
 
-        
         if (-1 == this->_args.indexOf("%token%", 0, Qt::CaseInsensitive)
           && -1 == this->_args.indexOf("%login%", 0, Qt::CaseInsensitive)) {
             QMetaObject::invokeMethod(this, "launcherStart");
@@ -182,73 +161,20 @@ namespace GGS {
         this->finished(this->_service, state);
       }
 
-      void ExecutableFilePrivate::launcherError(QProcess::ProcessError error)
-      {
-        QProcess *process = qobject_cast<QProcess*>(QObject::sender());
-        if (!process) {
-          CRITICAL_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
-          return;
-        }
-
-        CRITICAL_LOG << "with error code" << error;
-        this->finished(this->_service, ExternalFatalError);
-      }
-
       void ExecutableFilePrivate::launcherStarted()
       {
-        QProcess *process = qobject_cast<QProcess*>(QObject::sender());
-        if (!process) {
-          CRITICAL_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
-          return;
-        }
-
-        _PROCESS_INFORMATION* pi = process->pid();
-        DEBUG_LOG << "launcher process pid" << (pi ? pi->dwProcessId : 0);
-        
-        // 22.07.2013 Отключил по требованию.
-        //this->_syncJob = CreateJobObject(NULL, NULL);
-        //if (this->_syncJob) {
-        //  JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
-        //  jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
-        //  if (!SetInformationJobObject(this->_syncJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli))) {
-        //    DWORD res = GetLastError();
-        //    DEBUG_LOG << "SetInformationJobObject error " << res;
-        //  }
-
-        //  if (!AssignProcessToJobObject(this->_syncJob, process->pid()->hProcess)) {
-        //    DWORD res = GetLastError();
-        //    DEBUG_LOG << "AssignProcessToJobObject error " << res;
-        //  }
-
-        //} else {
-        //  DWORD res = GetLastError();
-        //  DEBUG_LOG << "Create job error " << res;
-        //}
-
         emit this->started(this->_service);
       }
 
-      void ExecutableFilePrivate::launcherFinished(int exitCode, QProcess::ExitStatus exitStatus)
+      void ExecutableFilePrivate::launcherFinished(int exitCode)
       {
-        QProcess *process = qobject_cast<QProcess*>(QObject::sender());
-        if (!process) {
-          CRITICAL_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
-          return;
-        }
-
-        if (this->_syncJob && this->_syncJob != INVALID_HANDLE_VALUE)
-          CloseHandle(this->_syncJob);
-
         if (this->_data)
           UnmapViewOfFile(this->_data);
         
         if (this->_serviceMapFileHandle)
           CloseHandle(this->_serviceMapFileHandle);
 
-        _PROCESS_INFORMATION* pi = process->pid();
-        DEBUG_LOG << "launcher with pid" << (pi ? pi->dwProcessId : 0) << "finished";
-
-        if (QProcess::NormalExit == exitStatus && exitCode == 0) {
+        if (exitCode == 0) {
           emit this->finished(this->_service, Success);
           return;
         }
@@ -259,28 +185,6 @@ namespace GGS {
         url.addQueryItem("exitCode", QString::number(exitCode));
         this->_service.setUrl(url);
         emit this->finished(this->_service, ExternalFatalError);
-      }
-
-      void ExecutableFilePrivate::launcherMessageReceived(int id, QString message)
-      {
-        Q_ASSERT(this->_processIpcId == id);
-        DEBUG_LOG << "message from launcher" << message;
-      }
-
-      void ExecutableFilePrivate::launcherConnected(int id)
-      {
-        DEBUG_LOG << "with id" << id;
-        this->_processIpcId = id;
-
-        QString message = 
-          QString("start|%1|%2|%3|%4").arg(this->_path, this->_workingDir, this->_args, this->_activityRequestArgs);
-
-        this->_ipcServer.sendMessage(this->_processIpcId, message);
-      }
-
-      void ExecutableFilePrivate::setWorkingDirectory( const QString &dir )
-      {
-        this->_process.setWorkingDirectory(dir);
       }
 
       FinishState ExecutableFilePrivate::finishStateFromRestApiErrorCode(int errorCode)
@@ -320,12 +224,10 @@ namespace GGS {
 
       void ExecutableFilePrivate::launcherStart()
       {
-        this->_process.close();
-#ifdef _DEBUG
-        this->_process.start(QCoreApplication::applicationDirPath() + "/Launcherd.exe", QStringList() << this->_ipcName);
-#else
-        this->_process.start(QCoreApplication::applicationDirPath() + "/Launcher.exe", QStringList() << this->_ipcName);
-#endif
+        QString message = 
+          QString("start|%1|%2|%3|%4").arg(this->_path, this->_workingDir, this->_args, this->_activityRequestArgs);
+
+        this->_client.sendMessage(message);
       }
 
       void ExecutableFilePrivate::shareServiceId(const GGS::Core::Service &service)

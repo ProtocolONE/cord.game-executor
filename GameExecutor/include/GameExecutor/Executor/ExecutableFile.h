@@ -54,19 +54,19 @@ namespace GGS {
         explicit ExecutableFile(QObject *parent = 0);
         ~ExecutableFile();
 
+        void setRestApiManager(GGS::RestApi::RestApiManager* manager);
+
         virtual void execute(
           const GGS::Core::Service &service, 
           GameExecutorService *executorService,
           const GGS::RestApi::GameNetCredential& credential) override;
 
-        void setWorkingDirectory(const QString &dir);
-
       private slots:
         void internalFinished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
 
       private:
-        QString _appPath;
         QHash<QString, ExecutableFilePrivate*> _privateExecutors;
+        GGS::RestApi::RestApiManager* _restapiManager;
       };
     }
   }

@@ -13,7 +13,7 @@
 
 #include <GameExecutor/gameexecutor_global.h>
 #include <GameExecutor/ExecutorBase.h>
-#include <GameExecutor/IPC/Server.h>
+#include <GameExecutor/Executor/ExecutableFileClient.h>
 
 #include <Core/Service>
 #include <RestApi/CommandBase>
@@ -40,11 +40,11 @@ namespace GGS {
         explicit ExecutableFilePrivate(QObject *parent);
         virtual ~ExecutableFilePrivate();
 
+        void setRestApiManager(GGS::RestApi::RestApiManager* manager);
+
         void execute(const GGS::Core::Service &service, 
           GameExecutorService *executorService,
           const GGS::RestApi::GameNetCredential& credential);
-
-        void setWorkingDirectory(const QString &dir);
       
       signals:
         void started(const GGS::Core::Service &service);
@@ -52,12 +52,8 @@ namespace GGS {
 
       private slots:
         void launcherStart();
-        void launcherError(QProcess::ProcessError error);
         void launcherStarted();
-        void launcherFinished(int exitCode, QProcess::ExitStatus exitStatus);
-
-        void launcherMessageReceived(int id, QString message);
-        void launcherConnected(int id);
+        void launcherFinished(int exitCode); 
 
         void getUserServiceAccountResult(GGS::RestApi::CommandBase::CommandResults result);
 
@@ -71,9 +67,7 @@ namespace GGS {
 
         GameExecutorService *_executorService;
         GGS::Core::Service _service;
-
-        QProcess _process;
-        int _processIpcId;
+        GGS::GameExecutor::Executor::ExecutableFileClient _client;
 
         QString _appPath;
 
@@ -82,13 +76,7 @@ namespace GGS {
         QString _args;
         QString _activityRequestArgs;
 
-        QString _ipcName;
-
-        IPC::Server _ipcServer;
-        bool _ipcServerStarted;
-        HANDLE _syncJob;
         QString _authSalt;
-
       };
     }
   }

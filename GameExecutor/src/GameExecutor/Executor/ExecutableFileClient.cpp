@@ -53,11 +53,6 @@ namespace GGS{
       ExecutableFileClient::ExecutableFileClient(QObject *parent) : QObject(parent)
       {
         DEBUG_LOG;
-        SIGNAL_CONNECT_CHECK(connect(&this->_client, SIGNAL(connected()), this, SLOT(connectedToServer())));
-        SIGNAL_CONNECT_CHECK(connect(&this->_client, SIGNAL(disconnected()), this, SLOT(disconnectedOrError())));
-        SIGNAL_CONNECT_CHECK(connect(&this->_client, SIGNAL(error(QLocalSocket::LocalSocketError)), this, SLOT(disconnectedOrError())));
-        SIGNAL_CONNECT_CHECK(connect(&this->_client, SIGNAL(messageReceived(QString)), this, SLOT(messageFromServer(QString))));
-
         SIGNAL_CONNECT_CHECK(connect(&this->_executeFeatureWatcher, SIGNAL(finished()), this, SLOT(processFinished())));
       }
 
@@ -75,19 +70,7 @@ namespace GGS{
         return this->_restApiManager;
       }
 
-      void ExecutableFileClient::exec()
-      {
-        DEBUG_LOG;
-        this->_client.setName(this->_ipcName);
-        this->_client.connectToServer();
-      }
-
-      void ExecutableFileClient::connectedToServer()
-      {
-        DEBUG_LOG;
-      }
-
-      void ExecutableFileClient::messageFromServer(QString message)
+      void ExecutableFileClient::sendMessage(QString message)
       {
         DEBUG_LOG << "'" << message << "'";
 
@@ -214,16 +197,6 @@ namespace GGS{
         emit this->exit(this->_code);
       }
 
-      void ExecutableFileClient::disconnectedOrError()
-      {
-        emit this->exit(1);
-      }
-
-      void ExecutableFileClient::setIpcName(const QString& name)
-      {
-        this->_ipcName = name;
-      }
-
       unsigned int ExecutableFileClient::startProcess(
         const QString& pathToExe, 
         const QString& workDirectory, 
@@ -241,15 +214,18 @@ namespace GGS{
         STARTUPINFO si;
         PROCESS_INFORMATION pi;
         ZeroMemory(&si, sizeof(STARTUPINFO));
-        si.cb=sizeof(STARTUPINFO);
+        si.cb = sizeof(STARTUPINFO);
 
+        emit this->started();
         if (!CreateProcessW(exe.data(), cmd.data(), 0, 0, FALSE, CREATE_SUSPENDED, NULL, dir.data(), &si, &pi))  {
           DEBUG_LOG << "Create process failed" << GetLastError();
+          emit this->exit(Fail);
           return 0xFFFFFFFF;
         }
 
         if (pi.hProcess == INVALID_HANDLE_VALUE) {
           DEBUG_LOG << "Create process invalid handle" << GetLastError();
+          emit this->exit(Fail);
           return 0xFFFFFFFE;
         }
 
@@ -286,7 +262,6 @@ namespace GGS{
 
         DWORD exitCode = 0;
         GetExitCodeProcess(pi.hProcess, &exitCode);
-
         return exitCode;
       }
 
@@ -297,6 +272,7 @@ namespace GGS{
         DEBUG_LOG << "with exit code" << result << "real result" << realExitCode;
 
         this->setUserActivityLogout(realExitCode);
+        emit this->finished(realExitCode);
       }
     }
   }

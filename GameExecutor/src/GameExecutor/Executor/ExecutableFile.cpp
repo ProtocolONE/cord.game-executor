@@ -24,11 +24,6 @@ namespace GGS {
       {
       }
 
-      void ExecutableFile::setRestApiManager(GGS::RestApi::RestApiManager* manager) 
-      {
-        this->_restapiManager = manager;
-      }
-
       void ExecutableFile::execute(
         const GGS::Core::Service &service, 
         GameExecutorService *executorService,
@@ -36,7 +31,6 @@ namespace GGS {
       {
         QString id = service.id();
         ExecutableFilePrivate* executor = new ExecutableFilePrivate(this);
-        executor->setRestApiManager(this->_restapiManager);
 
         connect(executor, SIGNAL(started(const GGS::Core::Service &)), 
           this, SIGNAL(started(const GGS::Core::Service &)), Qt::DirectConnection);

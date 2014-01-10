@@ -52,7 +52,6 @@ namespace GGS {
         else
           cookie = credential.cookie();
 
-
         if (!cookie.isEmpty()) {
           finalUrl.setPath("https://gnlogin.ru");
           finalUrl.addQueryItem("auth", cookie);

@@ -89,7 +89,6 @@ int main(int argc, char *argv[])
     GameExecutorService execService;
 
     ExecutableFile cmd(&execService);
-    cmd.setRestApiManager(&restapi);
     
     execService.registerExecutor(&cmd);
     execService.registerExecutor(&cmd2);

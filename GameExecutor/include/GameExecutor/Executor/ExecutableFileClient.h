@@ -19,6 +19,8 @@
 #include <QtCore/QFuture>
 #include <QtCore/QFutureWatcher>
 
+#include <functional>
+
 using GGS::RestApi::CommandBase;
 
 namespace GGS{
@@ -38,12 +40,11 @@ namespace GGS{
 
         explicit ExecutableFileClient(QObject *parent = 0);
         ~ExecutableFileClient();
-
-        void setRestApiManager(RestApi::RestApiManager *restApiManager);
-        RestApi::RestApiManager *respApiManager();
         
         void sendMessage(QString message);
 
+        void setShareArgs(std::function<void (unsigned int)> value);
+        void setDeleteSharedArgs(std::function<void ()> value);
       signals:
         void exit(int code);
         void finished(int exitCode);
@@ -58,13 +59,22 @@ namespace GGS{
         
       private:
         void setUserActivityLogout(int code);
-        unsigned int startProcess(const QString& pathToExe, const QString& workDirectory, const QString& args, const QString& dllPath = QString());
+        unsigned int startProcess(
+          QString pathToExe, 
+          QString workDirectory, 
+          QString args, 
+          QString dllPath = QString(),
+          QString dllPath2 = QString());
 
-        RestApi::RestApiManager *_restApiManager;
+        QString _userId;
+        QString _appKey;
         int _gameId;
         int _code;
         QFuture<unsigned int> _executeFeature;
         QFutureWatcher<unsigned int> _executeFeatureWatcher;
+
+        std::function<void (unsigned int)> _shareArgs;
+        std::function<void ()> _deleteSharedArgs;
         
       };
     }

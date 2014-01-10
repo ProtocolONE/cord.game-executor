@@ -69,7 +69,8 @@ xcopy /Y /I /R "$(TargetDir)..\..\Launcher\$(ConfigurationName)\*.*" "$(TargetDi
 xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\bin\*d.dll" "$(TargetDir)"
 xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\bin\*d.dll" "$(TargetDir)"
 xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\bin\*d.dll" "$(TargetDir)"
-xcopy /Y /I /R "$(QGNACOMMONDIR)\OpenSSL\0.9.8r\bin\*.dll" "$(TargetDir)"</Command>
+xcopy /Y /I /R "$(QGNACOMMONDIR)\OpenSSL\0.9.8r\bin\*.dll" "$(TargetDir)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

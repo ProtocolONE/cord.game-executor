@@ -19,6 +19,8 @@
 #include <QtCore/QCoreApplication>
 #include <QMetaObject>
 
+#include <sstream>
+
 using RestApi::Commands::User::GetUserServiceAccount;
 using RestApi::Commands::User::Response::UserServiceAccountResponse;
 
@@ -32,6 +34,7 @@ namespace GGS {
         : QObject(parent)
         , _serviceMapFileHandle(0)
         , _data(0)
+        , _executorHelperAvailable(false)
       {
         connect(&this->_client, SIGNAL(started()), this, SLOT(launcherStarted()));
         connect(&this->_client, SIGNAL(finished(int)), this, SLOT(launcherFinished(int)));
@@ -39,10 +42,6 @@ namespace GGS {
 
       ExecutableFilePrivate::~ExecutableFilePrivate()
       {
-      }
-
-      void ExecutableFilePrivate::setRestApiManager(GGS::RestApi::RestApiManager* manager) {
-        this->_client.setRestApiManager(manager);
       }
 
       void ExecutableFilePrivate::execute(
@@ -59,17 +58,23 @@ namespace GGS {
         this->_workingDir = url.queryItemValue("workingDir");
         this->_args = url.queryItemValue("args");
 
-        QString injectDll = url.queryItemValue("injectDll");
+        QString injectDll;
+        if (url.queryItemValue("noinject") != "1")
+          injectDll = url.queryItemValue("injectDll");
+
+        QString executorHelper = url.queryItemValue("executorHelper");
+        this->_executorHelperAvailable = !executorHelper.isEmpty();
+
         RestApi::GameNetCredential baseCredential = RestApi::RestApiManager::commonInstance()->credential();
 
         bool isSecondAccount = !credential.userId().isEmpty();
 
         if (isSecondAccount)
           this->_activityRequestArgs = 
-            QString("%1|%2|%3|%4").arg(credential.userId(), credential.appKey(), service.gameId(), injectDll);
+            QString("%1|%2|%3|%4|%5").arg(credential.userId(), credential.appKey(), service.gameId(), injectDll, executorHelper);
         else
           this->_activityRequestArgs = 
-            QString("%1|%2|%3|%4").arg(baseCredential.userId(), baseCredential.appKey(), service.gameId(), injectDll);
+            QString("%1|%2|%3|%4|%5").arg(baseCredential.userId(), baseCredential.appKey(), service.gameId(), injectDll, executorHelper);
 
         QRegExp rx("%(.+)%");
         rx.setMinimal(true);
@@ -143,11 +148,33 @@ namespace GGS {
           GetTokenExtension *extension = reinterpret_cast<GetTokenExtension *>(
             this->_executorService->extension(ExtensionTypes::GetToken));
 
+          QString tokenEx = "";
           if (extension) 
-            token = extension->get()(this->_authSalt, token);
+            tokenEx = extension->get()(this->_authSalt, token);
+          else
+            tokenEx = token;
+
+          if (!this->_executorHelperAvailable)
+            token = tokenEx;
+
+          this->_args.replace("%login%", response->getLogin(), Qt::CaseInsensitive);
+
+          if (this->_executorHelperAvailable) {
+            QString argEx = this->_args;
+            argEx.replace("%token%", tokenEx, Qt::CaseInsensitive);
+
+            this->_client.setShareArgs([this, argEx](unsigned int pid) {
+              std::wstringstream name;
+              name << L"Local\\HelperInfo_" << pid;
+              this->shareString(name.str(), argEx.toStdWString());
+            });
+
+            this->_client.setDeleteSharedArgs([this](){
+              this->closeSharedString();
+            });
+          }
 
           this->_args.replace("%token%", token, Qt::CaseInsensitive);
-          this->_args.replace("%login%", response->getLogin(), Qt::CaseInsensitive);
           QMetaObject::invokeMethod(this, "launcherStart");
           return;
         }
@@ -173,6 +200,8 @@ namespace GGS {
         
         if (this->_serviceMapFileHandle)
           CloseHandle(this->_serviceMapFileHandle);
+
+        this->closeSharedString();
 
         if (exitCode == 0) {
           emit this->finished(this->_service, Success);
@@ -253,6 +282,64 @@ namespace GGS {
         QByteArray serviceId = service.id().toAscii();
         memcpy_s(this->_data, SERVICE_ID_SIZE_MAX, serviceId.data(), serviceId.size());
         reinterpret_cast<char *>(this->_data)[serviceId.size()] = '\0';
+      }
+
+      bool ExecutableFilePrivate::shareString(const std::wstring& name, const std::wstring& value)
+      {
+        // INFO простое лобовое шифрование для быстрой выливки. В будущем можно поменять на что-то посложнее.
+        std::wstring valueEx;
+        std::wstringstream ss;
+        wchar_t t = 0x45;
+        wchar_t k = 0xBE;
+        for (int i = 0; i < value.size(); ++i) {
+          wchar_t c0 = value.at(i);
+          wchar_t c1 = c0 ^ k ^ t;
+          t = c0;
+          ss << c1;
+        }
+
+        valueEx = ss.str();
+
+        unsigned int fullSize = sizeof(unsigned int) + valueEx.size() * sizeof(wchar_t);
+        this->_stringShareHandle = CreateFileMappingW(
+          INVALID_HANDLE_VALUE, 
+          NULL, 
+          PAGE_READWRITE, 
+          0, 
+          fullSize, 
+          name.c_str());
+
+        if (this->_stringShareHandle == INVALID_HANDLE_VALUE)
+          return false;
+
+        this->_stringShareData = reinterpret_cast<char *>(
+          MapViewOfFile(this->_stringShareHandle, FILE_MAP_ALL_ACCESS, 0, 0, fullSize));
+
+        if (!this->_stringShareData) {
+          CloseHandle(this->_stringShareHandle);
+          return false;
+        }
+
+        unsigned int *sizePtr = reinterpret_cast<unsigned int *>(this->_stringShareData);
+        *sizePtr = valueEx.size();
+
+        wchar_t *str = reinterpret_cast<wchar_t *>((char*)this->_stringShareData + sizeof(unsigned int));
+        valueEx.copy(str, valueEx.size());
+
+        return true;
+      }
+
+      void ExecutableFilePrivate::closeSharedString()
+      {
+        if (this->_stringShareData) {
+          UnmapViewOfFile(this->_stringShareData);
+          this->_stringShareData = NULL;
+        }
+
+        if (this->_stringShareHandle != INVALID_HANDLE_VALUE && this->_stringShareHandle != NULL) {
+          CloseHandle(this->_stringShareHandle);
+          this->_stringShareHandle = INVALID_HANDLE_VALUE;
+        }
       }
 
     }

@@ -54,8 +54,6 @@ namespace GGS {
         explicit ExecutableFile(QObject *parent = 0);
         ~ExecutableFile();
 
-        void setRestApiManager(GGS::RestApi::RestApiManager* manager);
-
         virtual void execute(
           const GGS::Core::Service &service, 
           GameExecutorService *executorService,
@@ -66,7 +64,6 @@ namespace GGS {
 
       private:
         QHash<QString, ExecutableFilePrivate*> _privateExecutors;
-        GGS::RestApi::RestApiManager* _restapiManager;
       };
     }
   }

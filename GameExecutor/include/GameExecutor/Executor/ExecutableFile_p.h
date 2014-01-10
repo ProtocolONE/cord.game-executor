@@ -40,8 +40,6 @@ namespace GGS {
         explicit ExecutableFilePrivate(QObject *parent);
         virtual ~ExecutableFilePrivate();
 
-        void setRestApiManager(GGS::RestApi::RestApiManager* manager);
-
         void execute(const GGS::Core::Service &service, 
           GameExecutorService *executorService,
           const GGS::RestApi::GameNetCredential& credential);
@@ -55,15 +53,21 @@ namespace GGS {
         void launcherStarted();
         void launcherFinished(int exitCode); 
 
+        void closeSharedString();
+
         void getUserServiceAccountResult(GGS::RestApi::CommandBase::CommandResults result);
 
       private:
         void createAndExecuteLauncherProcess();
         FinishState finishStateFromRestApiErrorCode(int errorCode);
         void shareServiceId(const GGS::Core::Service &service);
+        bool shareString(const std::wstring& name, const std::wstring& value);
 
         HANDLE _serviceMapFileHandle;
         LPVOID _data;
+
+        HANDLE _stringShareHandle;
+        LPVOID _stringShareData;
 
         GameExecutorService *_executorService;
         GGS::Core::Service _service;
@@ -77,6 +81,7 @@ namespace GGS {
         QString _activityRequestArgs;
 
         QString _authSalt;
+        bool _executorHelperAvailable;
       };
     }
   }

@@ -1,7 +1,7 @@
-/****************************************************************************
+﻿/****************************************************************************
 ** This file is a part of Syncopate Limited GameNet Application or it parts.
 **
-** Copyright (�) 2011 - 2012, Syncopate Limited and/or affiliates. 
+** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
 ** All rights reserved.
 **
 ** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
@@ -60,20 +60,8 @@ namespace GGS{
       {
       }
 
-      void ExecutableFileClient::setRestApiManager(RestApi::RestApiManager *restApiManager)
-      {
-        this->_restApiManager = restApiManager;
-      }
-
-      RestApi::RestApiManager *ExecutableFileClient::respApiManager()
-      {
-        return this->_restApiManager;
-      }
-
       void ExecutableFileClient::sendMessage(QString message)
       {
-        DEBUG_LOG << "'" << message << "'";
-
         QStringList params = message.split("|", QString::KeepEmptyParts, Qt::CaseInsensitive);
         if (params.at(0) != "start") {
           CRITICAL_LOG << "unsupported command" << params.at(0);
@@ -98,11 +86,8 @@ namespace GGS{
           return;
         }
 
-        GameNetCredential credential;
-        credential.setUserId(params.at(4));
-        credential.setAppKey(params.at(5));
-
-        this->respApiManager()->setCridential(credential);
+        this->_userId = params.at(4);
+        this->_appKey = params.at(5);
 
         QString dir = params.at(2);
         QString args = params.at(3);
@@ -111,32 +96,153 @@ namespace GGS{
         if (params.length() > 7)
           injectedDll = params.at(7);
 
+        QString injectedDll2;
+        if (params.length() > 8)
+          injectedDll2 = params.at(8);
+
         QTimer::singleShot(1000, this, SLOT(setUserActivity()));
 
+        DEBUG_LOG << "Start " << this->_userId << exeFile << params.at(2)<< injectedDll;
+
+        // HACK переписать это на обычные потоки
         this->_executeFeature = QtConcurrent::run(
           this, 
           &ExecutableFileClient::startProcess, 
           exeFile, 
           params.at(2), 
           params.at(3), 
-          injectedDll);
+          injectedDll,
+          injectedDll2);
 
         this->_executeFeatureWatcher.setFuture(this->_executeFeature);
       }
 
+      unsigned int ExecutableFileClient::startProcess(
+        QString pathToExe, 
+        QString workDirectory, 
+        QString args, 
+        QString dllPath /*= QString()*/,
+        QString dllPath2)
+      {
+        // HACK ППц нашел XP где обратные слешы не работают.!
+        QString path = QDir::toNativeSeparators(pathToExe);
+        QString commandLine = QString("\"%1\" %2").arg(path, args);
+
+        QStringToWChar exe(path);
+        QStringToWChar cmd(commandLine);
+        QStringToWChar dir(workDirectory);
+        
+        STARTUPINFO si;
+        PROCESS_INFORMATION pi;
+        ZeroMemory(&si, sizeof(STARTUPINFO));
+        si.cb = sizeof(STARTUPINFO);
+
+        emit this->started();
+        if (!CreateProcessW(exe.data(), cmd.data(), 0, 0, FALSE, CREATE_SUSPENDED, NULL, dir.data(), &si, &pi))  {
+          DEBUG_LOG << "Create process failed" << GetLastError();
+          emit this->exit(Fail);
+          return 0xFFFFFFFF;
+        }
+
+        if (pi.hProcess == INVALID_HANDLE_VALUE) {
+          DEBUG_LOG << "Create process invalid handle" << GetLastError();
+          emit this->exit(Fail);
+          return 0xFFFFFFFE;
+        }
+
+        HANDLE handle = pi.hProcess;
+        if (!dllPath.isEmpty()) {
+          DEBUG_LOG << "Start inject";
+          HMODULE hModule = GetModuleHandleW(L"Kernel32");
+          QStringToWChar dll(dllPath);
+
+          size_t len = (dll.size() + 1) * sizeof(wchar_t);
+          void* pLibRemote = ::VirtualAllocEx(handle, NULL, len, MEM_COMMIT, PAGE_READWRITE);
+          DWORD iLen = 0;
+          WriteProcessMemory(handle, pLibRemote, static_cast<void*>(dll.data()), len, &iLen);
+
+          HANDLE waitHandle = CreateEvent(NULL, FALSE, FALSE, L"Local\\QGNA_OVERLAY_EVENT");
+
+          HANDLE hThread = CreateRemoteThread(
+            handle, 
+            NULL, 
+            0, 
+            (LPTHREAD_START_ROUTINE)GetProcAddress(hModule, "LoadLibraryW"), 
+            pLibRemote, 
+            0, 
+            &iLen);
+
+          WaitForSingleObject(hThread, INFINITE);
+          CloseHandle(hThread);
+
+          WaitForSingleObject(waitHandle, 5000);
+          CloseHandle(waitHandle);
+        }
+
+        // UNDONE рефакторнуть это как-то. Например грузить все дополнительные дллки через общий хелпер.
+        if (!dllPath2.isEmpty()) {
+          this->_shareArgs(pi.dwProcessId);
+          DEBUG_LOG << "Start inject2";
+          HMODULE hModule = GetModuleHandleW(L"Kernel32");
+          QStringToWChar dll(dllPath2);
+
+          size_t len = (dll.size() + 1) * sizeof(wchar_t);
+          void* pLibRemote = ::VirtualAllocEx(handle, NULL, len, MEM_COMMIT, PAGE_READWRITE);
+          DWORD iLen = 0;
+          WriteProcessMemory(handle, pLibRemote, static_cast<void*>(dll.data()), len, &iLen);
+
+          HANDLE waitHandle = CreateEvent(NULL, FALSE, FALSE, L"Local\\QGNA_OVERLAY_EVENT2");
+
+          HANDLE hThread = CreateRemoteThread(
+            handle, 
+            NULL, 
+            0, 
+            (LPTHREAD_START_ROUTINE)GetProcAddress(hModule, "LoadLibraryW"), 
+            pLibRemote, 
+            0, 
+            &iLen);
+
+          WaitForSingleObject(hThread, INFINITE);
+          CloseHandle(hThread);
+
+          WaitForSingleObject(waitHandle, 15000);
+          CloseHandle(waitHandle);
+          this->_deleteSharedArgs();
+        }
+
+        ResumeThread(pi.hThread);
+        WaitForSingleObject(pi.hProcess, INFINITE);
+
+        DWORD exitCode = 0;
+        GetExitCodeProcess(pi.hProcess, &exitCode);
+        return exitCode;
+      }
+
+      void ExecutableFileClient::processFinished()
+      {
+        unsigned int result = this->_executeFeatureWatcher.result();
+        int realExitCode = (result != 0xC0000005 && result != 0) ? Fail : Success;
+        DEBUG_LOG << "with exit code" << result << "real result" << realExitCode;
+
+        this->setUserActivityLogout(realExitCode);
+        emit this->finished(realExitCode);
+      }
+
       void ExecutableFileClient::setUserActivity()
       {
-        DEBUG_LOG << "request";
-
         SetUserActivity *cmd = new SetUserActivity();
 
         cmd->setGameId(this->_gameId);  
         cmd->setLogout(0);
 
+        cmd->setAuthRequire(false);
+        cmd->appendParameter("userId", this->_userId);
+        cmd->appendParameter("appKey", this->_appKey);
+
         SIGNAL_CONNECT_CHECK(connect(cmd, SIGNAL(result(GGS::RestApi::CommandBase::CommandResults)), 
           this, SLOT(setUserActivityResult(GGS::RestApi::CommandBase::CommandResults))));
 
-        this->respApiManager()->execute(cmd);
+        cmd->execute();
       }
 
       void ExecutableFileClient::setUserActivityResult(GGS::RestApi::CommandBase::CommandResults result)
@@ -167,25 +273,24 @@ namespace GGS{
 
       void ExecutableFileClient::setUserActivityLogout(int code)
       {
-        DEBUG_LOG;
-
         this->_code = code;
 
         SetUserActivity *cmd = new SetUserActivity();
 
         cmd->setGameId(this->_gameId);
         cmd->setLogout(1);
+        cmd->setAuthRequire(false);
+        cmd->appendParameter("userId", this->_userId);
+        cmd->appendParameter("appKey", this->_appKey);
 
         SIGNAL_CONNECT_CHECK(connect(cmd, SIGNAL(result(GGS::RestApi::CommandBase::CommandResults)), 
           this, SLOT(setUserActivityLogoutResult(GGS::RestApi::CommandBase::CommandResults))));
 
-        this->respApiManager()->execute(cmd);
+        cmd->execute();
       }
 
       void ExecutableFileClient::setUserActivityLogoutResult(GGS::RestApi::CommandBase::CommandResults result)
       {
-        DEBUG_LOG << "with result" << result;
-
         SetUserActivity *cmd = qobject_cast<SetUserActivity *>(QObject::sender());
         if (!cmd) {
           WARNING_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
@@ -197,83 +302,16 @@ namespace GGS{
         emit this->exit(this->_code);
       }
 
-      unsigned int ExecutableFileClient::startProcess(
-        const QString& pathToExe, 
-        const QString& workDirectory, 
-        const QString& args, 
-        const QString& dllPath /*= QString()*/)
+      void ExecutableFileClient::setShareArgs(std::function<void (unsigned int)> value)
       {
-        // HACK ��� ����� XP ��� �������� ����� �� ��������.!
-        QString path = QDir::toNativeSeparators(pathToExe);
-        QString commandLine = QString("\"%1\" %2").arg(path, args);
-
-        QStringToWChar exe(path);
-        QStringToWChar cmd(commandLine);
-        QStringToWChar dir(workDirectory);
-        
-        STARTUPINFO si;
-        PROCESS_INFORMATION pi;
-        ZeroMemory(&si, sizeof(STARTUPINFO));
-        si.cb = sizeof(STARTUPINFO);
-
-        emit this->started();
-        if (!CreateProcessW(exe.data(), cmd.data(), 0, 0, FALSE, CREATE_SUSPENDED, NULL, dir.data(), &si, &pi))  {
-          DEBUG_LOG << "Create process failed" << GetLastError();
-          emit this->exit(Fail);
-          return 0xFFFFFFFF;
-        }
-
-        if (pi.hProcess == INVALID_HANDLE_VALUE) {
-          DEBUG_LOG << "Create process invalid handle" << GetLastError();
-          emit this->exit(Fail);
-          return 0xFFFFFFFE;
-        }
-
-        if (!dllPath.isEmpty()) {
-          DEBUG_LOG << "Start inject";
-          HMODULE hModule = GetModuleHandleW(L"Kernel32");
-          QStringToWChar dll(dllPath);
-
-          size_t len = (dll.size() + 1) * sizeof(wchar_t);
-          void* pLibRemote = ::VirtualAllocEx(pi.hProcess, NULL, len, MEM_COMMIT, PAGE_READWRITE);
-          DWORD iLen = 0;
-          WriteProcessMemory(pi.hProcess, pLibRemote, static_cast<void*>(dll.data()), len, &iLen);
-
-          HANDLE waitHandle = CreateEvent(NULL, FALSE, FALSE, L"Local\\QGNA_OVERLAY_EVENT");
-
-          HANDLE hThread = CreateRemoteThread(
-            pi.hProcess, 
-            NULL, 
-            0, 
-            (LPTHREAD_START_ROUTINE)GetProcAddress(hModule, "LoadLibraryW"), 
-            pLibRemote, 
-            0, 
-            &iLen);
-
-          WaitForSingleObject(hThread, INFINITE);
-          CloseHandle(hThread);
-
-          WaitForSingleObject(waitHandle, 5000);
-          CloseHandle(waitHandle);
-        }
-
-        ResumeThread(pi.hThread);
-        WaitForSingleObject(pi.hProcess, INFINITE);
-
-        DWORD exitCode = 0;
-        GetExitCodeProcess(pi.hProcess, &exitCode);
-        return exitCode;
+        this->_shareArgs = value;
       }
 
-      void ExecutableFileClient::processFinished()
+      void ExecutableFileClient::setDeleteSharedArgs(std::function<void ()> value)
       {
-        unsigned int result = this->_executeFeatureWatcher.result();
-        int realExitCode = (result != 0xC0000005 && result != 0) ? Fail : Success;
-        DEBUG_LOG << "with exit code" << result << "real result" << realExitCode;
-
-        this->setUserActivityLogout(realExitCode);
-        emit this->finished(realExitCode);
+        this->_deleteSharedArgs = value;
       }
+
     }
   }
 }

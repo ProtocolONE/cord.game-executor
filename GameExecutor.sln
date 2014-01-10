@@ -2,6 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameExecutor", "GameExecutor\GameExecutor.vcxproj", "{752C4584-1D8C-4DDA-9AC0-5016DB47E4AC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E0ACFFE1-274A-4D43-9DCB-0EA290BBB2CD} = {E0ACFFE1-274A-4D43-9DCB-0EA290BBB2CD}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4D818193-3242-4244-92A3-E5CDC2CAA0AA}"
 	ProjectSection(SolutionItems) = preProject
@@ -18,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleLauncher", "SimpleLau
 	ProjectSection(ProjectDependencies) = postProject
 		{752C4584-1D8C-4DDA-9AC0-5016DB47E4AC} = {752C4584-1D8C-4DDA-9AC0-5016DB47E4AC}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameExecutorHelper", "GameExecutorHelper\GameExecutorHelper.vcxproj", "{E0ACFFE1-274A-4D43-9DCB-0EA290BBB2CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +42,10 @@ Global
 		{5DE0E4CB-1D40-4F6D-B3D9-1DA3A485178B}.Debug|Win32.Build.0 = Debug|Win32
 		{5DE0E4CB-1D40-4F6D-B3D9-1DA3A485178B}.Release|Win32.ActiveCfg = Release|Win32
 		{5DE0E4CB-1D40-4F6D-B3D9-1DA3A485178B}.Release|Win32.Build.0 = Release|Win32
+		{E0ACFFE1-274A-4D43-9DCB-0EA290BBB2CD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E0ACFFE1-274A-4D43-9DCB-0EA290BBB2CD}.Debug|Win32.Build.0 = Debug|Win32
+		{E0ACFFE1-274A-4D43-9DCB-0EA290BBB2CD}.Release|Win32.ActiveCfg = Release|Win32
+		{E0ACFFE1-274A-4D43-9DCB-0EA290BBB2CD}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

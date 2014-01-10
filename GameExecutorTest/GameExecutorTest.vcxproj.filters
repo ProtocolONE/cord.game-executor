@@ -34,24 +34,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ClientTest.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ClientTest.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GameExecutor\IPC\ClientTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ClientServerPingPongTest.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ClientServerPingPongTest.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GameExecutor\IPC\ClientServerPingPongTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_GameExecutorServiceWrapper.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -112,9 +94,6 @@
     <ClCompile Include="src\GameExecutorTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\IPCTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Mw2DownloadAndCheckXmlConfigTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -123,12 +102,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="include\GameExecutor\IPC\ClientTest.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="include\GameExecutor\IPC\ClientServerPingPongTest.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="include\GameExecutor\GameExecutorServiceWrapper.h">
       <Filter>Header Files</Filter>
     </CustomBuild>

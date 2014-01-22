@@ -66,6 +66,12 @@ namespace GGS{
           QString dllPath = QString(),
           QString dllPath2 = QString());
 
+        void eraseRegistry();
+        void restoreRegistry();
+
+        int _registryValue;
+        bool _needToRegistryRestore;
+
         QString _userId;
         QString _appKey;
         int _gameId;

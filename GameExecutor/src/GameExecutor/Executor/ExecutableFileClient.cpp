@@ -16,6 +16,8 @@
 #include <QtCore/QtConcurrentRun>
 #include <QtCore/QStringList>
 #include <QtCore/QDir>
+#include <QtCore/QSettings>
+#include <QtCore/QVariant>
 
 #include <RestApi/GameNetCredential>
 #include <RestApi/Commands/User/SetUserActivity>
@@ -50,7 +52,9 @@ namespace GGS{
         size_t _size;
       };
 
-      ExecutableFileClient::ExecutableFileClient(QObject *parent) : QObject(parent)
+      ExecutableFileClient::ExecutableFileClient(QObject *parent) 
+        : QObject(parent)
+        , _needToRegistryRestore(false)
       {
         DEBUG_LOG;
         SIGNAL_CONNECT_CHECK(connect(&this->_executeFeatureWatcher, SIGNAL(finished()), this, SLOT(processFinished())));
@@ -138,13 +142,17 @@ namespace GGS{
         si.cb = sizeof(STARTUPINFO);
 
         emit this->started();
-        if (!CreateProcessW(exe.data(), cmd.data(), 0, 0, FALSE, CREATE_SUSPENDED, NULL, dir.data(), &si, &pi))  {
+
+        this->eraseRegistry();
+        if (!CreateProcessW(exe.data(), cmd.data(), 0, 0, FALSE, CREATE_SUSPENDED, NULL, dir.data(), &si, &pi)) {
+          this->restoreRegistry();
           DEBUG_LOG << "Create process failed" << GetLastError();
           emit this->exit(Fail);
           return 0xFFFFFFFF;
         }
 
         if (pi.hProcess == INVALID_HANDLE_VALUE) {
+          this->restoreRegistry();
           DEBUG_LOG << "Create process invalid handle" << GetLastError();
           emit this->exit(Fail);
           return 0xFFFFFFFE;
@@ -211,6 +219,12 @@ namespace GGS{
         }
 
         ResumeThread(pi.hThread);
+
+        // INFO этот код важен. Необходимо подождать пока проинициализируется user32.dll и только потом восстанавливать
+        // реестр.
+        Sleep(100);
+        this->restoreRegistry();
+        
         WaitForSingleObject(pi.hProcess, INFINITE);
 
         DWORD exitCode = 0;
@@ -310,6 +324,33 @@ namespace GGS{
       void ExecutableFileClient::setDeleteSharedArgs(std::function<void ()> value)
       {
         this->_deleteSharedArgs = value;
+      }
+
+      void ExecutableFileClient::eraseRegistry()
+      {
+        this->_needToRegistryRestore = false;
+
+        QSettings settings("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows",
+          QSettings::NativeFormat);
+
+        if (!settings.contains("LoadAppInit_DLLs"))
+          return;
+        
+        QVariant value = settings.value("LoadAppInit_DLLs");
+        if (value.isValid()) {
+          this->_needToRegistryRestore = true;
+          this->_registryValue = value.toInt();
+          settings.setValue("LoadAppInit_DLLs", 0);
+        }
+      }
+
+      void ExecutableFileClient::restoreRegistry()
+      { 
+        if (this->_needToRegistryRestore) {
+          QSettings settings("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows",
+            QSettings::NativeFormat);
+          settings.setValue("LoadAppInit_DLLs", this->_registryValue);
+        }
       }
 
     }

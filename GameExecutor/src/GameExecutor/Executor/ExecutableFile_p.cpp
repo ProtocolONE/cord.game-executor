@@ -163,10 +163,10 @@ namespace GGS {
             QString argEx = this->_args;
             argEx.replace("%token%", tokenEx, Qt::CaseInsensitive);
 
-            this->_client.setShareArgs([this, argEx](unsigned int pid) {
+            this->_client.setShareArgs([this, argEx](unsigned int pid, HANDLE handle) {
               std::wstringstream name;
               name << L"Local\\HelperInfo_" << pid;
-              this->shareString(name.str(), argEx.toStdWString());
+              this->shareStringForProcess(name.str(), argEx, pid, handle);
             });
 
             this->_client.setDeleteSharedArgs([this](){
@@ -289,8 +289,8 @@ namespace GGS {
         // INFO простое лобовое шифрование для быстрой выливки. В будущем можно поменять на что-то посложнее.
         std::wstring valueEx;
         std::wstringstream ss;
-        wchar_t t = 0x45;
-        wchar_t k = 0xBE;
+        wchar_t t = 0x46;
+        wchar_t k = 0xCE;
         for (int i = 0; i < value.size(); ++i) {
           wchar_t c0 = value.at(i);
           wchar_t c1 = c0 ^ k ^ t;
@@ -340,6 +340,15 @@ namespace GGS {
           CloseHandle(this->_stringShareHandle);
           this->_stringShareHandle = INVALID_HANDLE_VALUE;
         }
+      }
+
+      void ExecutableFilePrivate::shareStringForProcess(const std::wstring& name, const QString& value, unsigned int pid, HANDLE handle)
+      {
+        ProcessHandleCheckExtension *extension = reinterpret_cast<ProcessHandleCheckExtension *>(
+          this->_executorService->extension(ExtensionTypes::ProcessHandleCheck));
+
+        if (extension->get()(pid, handle))
+          this->shareString(name, value.toStdWString());
       }
 
     }

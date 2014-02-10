@@ -9,6 +9,7 @@
 ****************************************************************************/
 
 #include <GameExecutor/Executor/ExecutableFileClient.h>
+#include <GameExecutor/Executor/AppInitPatch.h>
 
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
@@ -54,7 +55,7 @@ namespace GGS{
 
       ExecutableFileClient::ExecutableFileClient(QObject *parent) 
         : QObject(parent)
-        , _needToRegistryRestore(false)
+        , _appinitPatch(new AppInitPatch(this))
       {
         DEBUG_LOG;
         SIGNAL_CONNECT_CHECK(connect(&this->_executeFeatureWatcher, SIGNAL(finished()), this, SLOT(processFinished())));
@@ -143,24 +144,27 @@ namespace GGS{
 
         emit this->started();
 
-        this->eraseRegistry();
+        this->_appinitPatch->eraseRegistry();
+
         if (!CreateProcessW(exe.data(), cmd.data(), 0, 0, FALSE, CREATE_SUSPENDED, NULL, dir.data(), &si, &pi)) {
-          this->restoreRegistry();
+          this->_appinitPatch->restoreRegistry();
           DEBUG_LOG << "Create process failed" << GetLastError();
           emit this->exit(Fail);
           return 0xFFFFFFFF;
         }
 
         if (pi.hProcess == INVALID_HANDLE_VALUE) {
-          this->restoreRegistry();
+          this->_appinitPatch->restoreRegistry();
           DEBUG_LOG << "Create process invalid handle" << GetLastError();
           emit this->exit(Fail);
           return 0xFFFFFFFE;
         }
 
         HANDLE handle = pi.hProcess;
+
+        this->_appinitPatch->patchAppinit(handle);
+
         if (!dllPath.isEmpty()) {
-          DEBUG_LOG << "Start inject";
           HMODULE hModule = GetModuleHandleW(L"Kernel32");
           QStringToWChar dll(dllPath);
 
@@ -189,8 +193,7 @@ namespace GGS{
 
         // UNDONE рефакторнуть это как-то. Например грузить все дополнительные дллки через общий хелпер.
         if (!dllPath2.isEmpty()) {
-          this->_shareArgs(pi.dwProcessId);
-          DEBUG_LOG << "Start inject2";
+          this->_shareArgs(pi.dwProcessId, pi.hProcess);
           HMODULE hModule = GetModuleHandleW(L"Kernel32");
           QStringToWChar dll(dllPath2);
 
@@ -222,8 +225,8 @@ namespace GGS{
 
         // INFO этот код важен. Необходимо подождать пока проинициализируется user32.dll и только потом восстанавливать
         // реестр.
-        Sleep(100);
-        this->restoreRegistry();
+        Sleep(500);
+        this->_appinitPatch->restoreRegistry();
         
         WaitForSingleObject(pi.hProcess, INFINITE);
 
@@ -268,7 +271,6 @@ namespace GGS{
         }
 
         cmd->deleteLater();
-
         if (result != CommandBase::NoError) {
           WARNING_LOG << "error" << result << cmd->getGenericErrorMessageCode();
           QTimer::singleShot(300000, this, SLOT(setUserActivity())); // default timeOut is 5 minutes;
@@ -316,7 +318,7 @@ namespace GGS{
         emit this->exit(this->_code);
       }
 
-      void ExecutableFileClient::setShareArgs(std::function<void (unsigned int)> value)
+      void ExecutableFileClient::setShareArgs(std::function<void (unsigned int, HANDLE)> value)
       {
         this->_shareArgs = value;
       }
@@ -324,33 +326,6 @@ namespace GGS{
       void ExecutableFileClient::setDeleteSharedArgs(std::function<void ()> value)
       {
         this->_deleteSharedArgs = value;
-      }
-
-      void ExecutableFileClient::eraseRegistry()
-      {
-        this->_needToRegistryRestore = false;
-
-        QSettings settings("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows",
-          QSettings::NativeFormat);
-
-        if (!settings.contains("LoadAppInit_DLLs"))
-          return;
-        
-        QVariant value = settings.value("LoadAppInit_DLLs");
-        if (value.isValid()) {
-          this->_needToRegistryRestore = true;
-          this->_registryValue = value.toInt();
-          settings.setValue("LoadAppInit_DLLs", 0);
-        }
-      }
-
-      void ExecutableFileClient::restoreRegistry()
-      { 
-        if (this->_needToRegistryRestore) {
-          QSettings settings("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows",
-            QSettings::NativeFormat);
-          settings.setValue("LoadAppInit_DLLs", this->_registryValue);
-        }
       }
 
     }

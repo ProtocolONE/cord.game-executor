@@ -63,6 +63,8 @@ namespace GGS {
         void shareServiceId(const GGS::Core::Service &service);
         bool shareString(const std::wstring& name, const std::wstring& value);
 
+        void shareStringForProcess(const std::wstring& name, const QString& value, unsigned int pid, HANDLE handle);
+
         HANDLE _serviceMapFileHandle;
         LPVOID _data;
 

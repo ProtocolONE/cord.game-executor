@@ -20,12 +20,15 @@
 #include <QtCore/QFutureWatcher>
 
 #include <functional>
+#include <Windows.h>
 
 using GGS::RestApi::CommandBase;
 
-namespace GGS{
-  namespace GameExecutor{
+namespace GGS {
+  namespace GameExecutor {
     namespace Executor {
+
+      class AppInitPatch;
 
       /*!
       \class ExecutableFileClient
@@ -43,8 +46,9 @@ namespace GGS{
         
         void sendMessage(QString message);
 
-        void setShareArgs(std::function<void (unsigned int)> value);
+        void setShareArgs(std::function<void (unsigned int, HANDLE)> value);
         void setDeleteSharedArgs(std::function<void ()> value);
+
       signals:
         void exit(int code);
         void finished(int exitCode);
@@ -66,11 +70,7 @@ namespace GGS{
           QString dllPath = QString(),
           QString dllPath2 = QString());
 
-        void eraseRegistry();
-        void restoreRegistry();
-
-        int _registryValue;
-        bool _needToRegistryRestore;
+        AppInitPatch *_appinitPatch;
 
         QString _userId;
         QString _appKey;
@@ -79,7 +79,7 @@ namespace GGS{
         QFuture<unsigned int> _executeFeature;
         QFutureWatcher<unsigned int> _executeFeatureWatcher;
 
-        std::function<void (unsigned int)> _shareArgs;
+        std::function<void (unsigned int, HANDLE)> _shareArgs;
         std::function<void ()> _deleteSharedArgs;
         
       };

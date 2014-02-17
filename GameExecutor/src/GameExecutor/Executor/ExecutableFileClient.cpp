@@ -144,6 +144,8 @@ namespace GGS{
 
         emit this->started();
 
+        QString nvidia = this->_appinitPatch->nvidiaDriverPath();
+
         this->_appinitPatch->eraseRegistry();
 
         if (!CreateProcessW(exe.data(), cmd.data(), 0, 0, FALSE, CREATE_SUSPENDED, NULL, dir.data(), &si, &pi)) {
@@ -164,62 +166,16 @@ namespace GGS{
 
         this->_appinitPatch->patchAppinit(handle);
 
-        if (!dllPath.isEmpty()) {
-          HMODULE hModule = GetModuleHandleW(L"Kernel32");
-          QStringToWChar dll(dllPath);
+        // INFO Инжектнем первой, ибо не умеем ждать пока загрузка пройдет успешно.
+        if (!nvidia.isEmpty())
+          this->injectDll(handle, nvidia);
 
-          size_t len = (dll.size() + 1) * sizeof(wchar_t);
-          void* pLibRemote = ::VirtualAllocEx(handle, NULL, len, MEM_COMMIT, PAGE_READWRITE);
-          DWORD iLen = 0;
-          WriteProcessMemory(handle, pLibRemote, static_cast<void*>(dll.data()), len, &iLen);
-
-          HANDLE waitHandle = CreateEvent(NULL, FALSE, FALSE, L"Local\\QGNA_OVERLAY_EVENT");
-
-          HANDLE hThread = CreateRemoteThread(
-            handle, 
-            NULL, 
-            0, 
-            (LPTHREAD_START_ROUTINE)GetProcAddress(hModule, "LoadLibraryW"), 
-            pLibRemote, 
-            0, 
-            &iLen);
-
-          WaitForSingleObject(hThread, INFINITE);
-          CloseHandle(hThread);
-
-          WaitForSingleObject(waitHandle, 5000);
-          CloseHandle(waitHandle);
-        }
+        if (!dllPath.isEmpty())
+          this->injectDll(handle, dllPath, QString("Local\\QGNA_OVERLAY_EVENT"));
 
         // UNDONE рефакторнуть это как-то. Например грузить все дополнительные дллки через общий хелпер.
-        if (!dllPath2.isEmpty()) {
-          this->_shareArgs(pi.dwProcessId, pi.hProcess);
-          HMODULE hModule = GetModuleHandleW(L"Kernel32");
-          QStringToWChar dll(dllPath2);
-
-          size_t len = (dll.size() + 1) * sizeof(wchar_t);
-          void* pLibRemote = ::VirtualAllocEx(handle, NULL, len, MEM_COMMIT, PAGE_READWRITE);
-          DWORD iLen = 0;
-          WriteProcessMemory(handle, pLibRemote, static_cast<void*>(dll.data()), len, &iLen);
-
-          HANDLE waitHandle = CreateEvent(NULL, FALSE, FALSE, L"Local\\QGNA_OVERLAY_EVENT2");
-
-          HANDLE hThread = CreateRemoteThread(
-            handle, 
-            NULL, 
-            0, 
-            (LPTHREAD_START_ROUTINE)GetProcAddress(hModule, "LoadLibraryW"), 
-            pLibRemote, 
-            0, 
-            &iLen);
-
-          WaitForSingleObject(hThread, INFINITE);
-          CloseHandle(hThread);
-
-          WaitForSingleObject(waitHandle, 15000);
-          CloseHandle(waitHandle);
-          this->_deleteSharedArgs();
-        }
+        if (!dllPath2.isEmpty()) 
+          this->injectDll(handle, dllPath2, QString("Local\\QGNA_OVERLAY_EVENT2"));
 
         ResumeThread(pi.hThread);
 
@@ -326,6 +282,39 @@ namespace GGS{
       void ExecutableFileClient::setDeleteSharedArgs(std::function<void ()> value)
       {
         this->_deleteSharedArgs = value;
+      }
+
+      void ExecutableFileClient::injectDll(HANDLE handle, const QString& path, const QString& waitEvent /*= QString()*/)
+      {
+        HMODULE hModule = GetModuleHandleW(L"Kernel32");
+        QStringToWChar dll(path);
+        QStringToWChar waitEventName(waitEvent);
+        HANDLE waitHandle = NULL;
+
+        size_t len = (dll.size() + 1) * sizeof(wchar_t);
+        void* pLibRemote = ::VirtualAllocEx(handle, NULL, len, MEM_COMMIT, PAGE_READWRITE);
+        DWORD iLen = 0;
+        WriteProcessMemory(handle, pLibRemote, static_cast<void*>(dll.data()), len, &iLen);
+
+        if (!waitEvent.isEmpty())
+          waitHandle = CreateEvent(NULL, FALSE, FALSE, waitEventName.data());
+
+        HANDLE hThread = CreateRemoteThread(
+          handle, 
+          NULL, 
+          0, 
+          (LPTHREAD_START_ROUTINE)GetProcAddress(hModule, "LoadLibraryW"), 
+          pLibRemote, 
+          0, 
+          &iLen);
+
+        WaitForSingleObject(hThread, INFINITE);
+        CloseHandle(hThread);
+
+        if (waitHandle != NULL) {
+          WaitForSingleObject(waitHandle, 5000);
+          CloseHandle(waitHandle);
+        }
       }
 
     }

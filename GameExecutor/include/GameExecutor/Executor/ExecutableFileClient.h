@@ -70,6 +70,8 @@ namespace GGS {
           QString dllPath = QString(),
           QString dllPath2 = QString());
 
+        void injectDll(HANDLE handle, const QString& path, const QString& waitEvent = QString());
+
         AppInitPatch *_appinitPatch;
 
         QString _userId;

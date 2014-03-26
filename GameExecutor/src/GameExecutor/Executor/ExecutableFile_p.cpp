@@ -35,6 +35,7 @@ namespace GGS {
         , _serviceMapFileHandle(0)
         , _data(0)
         , _executorHelperAvailable(false)
+        , _stringShareHandle(INVALID_HANDLE_VALUE)
       {
         connect(&this->_client, SIGNAL(started()), this, SLOT(launcherStarted()));
         connect(&this->_client, SIGNAL(finished(int)), this, SLOT(launcherFinished(int)));
@@ -309,7 +310,7 @@ namespace GGS {
           fullSize, 
           name.c_str());
 
-        if (this->_stringShareHandle == INVALID_HANDLE_VALUE)
+        if (this->_stringShareHandle == INVALID_HANDLE_VALUE || this->_stringShareHandle == NULL)
           return false;
 
         this->_stringShareData = reinterpret_cast<char *>(
@@ -317,6 +318,7 @@ namespace GGS {
 
         if (!this->_stringShareData) {
           CloseHandle(this->_stringShareHandle);
+          this->_stringShareHandle = INVALID_HANDLE_VALUE;
           return false;
         }
 

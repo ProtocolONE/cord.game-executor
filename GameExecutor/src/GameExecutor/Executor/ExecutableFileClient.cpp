@@ -174,8 +174,11 @@ namespace GGS{
           this->injectDll(handle, dllPath, QString("Local\\QGNA_OVERLAY_EVENT"));
 
         // UNDONE рефакторнуть это как-то. Например грузить все дополнительные дллки через общий хелпер.
-        if (!dllPath2.isEmpty()) 
+        if (!dllPath2.isEmpty()) {
+          this->_shareArgs(pi.dwProcessId, handle);
           this->injectDll(handle, dllPath2, QString("Local\\QGNA_OVERLAY_EVENT2"));
+          this->_deleteSharedArgs();
+        }
 
         ResumeThread(pi.hThread);
 

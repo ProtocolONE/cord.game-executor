@@ -62,8 +62,6 @@ namespace GGS {
       private slots:
         void internalFinished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
 
-      private:
-        QHash<QString, ExecutableFilePrivate*> _privateExecutors;
       };
     }
   }

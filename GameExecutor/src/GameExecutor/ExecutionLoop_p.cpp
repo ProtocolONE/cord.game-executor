@@ -1,7 +1,7 @@
 /****************************************************************************
 ** This file is a part of Syncopate Limited GameNet Application or it parts.
 **
-** Copyright (�) 2011 - 2012, Syncopate Limited and/or affiliates. 
+** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
 ** All rights reserved.
 **
 ** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
@@ -19,8 +19,9 @@ using GGS::Core::Marketing;
 namespace GGS {
   namespace GameExecutor {
     ExecutionLoopPrivate::ExecutionLoopPrivate(QObject *parent)
-      : QObject(parent),
-      _listIndex(0)
+      : QObject(parent)
+      , _listIndex(0)
+      , _stopExecution(false)
     {
     }
 
@@ -104,7 +105,11 @@ namespace GGS {
     {
       Marketing::sendOnceByService(Marketing::FirstRunService, this->_service.id());
       Marketing::send(Marketing::StartService, this->_service.id());
-      this->_executor->execute(this->_service, this->_executorService, this->_credential);
+      if (this->_stopExecution) {
+        emit this->finished(this->_service, GGS::GameExecutor::Success);
+      } else {
+        this->_executor->execute(this->_service, this->_executorService, this->_credential);
+      }
     }
 
     void ExecutionLoopPrivate::executorCompletedStep(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state)
@@ -159,6 +164,13 @@ namespace GGS {
         return;
 
       emit this->started(service);
+    }
+
+    void ExecutionLoopPrivate::onStopExecution()
+    {
+      //  INFO: просто выставляем флаг, ничего не вызывая у Executor'a, т.к.
+      //  он сам подписывается на соответствующий сигнал ExecutorService
+      this->_stopExecution = true;
     }
 
     void ExecutionLoopPrivate::setCredential(const GGS::RestApi::GameNetCredential& value)

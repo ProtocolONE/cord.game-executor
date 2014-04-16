@@ -33,6 +33,9 @@ namespace GGS {
       
       void execute();
 
+    public slots:
+      void onStopExecution();
+
     signals:
       void canExecuteCompleted(const GGS::Core::Service &service);
       void preExecuteCompleted(const GGS::Core::Service &service);
@@ -56,7 +59,7 @@ namespace GGS {
       QPointer<GGS::GameExecutor::ExecutorBase> _executor;
       GGS::GameExecutor::FinishState _state;
       GGS::RestApi::GameNetCredential _credential;
-      
+      bool _stopExecution;
     };
   }
 }

@@ -32,12 +32,14 @@ namespace GGS {
         QString id = service.id();
         ExecutableFilePrivate* executor = new ExecutableFilePrivate(this);
 
-        connect(executor, SIGNAL(started(const GGS::Core::Service &)), 
-          this, SIGNAL(started(const GGS::Core::Service &)), Qt::DirectConnection);
+        SIGNAL_CONNECT_CHECK(connect(executor, SIGNAL(started(const GGS::Core::Service &)), 
+          this, SIGNAL(started(const GGS::Core::Service &)), Qt::DirectConnection));
 
-        connect(executor, SIGNAL(finished(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), 
-          this, SLOT(internalFinished(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), Qt::DirectConnection);
-          
+        SIGNAL_CONNECT_CHECK(connect(executor, SIGNAL(finished(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), 
+          this, SLOT(internalFinished(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), Qt::DirectConnection));
+
+        SIGNAL_CONNECT_CHECK(connect(executorService, SIGNAL(stopExecution()), executor, SLOT(shutdown())));
+
         executor->execute(service, executorService, credential);
       }
 

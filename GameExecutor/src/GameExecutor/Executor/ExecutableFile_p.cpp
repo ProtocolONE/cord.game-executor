@@ -131,6 +131,11 @@ namespace GGS {
         cmd->execute();
       }
       
+      void ExecutableFilePrivate::shutdown()
+      {
+        this->_client.stopProcess();
+      }
+
       void ExecutableFilePrivate::getUserServiceAccountResult(CommandBase::CommandResults result)
       {
         GetUserServiceAccount *cmd = qobject_cast<GetUserServiceAccount*>(QObject::sender());
@@ -254,10 +259,10 @@ namespace GGS {
 
       void ExecutableFilePrivate::launcherStart()
       {
-        QString message = 
+        QString startParams = 
           QString("start|%1|%2|%3|%4").arg(this->_path, this->_workingDir, this->_args, this->_activityRequestArgs);
 
-        this->_client.sendMessage(message);
+        this->_client.startProcess(startParams);
       }
 
       void ExecutableFilePrivate::shareServiceId(const GGS::Core::Service &service)

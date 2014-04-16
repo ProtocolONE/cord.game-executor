@@ -107,6 +107,8 @@ namespace GGS {
       loop->setExecutorService(this);
       loop->setCredential(credential);
 
+      SIGNAL_CONNECT_CHECK(connect(this, SIGNAL(stopExecution()), loop, SLOT(onStopExecution())));
+
       SIGNAL_CONNECT_CHECK(connect(loop, SIGNAL(canExecuteCompleted(const GGS::Core::Service &)),
         this, SIGNAL(canExecuteCompleted(const GGS::Core::Service &)), Qt::QueuedConnection));
 
@@ -120,6 +122,11 @@ namespace GGS {
         this, SLOT(privateFinished(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), Qt::QueuedConnection));
 
       loop->execute();
+    }
+
+    void GameExecutorService::terminateAll()
+    {
+      emit this->stopExecution();
     }
 
     void GameExecutorService::privateFinished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state)

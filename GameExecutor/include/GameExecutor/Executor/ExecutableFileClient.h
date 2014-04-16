@@ -43,8 +43,9 @@ namespace GGS {
 
         explicit ExecutableFileClient(QObject *parent = 0);
         ~ExecutableFileClient();
-        
-        void sendMessage(QString message);
+
+        void startProcess(QString startParams);
+        void stopProcess();
 
         void setShareArgs(std::function<void (unsigned int, HANDLE)> value);
         void setDeleteSharedArgs(std::function<void ()> value);
@@ -60,10 +61,10 @@ namespace GGS {
         void setUserActivity();
         void setUserActivityResult(GGS::RestApi::CommandBase::CommandResults result);
         void setUserActivityLogoutResult(GGS::RestApi::CommandBase::CommandResults result);
-        
+
       private:
         void setUserActivityLogout(int code);
-        unsigned int startProcess(
+        unsigned int startProcessInternal(
           QString pathToExe, 
           QString workDirectory, 
           QString args, 
@@ -83,7 +84,8 @@ namespace GGS {
 
         std::function<void (unsigned int, HANDLE)> _shareArgs;
         std::function<void ()> _deleteSharedArgs;
-        
+
+        HANDLE _processHandle;
       };
     }
   }

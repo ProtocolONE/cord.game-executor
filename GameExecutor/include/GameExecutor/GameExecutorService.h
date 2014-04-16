@@ -53,6 +53,7 @@ namespace GGS {
 
       void execute(const GGS::Core::Service &service);
       void execute(const GGS::Core::Service &service, const GGS::RestApi::GameNetCredential &credential);
+      void terminateAll();
 
       bool isAnyGameStarted();
       bool isGameStarted(const QString& serviceId);
@@ -67,6 +68,7 @@ namespace GGS {
       void preExecuteCompleted(const GGS::Core::Service &service);
       void started(const GGS::Core::Service &service);
       void finished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
+      void stopExecution();
 
     private slots:
       void privateFinished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);

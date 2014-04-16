@@ -56,6 +56,7 @@ namespace GGS{
       ExecutableFileClient::ExecutableFileClient(QObject *parent) 
         : QObject(parent)
         , _appinitPatch(new AppInitPatch(this))
+        , _processHandle(NULL)
       {
         DEBUG_LOG;
         SIGNAL_CONNECT_CHECK(connect(&this->_executeFeatureWatcher, SIGNAL(finished()), this, SLOT(processFinished())));
@@ -65,9 +66,9 @@ namespace GGS{
       {
       }
 
-      void ExecutableFileClient::sendMessage(QString message)
+      void ExecutableFileClient::startProcess(QString startParams)
       {
-        QStringList params = message.split("|", QString::KeepEmptyParts, Qt::CaseInsensitive);
+        QStringList params = startParams.split("|", QString::KeepEmptyParts, Qt::CaseInsensitive);
         if (params.at(0) != "start") {
           CRITICAL_LOG << "unsupported command" << params.at(0);
           emit this->exit(Fail);
@@ -112,7 +113,7 @@ namespace GGS{
         // HACK переписать это на обычные потоки
         this->_executeFeature = QtConcurrent::run(
           this, 
-          &ExecutableFileClient::startProcess, 
+          &ExecutableFileClient::startProcessInternal, 
           exeFile, 
           params.at(2), 
           params.at(3), 
@@ -122,7 +123,7 @@ namespace GGS{
         this->_executeFeatureWatcher.setFuture(this->_executeFeature);
       }
 
-      unsigned int ExecutableFileClient::startProcess(
+      unsigned int ExecutableFileClient::startProcessInternal(
         QString pathToExe, 
         QString workDirectory, 
         QString args, 
@@ -162,21 +163,21 @@ namespace GGS{
           return 0xFFFFFFFE;
         }
 
-        HANDLE handle = pi.hProcess;
+        this->_processHandle = pi.hProcess;
 
-        this->_appinitPatch->patchAppinit(handle);
+        this->_appinitPatch->patchAppinit(this->_processHandle);
 
         // INFO Инжектнем первой, ибо не умеем ждать пока загрузка пройдет успешно.
         if (!nvidia.isEmpty())
-          this->injectDll(handle, nvidia);
+          this->injectDll(this->_processHandle, nvidia);
 
         if (!dllPath.isEmpty())
-          this->injectDll(handle, dllPath, QString("Local\\QGNA_OVERLAY_EVENT"));
+          this->injectDll(this->_processHandle, dllPath, QString("Local\\QGNA_OVERLAY_EVENT"));
 
         // UNDONE рефакторнуть это как-то. Например грузить все дополнительные дллки через общий хелпер.
         if (!dllPath2.isEmpty()) {
-          this->_shareArgs(pi.dwProcessId, handle);
-          this->injectDll(handle, dllPath2, QString("Local\\QGNA_OVERLAY_EVENT2"));
+          this->_shareArgs(pi.dwProcessId, this->_processHandle);
+          this->injectDll(this->_processHandle, dllPath2, QString("Local\\QGNA_OVERLAY_EVENT2"));
           this->_deleteSharedArgs();
         }
 
@@ -191,7 +192,17 @@ namespace GGS{
 
         DWORD exitCode = 0;
         GetExitCodeProcess(pi.hProcess, &exitCode);
+
+        CloseHandle(this->_processHandle);
+        CloseHandle(pi.hThread);
+
         return exitCode;
+      }
+
+      void ExecutableFileClient::stopProcess()
+      {
+        if (this->_processHandle != NULL)
+          TerminateProcess(this->_processHandle, 0);
       }
 
       void ExecutableFileClient::processFinished()

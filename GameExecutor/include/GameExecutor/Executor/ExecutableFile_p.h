@@ -43,7 +43,10 @@ namespace GGS {
         void execute(const GGS::Core::Service &service, 
           GameExecutorService *executorService,
           const GGS::RestApi::GameNetCredential& credential);
-      
+
+      public slots:
+        void shutdown();
+
       signals:
         void started(const GGS::Core::Service &service);
         void finished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);

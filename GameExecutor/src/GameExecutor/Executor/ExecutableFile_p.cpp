@@ -17,6 +17,8 @@
 #include <RestApi/Commands/User/GetUserServiceAccount>
 
 #include <QtCore/QCoreApplication>
+#include <QtCore/QDateTime>
+#include <QtCore/QUrlQuery>
 #include <QMetaObject>
 
 #include <sstream>
@@ -25,6 +27,8 @@ using RestApi::Commands::User::GetUserServiceAccount;
 using RestApi::Commands::User::Response::UserServiceAccountResponse;
 
 #define SERVICE_ID_SIZE_MAX 20
+#define GARBAGE_COUNT 64
+#define GARBAGE_INDEX_MASK 0x01CCFA1C
 
 namespace GGS {
   namespace GameExecutor {
@@ -39,6 +43,8 @@ namespace GGS {
       {
         connect(&this->_client, SIGNAL(started()), this, SLOT(launcherStarted()));
         connect(&this->_client, SIGNAL(finished(int)), this, SLOT(launcherFinished(int)));
+        
+        this->_random.seed(QDateTime::currentMSecsSinceEpoch());
       }
 
       ExecutableFilePrivate::~ExecutableFilePrivate()
@@ -55,15 +61,17 @@ namespace GGS {
         this->_service = service;
         QUrl url = this->_service.url();
 
+        QUrlQuery urlQuery(url);
+
         this->_path = url.path();
-        this->_workingDir = url.queryItemValue("workingDir");
-        this->_args = url.queryItemValue("args");
+        this->_workingDir = urlQuery.queryItemValue("workingDir", QUrl::FullyDecoded);
+        this->_args = urlQuery.queryItemValue("args", QUrl::FullyDecoded);
 
         QString injectDll;
-        if (url.queryItemValue("noinject") != "1")
-          injectDll = url.queryItemValue("injectDll");
+        if (urlQuery.queryItemValue("noinject") != "1")
+          injectDll = urlQuery.queryItemValue("injectDll");
 
-        QString executorHelper = url.queryItemValue("executorHelper");
+        QString executorHelper = urlQuery.queryItemValue("executorHelper", QUrl::FullyDecoded);
         this->_executorHelperAvailable = !executorHelper.isEmpty();
 
         RestApi::GameNetCredential baseCredential = RestApi::RestApiManager::commonInstance()->credential();
@@ -84,8 +92,8 @@ namespace GGS {
         while ((pos = rx.indexIn(this->_args, pos)) != -1) {
           pos += rx.matchedLength();
           QString entry = rx.cap(1);
-          if (url.hasQueryItem(entry)) {
-            this->_args.replace("%" + entry + "%", url.queryItemValue(entry), Qt::CaseInsensitive);
+          if (urlQuery.hasQueryItem(entry)) {
+            this->_args.replace("%" + entry + "%", urlQuery.queryItemValue(entry, QUrl::FullyDecoded), Qt::CaseInsensitive);
           }
         }
 
@@ -119,6 +127,8 @@ namespace GGS {
         // UNDONE поидее когда запретим стартовать без драйвера эту проверку убрать надо
         if (this->_authSalt.size() > 0)
           cmd->appendParameter("salt", this->_authSalt);
+
+        cmd->appendParameter("thettaVersion", "1");
 
         if (isSecondAccount) {
           cmd->appendParameter("secondUserId", credential.userId());
@@ -166,13 +176,13 @@ namespace GGS {
           this->_args.replace("%login%", response->getLogin(), Qt::CaseInsensitive);
 
           if (this->_executorHelperAvailable) {
-            QString argEx = this->_args;
-            argEx.replace("%token%", tokenEx, Qt::CaseInsensitive);
+            this->prepairArgsEx(this->_args, tokenEx);
+            tokenEx.fill('\n');
 
-            this->_client.setShareArgs([this, argEx](unsigned int pid, HANDLE handle) {
+            this->_client.setShareArgs([this](unsigned int pid, HANDLE handle) {
               std::wstringstream name;
               name << L"Local\\HelperInfo_" << pid;
-              this->shareStringForProcess(name.str(), argEx, pid, handle);
+              this->shareStringForProcess(name.str(), this->_argsEx, pid, handle);
             });
 
             this->_client.setDeleteSharedArgs([this](){
@@ -217,7 +227,10 @@ namespace GGS {
         CRITICAL_LOG << "with error code" << exitCode;
 
         QUrl url = this->_service.url();
-        url.addQueryItem("exitCode", QString::number(exitCode));
+        QUrlQuery urlQuery(url);
+        urlQuery.addQueryItem("exitCode", QString::number(exitCode));
+        url.setQuery(urlQuery);
+
         this->_service.setUrl(url);
         emit this->finished(this->_service, ExternalFatalError);
       }
@@ -285,7 +298,7 @@ namespace GGS {
         if (!this->_data)
           return;
 
-        QByteArray serviceId = service.id().toAscii();
+        QByteArray serviceId = service.id().toLatin1();
         memcpy_s(this->_data, SERVICE_ID_SIZE_MAX, serviceId.data(), serviceId.size());
         reinterpret_cast<char *>(this->_data)[serviceId.size()] = '\0';
       }
@@ -349,13 +362,72 @@ namespace GGS {
         }
       }
 
-      void ExecutableFilePrivate::shareStringForProcess(const std::wstring& name, const QString& value, unsigned int pid, HANDLE handle)
+      void ExecutableFilePrivate::shareStringForProcess(const std::wstring& name, const std::wstring& value, unsigned int pid, HANDLE handle)
       {
         ProcessHandleCheckExtension *extension = reinterpret_cast<ProcessHandleCheckExtension *>(
           this->_executorService->extension(ExtensionTypes::ProcessHandleCheck));
 
         if (extension->get()(pid, handle))
-          this->shareString(name, value.toStdWString());
+          this->shareString(name, value);
+      }
+
+      void ExecutableFilePrivate::prepairArgsEx(const QString& format, const QString& token)
+      {
+        int garbageCount = GARBAGE_COUNT;
+        std::uniform_int_distribution<int> distribution(0, 0x00FFFFFF);
+
+        int realIndex = 1 + (distribution(this->_random) % (garbageCount - 2));
+
+        QString realFormat = format;
+        std::wstring realArgs = realFormat.replace("%token%", token, Qt::CaseInsensitive).toStdWString();
+
+        size_t totalSize = (2 * sizeof(unsigned int)) 
+          + ((realArgs.size() + 1) * garbageCount * sizeof(wchar_t)) 
+          + sizeof(wchar_t);
+
+        std::vector<char> buffer(totalSize, 0);
+        char* bufferData = &buffer[0];
+
+        unsigned int* subStringSizePtr = reinterpret_cast<unsigned int*>(bufferData);
+        int* garbageIndexPtr = reinterpret_cast<int*>(bufferData + sizeof(unsigned int));
+        wchar_t * subStringPtr = reinterpret_cast<wchar_t *>(bufferData + sizeof(unsigned int) * 2);
+
+        *subStringSizePtr = realArgs.size() + 1;
+        *garbageIndexPtr = (realIndex ^ GARBAGE_INDEX_MASK);
+
+        for (int i = 0; i < garbageCount; ++i) {
+          if (i == realIndex) {
+            realArgs.copy(subStringPtr, realArgs.size());
+          } else {
+            QString tmp = format;
+            std::wstring arg = tmp.replace("%token%", this->fakeToken(token), Qt::CaseInsensitive).toStdWString();
+            arg.copy(subStringPtr, arg.size());
+          }
+
+          subStringPtr += realArgs.size();
+          *subStringPtr = L'\0';
+          ++subStringPtr;
+        }
+
+        realArgs.assign(realArgs.size(), L'\t');
+        this->_argsEx.assign(reinterpret_cast<const wchar_t*>(bufferData), totalSize / sizeof(wchar_t));
+      }
+
+      QString ExecutableFilePrivate::fakeToken(const QString& realToken)
+      {
+        const wchar_t str[16] = { L'0', L'1', L'2', L'3', L'4', L'5', L'6', L'7', 
+                                L'8', L'9', L'a', L'b', L'c', L'd', L'e', L'f' };
+
+        std::uniform_int_distribution<int> distribution(0, 15);
+
+        std::wstring result;
+
+        for (int i = 0; i < realToken.size(); ++i) {
+          int rnd = distribution(this->_random);
+          result.append(1, str[rnd]);
+        }
+
+        return QString::fromStdWString(result);
       }
 
     }

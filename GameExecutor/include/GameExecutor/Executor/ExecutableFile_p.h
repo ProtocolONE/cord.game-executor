@@ -22,6 +22,8 @@
 
 #include <Windows.h>
 
+#include <random>
+
 using namespace GGS;
 using namespace RestApi;
 
@@ -66,7 +68,10 @@ namespace GGS {
         void shareServiceId(const GGS::Core::Service &service);
         bool shareString(const std::wstring& name, const std::wstring& value);
 
-        void shareStringForProcess(const std::wstring& name, const QString& value, unsigned int pid, HANDLE handle);
+        void shareStringForProcess(const std::wstring& name, const std::wstring& value, unsigned int pid, HANDLE handle);
+        
+        void prepairArgsEx(const QString& format, const QString& token);
+        QString fakeToken(const QString& realToken);
 
         HANDLE _serviceMapFileHandle;
         LPVOID _data;
@@ -87,6 +92,9 @@ namespace GGS {
 
         QString _authSalt;
         bool _executorHelperAvailable;
+        std::wstring _argsEx;
+
+        std::default_random_engine _random;
       };
     }
   }

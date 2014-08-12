@@ -73,10 +73,10 @@
     <ClCompile Include="src\BannerDownloadTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\DefaultAikaSettingsTest.cpp">
+    <ClCompile Include="src\FileUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ServiceInfoCounterTest.cpp">
+    <ClCompile Include="src\DefaultAikaSettingsTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\DisableAeroHookTest.cpp">
@@ -88,16 +88,13 @@
     <ClCompile Include="src\ExecutableFileTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\FileUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\GameExecutorTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mw2DownloadAndCheckXmlConfigTest.cpp">
+    <ClCompile Include="src\RestoreFileModificationTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\RestoreFileModificationTest.cpp">
+    <ClCompile Include="src\ServiceInfoCounterTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

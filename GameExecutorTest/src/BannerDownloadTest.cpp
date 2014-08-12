@@ -54,6 +54,7 @@ public:
     hook1.PreExecute(service);
     loop.exec();
     return spy.at(0).at(1).value<GGS::GameExecutor::FinishState>();
+    //return GGS::GameExecutor::CanExecutionHookBreak;
   }
 
   GGS::Core::Service srvHook;

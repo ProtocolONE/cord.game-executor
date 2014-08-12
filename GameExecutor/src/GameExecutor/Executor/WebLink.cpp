@@ -16,6 +16,7 @@
 #include <RestApi/GameNetCredential>
 
 #include <QtCore/QUrl>
+#include <QtCore/QUrlQuery>
 #include <QtCore/QDebug>
 
 #include <qt_windows.h>
@@ -53,9 +54,11 @@ namespace GGS {
           cookie = credential.cookie();
 
         if (!cookie.isEmpty()) {
-          finalUrl.setPath("https://gnlogin.ru");
-          finalUrl.addQueryItem("auth", cookie);
-          finalUrl.addQueryItem("rp", service.url().toString());
+          finalUrl.setUrl("https://gnlogin.ru");
+          QUrlQuery urlQuery(finalUrl);
+          urlQuery.addQueryItem("auth", cookie);
+          urlQuery.addQueryItem("rp", QUrl::toPercentEncoding(service.url().toString()));
+          finalUrl.setQuery(urlQuery);
         } else {
           finalUrl = service.url();
         }

@@ -1,27 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="ru_RU">
+<TS version="2.1" language="ru_RU">
 <context>
     <name>GGS::GameExecutor::Hook::Mw2DownloadAndCheckXmlConfig</name>
     <message>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="55"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="73"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="80"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="95"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="156"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="179"/>
         <source>HOOK_CANEXECUTE_FAIL</source>
-        <translation>Ошибка</translation>
+        <translation type="vanished">Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="55"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="73"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="80"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="95"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="156"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="179"/>
         <source>MW2_DOWNLOAD_CUSTOM_FILE_INFO</source>
-        <translation>Не удалось корректно обновить файл настроек. Попробуйте запустить игру ещё раз или обратитесь в службу технической поддержки https://support.gamenet.ru</translation>
+        <translation type="vanished">Не удалось корректно обновить файл настроек. Попробуйте запустить игру ещё раз или обратитесь в службу технической поддержки https://support.gamenet.ru</translation>
     </message>
 </context>
 <context>

@@ -1,4 +1,4 @@
-#include <GameExecutor/Enum>
+#include <GameExecutor/Enum.h>
 #include <Windows.h>
 #include <QtCore/QMetaType>
 

@@ -12,6 +12,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QProcess>
 #include <QtCore/QFile>
+#include <QtCore/QUrlQuery>
 
 namespace GGS {
   namespace GameExecutor {
@@ -63,8 +64,9 @@ namespace GGS {
       {
         this->_isInstalled = !this->_isInstalled;
 
+        QUrlQuery query(service.url());
         if (state == GGS::GameExecutor::ExternalFatalError &&
-          service.url().queryItemValue("exitCode") == "1" &&
+          query.queryItemValue("exitCode") == "1" &&
           !this->_isInstalled) {
             this->install(service);
             return;

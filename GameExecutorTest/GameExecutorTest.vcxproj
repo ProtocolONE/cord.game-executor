@@ -43,19 +43,19 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>UNICODE;WIN32;QT_CORE_LIB;QT_DLL;QT_SQL_LIB;QT_XML_LIB;QT_GUI_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;WIN32;QT_DLL;NOMINMAX;QT_CORE_LIB;QT_GUI_LIB;QT_SQL_LIB;QT_TESTLIB_LIB;QT_CONCURRENT_LIB;QT_XML_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(QTDIR)\include;$(QTDIR)\include\QtCore;.\;.\GeneratedFiles\$(ConfigurationName);$(ProjectDir)include;$(QGNACOMMONDIR)\Google\gtest\1.6.0\include;$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include;$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include;$(ProjectDir)..\GameExecutor\include;$(VLDDIR)\include;$(QTDIR)\include\QtTest;$(QTDIR)\include\QtSql;$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include;$(QTDIR)\include\QtXml;$(QGNACOMMONDIR)\GGS\CASettings\$(CASettingsArea)\include;$(QTDIR)\include\QtGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <AdditionalIncludeDirectories>$(QTDIR)\include;.\;.\GeneratedFiles\$(ConfigurationName);$(ProjectDir)include;$(QGNACOMMONDIR)\Google\gtest\1.6.0\include;$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include;$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include;$(ProjectDir)..\GameExecutor\include;$(VLDDIR)\include;$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include;$(QGNACOMMONDIR)\GGS\CASettings\$(CASettingsArea)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtTest;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <OutputFile>$(TargetPath)</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;$(QGNACOMMONDIR)\Google\gtest\1.6.0\lib;$(SolutionDir)!build\GameExecutor\$(Configuration);$(VLDDIR)\lib\Win32;$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\lib;$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\lib;$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>qtmaind.lib;QtCored4.lib;QtGuid4.lib;gtestd.lib;GameExecutorX86d.lib;RestApiX86d.lib;CoreX86d.lib;QtTestd4.lib;QtSqld4.lib;SettingsX86d.lib;QtXmld4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;gtestd.lib;GameExecutorX86d.lib;RestApiX86d.lib;CoreX86d.lib;SettingsX86d.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Sqld.lib;Qt5Testd.lib;Qt5Concurrentd.lib;Qt5Xmld.lib;Qt5Widgetsd.lib;Qt5Networkd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
     </Link>
     <PreBuildEvent>
@@ -69,25 +69,26 @@ xcopy /Y /I /R "$(TargetDir)..\..\Launcher\$(ConfigurationName)\*.*" "$(TargetDi
 xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\bin\*d.dll" "$(TargetDir)"
 xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\bin\*d.dll" "$(TargetDir)"
 xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\bin\*d.dll" "$(TargetDir)"
-xcopy /Y /I /R "$(QGNACOMMONDIR)\OpenSSL\0.9.8r\bin\*.dll" "$(TargetDir)"
+xcopy /Y /I /R "$(QGNACOMMONDIR)\OpenSSL\$(OpenSSLArea)\bin\*.dll" "$(TargetDir)"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>UNICODE;WIN32;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_SQL_LIB;QT_XML_LIB;QT_GUI_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
+      <PreprocessorDefinitions>UNICODE;WIN32;QT_NO_DEBUG;NDEBUG;NOMINMAX;QT_CORE_LIB;QT_GUI_LIB;QT_SQL_LIB;QT_TESTLIB_LIB;QT_CONCURRENT_LIB;QT_XML_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(QTDIR)\include;$(QTDIR)\include\QtCore;.\;.\GeneratedFiles\$(ConfigurationName);$(ProjectDir)include;$(QGNACOMMONDIR)\Google\gtest\1.6.0\include;$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include;$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include;$(ProjectDir)..\GameExecutor\include;$(VLDDIR)\include;$(QTDIR)\include\QtTest;$(QTDIR)\include\QtSql;$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include;$(QTDIR)\include\QtXml;$(QGNACOMMONDIR)\GGS\CASettings\$(CASettingsArea)\include;$(QTDIR)\include\QtGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <AdditionalIncludeDirectories>$(QTDIR)\include;.\;.\GeneratedFiles\$(ConfigurationName);$(ProjectDir)include;$(QGNACOMMONDIR)\Google\gtest\1.6.0\include;$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include;$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include;$(ProjectDir)..\GameExecutor\include;$(VLDDIR)\include;$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include;$(QGNACOMMONDIR)\GGS\CASettings\$(CASettingsArea)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtTest;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <OutputFile>$(TargetPath)</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;$(QGNACOMMONDIR)\Google\gtest\1.6.0\lib;$(SolutionDir)!build\GameExecutor\$(Configuration);$(VLDDIR)\lib\Win32;$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\lib;$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\lib;$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>qtmain.lib;QtCore4.lib;QtGui4.lib;gtest.lib;GameExecutorX86.lib;RestApiX86.lib;CoreX86.lib;QtTest4.lib;QtSql4.lib;SettingsX86.lib;QtXml4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>qtmain.lib;gtest.lib;GameExecutorX86.lib;RestApiX86.lib;CoreX86.lib;SettingsX86.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Sql.lib;Qt5Test.lib;Qt5Concurrent.lib;Qt5Xml.lib;Qt5Widgets.lib;Qt5Network.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y /I /R "$(ProjectDir)\fixtures" "$(TargetDir)\fixtures"
@@ -99,7 +100,7 @@ xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\bin\*.dll" "$(TargetDir)"
 xcopy /Y /I /R "$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\bin\*.dll" "$(TargetDir)"
 del /F /S /Q "$(TargetDir)*d.dll"
 
-xcopy /Y /I /R "$(QGNACOMMONDIR)\OpenSSL\0.9.8r\bin\*.dll" "$(TargetDir)"</Command>
+xcopy /Y /I /R "$(QGNACOMMONDIR)\OpenSSL\$(OpenSSLArea)\bin\*.dll" "$(TargetDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -139,7 +140,6 @@ xcopy /Y /I /R "$(QGNACOMMONDIR)\OpenSSL\0.9.8r\bin\*.dll" "$(TargetDir)"</Comma
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="src\Mw2DownloadAndCheckXmlConfigTest.cpp" />
     <ClCompile Include="src\RestoreFileModificationTest.cpp" />
     <ClCompile Include="src\ServiceInfoCounterTest.cpp" />
   </ItemGroup>
@@ -209,7 +209,7 @@ xcopy /Y /I /R "$(QGNACOMMONDIR)\OpenSSL\0.9.8r\bin\*.dll" "$(TargetDir)"</Comma
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties UicDir=".\GeneratedFiles" MocDir=".\GeneratedFiles\$(ConfigurationName)" MocOptions="" RccDir=".\GeneratedFiles" lupdateOnBuild="0" lupdateOptions="" lreleaseOptions="" QtVersion_x0020_Win32="$(DefaultQtVersion)" />
+      <UserProperties UicDir=".\GeneratedFiles" MocDir=".\GeneratedFiles\$(ConfigurationName)" MocOptions="" RccDir=".\GeneratedFiles" lupdateOnBuild="0" lupdateOptions="" lreleaseOptions="" QtVersion_x0020_Win32="$(DefaultQtVersion)" Qt5Version_x0020_Win32="$(DefaultQtVersion)" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

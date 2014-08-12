@@ -9,12 +9,11 @@
 ****************************************************************************/
 
 #include <gtest/gtest.h>
-#include <QApplication>
 
-#include <GameExecutor/Enum.h>
-#include <Core/Service>
+#include <QtWidgets/QApplication>
+#include <QtCore/QCoreApplication>
+
 #include <QMetaType>
-
 
 #ifdef VLD_CHECK_ENABLED
 #include <vld.h>
@@ -24,7 +23,9 @@
 int main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
+
   testing::InitGoogleTest(&argc, argv);
   int r = RUN_ALL_TESTS();
+  
   return r;
 }

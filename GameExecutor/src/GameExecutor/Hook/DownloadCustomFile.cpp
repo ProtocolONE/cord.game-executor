@@ -3,6 +3,8 @@
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
+#include <QtCore/QUrlQuery>
+
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
@@ -22,12 +24,14 @@ namespace GGS {
       void DownloadCustomFile::CanExecute(GGS::Core::Service &service)
       {
         QUrl url = service.url();
-        if (!url.hasQueryItem("downloadCustomFile")) {
+        QUrlQuery urlQuery(url);
+
+        if (!urlQuery.hasQueryItem("downloadCustomFile")) {
           emit this->canExecuteCompleted(service, GGS::GameExecutor::Success);
           return;
         }
         
-        this->_args = url.queryItemValue("downloadCustomFile").split(',');
+        this->_args = urlQuery.queryItemValue("downloadCustomFile", QUrl::FullyDecoded).split(',');
 
         if ((this->_args.count() % 3)) {
           emit this->canExecuteCompleted(service, GGS::GameExecutor::CanExecutionHookBreak);
@@ -79,7 +83,7 @@ namespace GGS {
 
 			QNetworkRequest request(this->_url);
 			QString oldLastModifed = this->loadLastModifiedDate(this->_url.toString());
-			request.setRawHeader("If-Modified-Since", oldLastModifed.toAscii());
+			request.setRawHeader("If-Modified-Since", oldLastModifed.toLatin1());
 
 			QNetworkReply *reply = this->_manager.head(request);
 			connect(reply, SIGNAL(finished()), this, SLOT(slotReplyDownloadFinished()));
@@ -102,7 +106,7 @@ namespace GGS {
 
 	  void DownloadCustomFile::slotError(QNetworkReply::NetworkError error) 
 	  {
-          emit this->canExecuteCompleted(this->_service, GGS::GameExecutor::CanExecutionHookBreak);
+      emit this->canExecuteCompleted(this->_service, GGS::GameExecutor::CanExecutionHookBreak);
 	  }
 
 	  void DownloadCustomFile::slotReplyDownloadFinished() 
@@ -123,7 +127,7 @@ namespace GGS {
 			  return;
 		  } 
 
-		  this->_lastModified = QString::fromAscii(reply->rawHeader(QByteArray("Last-Modified")));
+		  this->_lastModified = QString::fromLatin1(reply->rawHeader(QByteArray("Last-Modified")));
 
 		  if (httpCode == 304 &&
 			  QFile::exists(this->_downloadFilePath)) {

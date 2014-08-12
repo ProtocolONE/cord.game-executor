@@ -14,11 +14,12 @@
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
 #include <QtCore/QCoreApplication>
-#include <QtCore/QtConcurrentRun>
 #include <QtCore/QStringList>
 #include <QtCore/QDir>
 #include <QtCore/QSettings>
 #include <QtCore/QVariant>
+
+#include <QtConcurrent/QtConcurrentRun>
 
 #include <RestApi/GameNetCredential>
 #include <RestApi/Commands/User/SetUserActivity>
@@ -326,7 +327,7 @@ namespace GGS{
         CloseHandle(hThread);
 
         if (waitHandle != NULL) {
-          WaitForSingleObject(waitHandle, 5000);
+          WaitForSingleObject(waitHandle, 15000);
           CloseHandle(waitHandle);
         }
       }

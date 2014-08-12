@@ -172,15 +172,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameExecutor\Hook\Mw2DownloadAndCheckXmlConfig.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_Mw2DownloadAndCheckXmlConfig.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_Mw2DownloadAndCheckXmlConfig.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="src\GameExecutor\Hook\DisableAeroHook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -262,9 +253,6 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="include\GameExecutor\Hook\RestoreFileModification.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="include\GameExecutor\Hook\Mw2DownloadAndCheckXmlConfig.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="include\GameExecutor\Hook\DefaultAikaSettings.h">

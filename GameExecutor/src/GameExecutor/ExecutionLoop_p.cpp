@@ -13,9 +13,6 @@
 #include <GameExecutor/ExecutorBase.h>
 #include <GameExecutor/GameExecutorService.h>
 
-#include <Core/Marketing.h>
-using GGS::Core::Marketing;
-
 namespace GGS {
   namespace GameExecutor {
     ExecutionLoopPrivate::ExecutionLoopPrivate(QObject *parent)
@@ -103,8 +100,6 @@ namespace GGS {
 
     void ExecutionLoopPrivate::executorStep()
     {
-      Marketing::sendOnceByService(Marketing::FirstRunService, this->_service.id());
-      Marketing::send(Marketing::StartService, this->_service.id());
       if (this->_stopExecution) {
         emit this->finished(this->_service, GGS::GameExecutor::Success);
       } else {
@@ -129,7 +124,6 @@ namespace GGS {
         return;
 
       if (this->_listIndex == this->_list.size()) {
-        Marketing::send(Marketing::CloseService, this->_service.id());
         emit this->finished(this->_service, this->_state);
         return;
       }

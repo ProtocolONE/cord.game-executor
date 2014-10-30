@@ -46,6 +46,7 @@ protected:
 
   ExecutorMock mockExecutor;
   GGS::RestApi::RestApiManager restapiManger;
+  GGS::RestApi::GameNetCredential defaultCredential;
   GameExecutorService executorService;
   Core::Service service;
 
@@ -76,9 +77,8 @@ TEST_F(GameExecutorServiceTest, BaseSignals)
   
   //Это может показаться странным, но это лучший способ проверить корректность следования сигналов при условии, что
   //часть сигналы эмитятся в разных потоках.
-  for (int y = 0; y < 1000; y++)
-  {
-    executorService.execute(service);
+  for (int y = 0; y < 1000; y++) {
+    executorService.executeEx(service, defaultCredential);
 
     loop.exec();
 
@@ -95,7 +95,7 @@ TEST_F(GameExecutorServiceTest, CanExecuteStopTheLoop)
 {
   HookMock hook;
   
-  hook.setCanFunc([&](const Core::Service &service) -> GGS::GameExecutor::FinishState {
+  hook.setCanFunc([](const Core::Service &service) -> GGS::GameExecutor::FinishState {
     return GGS::GameExecutor::CanExecutionHookBreak;
   });
   
@@ -108,11 +108,11 @@ TEST_F(GameExecutorServiceTest, CanExecuteStopTheLoop)
   QSignalSpy finishExecute(&executorService, SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)));
 
   GameExecutorServiceWrapper wrapper(&executorService);
-  wrapper.setFinished([&](const GGS::Core::Service &service, GGS::GameExecutor::FinishState state) {
-    loop.exit();
+  wrapper.setFinished([this](const GGS::Core::Service &service, GGS::GameExecutor::FinishState state) {
+    this->loop.exit();
   });
 
-  executorService.execute(service);
+  executorService.executeEx(service, defaultCredential);
   loop.exec();
 
   ASSERT_EQ(0, canExecute.count());
@@ -126,7 +126,7 @@ TEST_F(GameExecutorServiceTest, PreExecuteStopTheLoop)
 {
   HookMock hook;
 
-  hook.setPreFunc([&](const Core::Service &service) -> GGS::GameExecutor::FinishState {
+  hook.setPreFunc([](const Core::Service &service) -> GGS::GameExecutor::FinishState {
     return GGS::GameExecutor::PreExecutionHookBreak;
   });
 
@@ -139,11 +139,11 @@ TEST_F(GameExecutorServiceTest, PreExecuteStopTheLoop)
   QSignalSpy finishExecute(&executorService, SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)));
 
   GameExecutorServiceWrapper wrapper(&executorService);
-  wrapper.setFinished([&](const GGS::Core::Service &service, GGS::GameExecutor::FinishState state) {
-    loop.exit();
+  wrapper.setFinished([this](const GGS::Core::Service &service, GGS::GameExecutor::FinishState state) {
+    this->loop.exit();
   });
 
-  executorService.execute(service);
+  executorService.executeEx(service, defaultCredential);
   loop.exec();
 
   ASSERT_EQ(1, canExecute.count());
@@ -188,11 +188,11 @@ TEST_F(GameExecutorServiceTest, NormalFlowOfTheLoop)
   NORMAL_FLOW_OF_THE_LOOP_HOOK(Hook3, 1);
   
   GameExecutorServiceWrapper wrapper(&executorService);
-  wrapper.setFinished([&](const GGS::Core::Service &service, GGS::GameExecutor::FinishState state) {
-    loop.exit();
+  wrapper.setFinished([this](const GGS::Core::Service &service, GGS::GameExecutor::FinishState state) {
+    this->loop.exit();
   });
 
-  executorService.execute(service);
+  executorService.executeEx(service, defaultCredential);
   loop.exec();
 
   //UNDONE Проверить, что Core::Service реально тот, что был передан
@@ -218,14 +218,14 @@ TEST_F(GameExecutorServiceTest, InvalidServiceCase)
   QSignalSpy finishedSpy(&executorService, SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)));
 
   GameExecutorServiceWrapper wrapper(&executorService);
-  wrapper.setFinished([&](const GGS::Core::Service &service, GGS::GameExecutor::FinishState state) {
-    loop.exit();
+  wrapper.setFinished([this](const GGS::Core::Service &service, GGS::GameExecutor::FinishState state) {
+    this->loop.exit();
   });
 
   Core::Service srv;
   srv.setUrl(QUrl("test://"));
 
-  executorService.execute(srv);
+  executorService.executeEx(srv, defaultCredential);
   loop.exec();
 
   ASSERT_EQ(0, startedSpy.count());
@@ -239,20 +239,19 @@ TEST_F(GameExecutorServiceTest, UnknownSchemeErrorCase)
   QSignalSpy finishedSpy(&executorService, SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)));
  
   GameExecutorServiceWrapper wrapper(&executorService);
-  wrapper.setFinished([&](const GGS::Core::Service &service, GGS::GameExecutor::FinishState state) {
-    loop.exit();
+  wrapper.setFinished([this](const GGS::Core::Service &service, GGS::GameExecutor::FinishState state) {
+    this->loop.exit();
   });
 
   service.setUrl(QUrl("wrongScheme://"));
 
-  executorService.execute(service);
+  executorService.executeEx(service, defaultCredential);
   loop.exec();
 
   ASSERT_EQ(0, startedSpy.count());
   ASSERT_EQ(GGS::GameExecutor::UnknownSchemeError, 
             finishedSpy.at(0).at(1).value<GGS::GameExecutor::FinishState>());
 }
-
 
 TEST_F(GameExecutorServiceTest, MultiStartErrorCase) 
 {
@@ -267,8 +266,8 @@ TEST_F(GameExecutorServiceTest, MultiStartErrorCase)
   });
 
   service.setUrl(QUrl("test://"));
-  executorService.execute(service);
-  executorService.execute(service);
+  executorService.executeEx(service, defaultCredential);
+  executorService.executeEx(service, defaultCredential);
   loop.exec();
 
   ASSERT_EQ(1, startedSpy.count());
@@ -283,3 +282,38 @@ TEST_F(GameExecutorServiceTest, MultiStartErrorCase)
     finishedSpy.at(1).at(1).value<GGS::GameExecutor::FinishState>());
 }
 
+TEST_F(GameExecutorServiceTest, TestNewCredential)
+{
+  GameExecutorServiceWrapper wrapper(&executorService);
+  wrapper.setFinished([this](const Core::Service &service, GGS::GameExecutor::FinishState state) {
+    this->loop.exit();
+  });
+  
+  GGS::RestApi::GameNetCredential oldCredential;
+  oldCredential.setUserId("11111111111111111");
+  oldCredential.setAppKey("aaaaaaaaaaaaaaaaa");
+  oldCredential.setCookie("ccccccccccccccccc");
+
+  GGS::RestApi::RestApiManager::commonInstance()->setCridential(oldCredential);
+
+  GGS::RestApi::GameNetCredential mainCredential;
+  mainCredential.setUserId("22222222222222222");
+  mainCredential.setAppKey("bbbbbbbbbbbbbbbbb");
+  mainCredential.setCookie("ddddddddddddddddd");
+
+  GGS::RestApi::GameNetCredential secondCredential;
+  secondCredential.setUserId("33333333333333333");
+  secondCredential.setAppKey("eeeeeeeeeeeeeeeee");
+  secondCredential.setCookie("fffffffffffffffff");
+
+  executorService.executeEx(service, mainCredential, secondCredential);
+  loop.exec();
+
+  ASSERT_EQ(mainCredential.userId(), mockExecutor.credential.userId());
+  ASSERT_EQ(mainCredential.appKey(), mockExecutor.credential.appKey());
+  ASSERT_EQ(mainCredential.cookie(), mockExecutor.credential.cookie());
+
+  ASSERT_EQ(secondCredential.userId(), mockExecutor.secondCredential.userId());
+  ASSERT_EQ(secondCredential.appKey(), mockExecutor.secondCredential.appKey());
+  ASSERT_EQ(secondCredential.cookie(), mockExecutor.secondCredential.cookie());
+}

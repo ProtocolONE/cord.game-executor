@@ -85,6 +85,11 @@ namespace GGS {
         this->preExecuteCompleted(this->_service, GGS::GameExecutor::FinishState::Success);
       }
 
+      QString BannerDownload::id()
+      {
+        return "719D797A-9463-47D2-BD66-412BCA758DB9";
+      }
+
     }
   }
 }

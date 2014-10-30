@@ -29,24 +29,30 @@ namespace GGS {
     void ExecutionLoopPrivate::execute()
     {
       this->_listIndex = 0;
+      bool useMain = this->_secondCredential.userId().isEmpty();
+
+      const GGS::RestApi::GameNetCredential& credential(useMain 
+        ? this->_credential
+        : this->_secondCredential);
 
       Q_FOREACH(HookInterface *hook, this->_list) {
-        SIGNAL_CONNECT_CHECK(connect(hook, SIGNAL(canExecuteCompleted(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), 
-          this, SLOT(executeHookCanStep(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), Qt::QueuedConnection));
-        SIGNAL_CONNECT_CHECK(connect(hook, SIGNAL(preExecuteCompleted(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), 
-          this, SLOT(executeHookPreStep(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), Qt::QueuedConnection));
-        SIGNAL_CONNECT_CHECK(connect(hook, SIGNAL(postExecuteCompleted(const GGS::Core::Service &)), 
-          this, SLOT(executeHookPostStep(const GGS::Core::Service &)), Qt::QueuedConnection));
+        hook->setCredential(credential);
+
+        QObject::connect(hook, &HookInterface::canExecuteCompleted,
+          this, &ExecutionLoopPrivate::executeHookCanStep, Qt::QueuedConnection);
+
+        QObject::connect(hook, &HookInterface::preExecuteCompleted,
+          this, &ExecutionLoopPrivate::executeHookPreStep, Qt::QueuedConnection);
+
+        QObject::connect(hook, &HookInterface::postExecuteCompleted,
+          this, &ExecutionLoopPrivate::executeHookPostStep, Qt::QueuedConnection);
       }
 
-      SIGNAL_CONNECT_CHECK(connect(this->_executor.data(), SIGNAL(started(const GGS::Core::Service)), 
-        this, SLOT(startedStep(const GGS::Core::Service)), Qt::QueuedConnection));
+      QObject::connect(this->_executor.data(), &ExecutorBase::started,
+        this, &ExecutionLoopPrivate::startedStep, Qt::QueuedConnection);
 
-      SIGNAL_CONNECT_CHECK(connect(this->_executor.data(), 
-        SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)), 
-        this, 
-        SLOT(executorCompletedStep(const GGS::Core::Service, GGS::GameExecutor::FinishState)), 
-        Qt::QueuedConnection));
+      QObject::connect(this->_executor.data(), &ExecutorBase::finished,
+        this, &ExecutionLoopPrivate::executorCompletedStep, Qt::QueuedConnection);
 
       this->executeHookCanStep(this->_service, GGS::GameExecutor::Success);
     }
@@ -103,7 +109,7 @@ namespace GGS {
       if (this->_stopExecution) {
         emit this->finished(this->_service, GGS::GameExecutor::Success);
       } else {
-        this->_executor->execute(this->_service, this->_executorService, this->_credential);
+        this->_executor->execute(this->_service, this->_executorService, this->_credential, this->_secondCredential);
       }
     }
 
@@ -170,6 +176,11 @@ namespace GGS {
     void ExecutionLoopPrivate::setCredential(const GGS::RestApi::GameNetCredential& value)
     {
       this->_credential = value;
+    }
+
+    void ExecutionLoopPrivate::setSecondCredential(const GGS::RestApi::GameNetCredential& value)
+    {
+      this->_secondCredential = value;
     }
 
   }

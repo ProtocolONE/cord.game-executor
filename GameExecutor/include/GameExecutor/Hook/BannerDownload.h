@@ -25,8 +25,10 @@ namespace GGS {
       {
         Q_OBJECT
       public:
-        BannerDownload(QObject *parent = 0);
-        ~BannerDownload();
+        explicit BannerDownload(QObject *parent = 0);
+        virtual ~BannerDownload();
+
+        static QString id();
 
         virtual void PreExecute(Core::Service &service);
 

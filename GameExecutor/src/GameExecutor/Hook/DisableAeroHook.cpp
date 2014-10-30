@@ -13,6 +13,7 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QDebug>
+#include <QtCore/QSysInfo>
 
 #include <Windows.h>
 
@@ -32,6 +33,25 @@ namespace GGS {
 
       void DisableAeroHook::CanExecute(Core::Service &service)
       {
+        QSysInfo::WinVersion version = QSysInfo::windowsVersion();
+        bool oldVersion = version == QSysInfo::WV_NT 
+          || version == QSysInfo::WV_2000
+          || version == QSysInfo::WV_XP
+          || version == QSysInfo::WV_2003;
+
+        if (!oldVersion)
+          this->disableAero(service);
+
+        emit this->canExecuteCompleted(service, GGS::GameExecutor::Success);
+      }
+
+      QString DisableAeroHook::id()
+      {
+        return "B0215EBC-27F0-4C3C-BC21-0C3611AFEEF4";
+      }
+
+      void DisableAeroHook::disableAero(const Core::Service &service)
+      {
         QString pathToExe = QString("%1/%2/Engine.exe").arg(service.installPath(), service.areaString());
         pathToExe = QDir::toNativeSeparators(pathToExe);
 
@@ -39,9 +59,8 @@ namespace GGS {
         if (!registry.setValue(pathToExe, "DISABLETHEMES DISABLEDWM")) {
           DEBUG_LOG << "DisableAeroHook failed";
         }
-
-        emit this->canExecuteCompleted(service, GGS::GameExecutor::Success);
       }
+
     }
   }
 }

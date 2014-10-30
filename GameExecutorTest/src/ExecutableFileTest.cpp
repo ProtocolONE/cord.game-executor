@@ -43,12 +43,8 @@ class ExecutableFileTest : public ::testing::Test
 protected:
   virtual void SetUp() 
   {
-    auth.setAppKey(QString("599fd1beed859639ba44e7100383bb735f606c89"));
-    auth.setUserId(QString("400001000001890150"));
-
     restapi.setUri(QString("https://gnapi.com/restapi"));
     restapi.setCache(&cache);
-    restapi.setCridential(auth);
     restapi.setRequest(GGS::RestApi::RequestFactory::Http);
     GGS::RestApi::RestApiManager::setCommonInstance(&restapi);
   }
@@ -61,8 +57,8 @@ protected:
     const GGS::Core::Service &srv, 
     int startCount, 
     GGS::GameExecutor::FinishState finishState, 
-    const QString workingPath = "",
-    GGS::RestApi::GameNetCredential credential = GGS::RestApi::GameNetCredential())
+    GGS::RestApi::GameNetCredential credential,
+    GGS::RestApi::GameNetCredential secondCredential = GGS::RestApi::GameNetCredential())
   {
     GameExecutor::Executor::ExecutableFile executor;
 
@@ -74,7 +70,7 @@ protected:
       loop.exit();
     });;
 
-    executor.execute(srv, &executorService, credential);
+    executor.execute(srv, &executorService, credential, secondCredential);
 
     loop.exec();
     //такая конструкция нужна, чтобы "доработать" события deleteLater
@@ -126,7 +122,7 @@ TEST_F(ExecutableFileTest, DISABLED_ArgumentParsing)
   QFile successOutput(QCoreApplication::applicationDirPath() + "/output.txt");
   successOutput.remove();
   
-  ExecutionFlow(srv, 1, GGS::GameExecutor::Success);
+  ExecutionFlow(srv, 1, GGS::GameExecutor::Success, GGS::RestApi::GameNetCredential());
 
   QString output;
   if (successOutput.open(QIODevice::ReadOnly)) {
@@ -158,13 +154,12 @@ TEST_F(ExecutableFileTest, DISABLED_ExternalFatalError)
   srv.setGameId("71");
   srv.setUrl(url);
 
-  ExecutionFlow(srv, 1, GGS::GameExecutor::ExternalFatalError);
+  ExecutionFlow(srv, 1, GGS::GameExecutor::ExternalFatalError, GGS::RestApi::GameNetCredential());
 }
 
 TEST_F(ExecutableFileTest, AuthorizationError) 
 {
   GameNetCredential wrongAuth;
-  restapi.setCridential(wrongAuth);
 
   QUrl url;
   url.setScheme("exe");
@@ -180,16 +175,14 @@ TEST_F(ExecutableFileTest, AuthorizationError)
   srv.setGameId("71");
   srv.setUrl(url);
 
-  ExecutionFlow(srv, 0, GGS::GameExecutor::AuthorizationError);
+  ExecutionFlow(srv, 0, GGS::GameExecutor::AuthorizationError, wrongAuth);
 }
 
-TEST_F(ExecutableFileTest, DISABLED_ServiceAuthorizationImpossibleError) 
+TEST_F(ExecutableFileTest, ServiceAuthorizationImpossibleError) 
 {
   GameNetCredential auth; 
   auth.setUserId("400001000025914750"); //gna_blocked_acc@unit.test
   auth.setAppKey("60472d5bc9f7dee91d0a113ff481a99a8091b503");
-
-  restapi.setCridential(auth);
 
   QUrl url;
   url.setScheme("exe");
@@ -204,7 +197,7 @@ TEST_F(ExecutableFileTest, DISABLED_ServiceAuthorizationImpossibleError)
   srv.setGameId("83");
   srv.setUrl(url);
 
-  ExecutionFlow(srv, 0, GGS::GameExecutor::ServiceAuthorizationImpossible);
+  ExecutionFlow(srv, 0, GGS::GameExecutor::ServiceAuthorizationImpossible, auth);
 }
 
 TEST_F(ExecutableFileTest, ServiceAccountBlockedError) 
@@ -212,8 +205,6 @@ TEST_F(ExecutableFileTest, ServiceAccountBlockedError)
   GameNetCredential auth; 
   auth.setUserId("400001000025914750"); //gna_blocked_acc@unit.test
   auth.setAppKey("60472d5bc9f7dee91d0a113ff481a99a8091b503");
-
-  restapi.setCridential(auth);
 
   QUrl url;
   url.setScheme("exe");
@@ -228,40 +219,40 @@ TEST_F(ExecutableFileTest, ServiceAccountBlockedError)
   srv.setGameId("83");
   srv.setUrl(url);
 
-  ExecutionFlow(srv, 0, GGS::GameExecutor::ServiceAccountBlockedError);
+  ExecutionFlow(srv, 0, GGS::GameExecutor::ServiceAccountBlockedError, auth);
 }
 
-TEST_F(ExecutableFileTest, DISABLED_ArgumentParsingSecondAccount) 
-{
-  RestApi::GameNetCredential secondAuth;
-  secondAuth.setUserId("400001000001709240");
-  secondAuth.setAppKey("570e3c3e59c7c4d7a1b322a0e25f231752814dc6");
-
-  QUrl url;
-  url.setScheme("exe");
-  url.setPath(QCoreApplication::applicationDirPath() + "/fixtures/success.exe");
-  QUrlQuery query;
-  query.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
-  query.addQueryItem("args", "%userId% %appKey% %token%");
-  url.setQuery(query);
-
-  GGS::Core::Service srv;
-  srv.setId("300003010000000000");
-  srv.setGameId("71");
-  srv.setUrl(url);
-
-  QFile successOutput(QCoreApplication::applicationDirPath() + "/output.txt");
-  successOutput.remove();
-
-  ExecutionFlow(srv, 1, GGS::GameExecutor::Success, "", secondAuth);
-
-  QString output;
-  if (successOutput.open(QIODevice::ReadOnly)) {
-    QTextStream in(&successOutput);
-    output = in.readAll();
-  }
-
-  QString correctOutput = QString("%1 %2").arg(secondAuth.userId(), secondAuth.appKey());
-
-  ASSERT_TRUE(output.trimmed().startsWith(correctOutput));
-}
+//TEST_F(ExecutableFileTest, DISABLED_ArgumentParsingSecondAccount) 
+//{
+//  RestApi::GameNetCredential secondAuth;
+//  secondAuth.setUserId("400001000001709240");
+//  secondAuth.setAppKey("570e3c3e59c7c4d7a1b322a0e25f231752814dc6");
+//
+//  QUrl url;
+//  url.setScheme("exe");
+//  url.setPath(QCoreApplication::applicationDirPath() + "/fixtures/success.exe");
+//  QUrlQuery query;
+//  query.addQueryItem("workingDir", QCoreApplication::applicationDirPath());
+//  query.addQueryItem("args", "%userId% %appKey% %token%");
+//  url.setQuery(query);
+//
+//  GGS::Core::Service srv;
+//  srv.setId("300003010000000000");
+//  srv.setGameId("71");
+//  srv.setUrl(url);
+//
+//  QFile successOutput(QCoreApplication::applicationDirPath() + "/output.txt");
+//  successOutput.remove();
+//
+//  ExecutionFlow(srv, 1, GGS::GameExecutor::Success, "", secondAuth);
+//
+//  QString output;
+//  if (successOutput.open(QIODevice::ReadOnly)) {
+//    QTextStream in(&successOutput);
+//    output = in.readAll();
+//  }
+//
+//  QString correctOutput = QString("%1 %2").arg(secondAuth.userId(), secondAuth.appKey());
+//
+//  ASSERT_TRUE(output.trimmed().startsWith(correctOutput));
+//}

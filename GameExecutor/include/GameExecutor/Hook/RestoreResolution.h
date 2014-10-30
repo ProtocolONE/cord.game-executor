@@ -1,7 +1,7 @@
 /****************************************************************************
 ** This file is a part of Syncopate Limited GameNet Application or it parts.
 **
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
+** Copyright (В©) 2011 - 2012, Syncopate Limited and/or affiliates. 
 ** All rights reserved.
 **
 ** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
@@ -23,18 +23,20 @@ namespace GGS {
       /*!
         \class RestoreResolution
       
-        \brief Сохраняет и восстанавливает разрешение экрана после запуска игры. 
+        \brief РЎРѕС…СЂР°РЅСЏРµС‚ Рё РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЂР°Р·СЂРµС€РµРЅРёРµ СЌРєСЂР°РЅР° РїРѕСЃР»Рµ Р·Р°РїСѓСЃРєР° РёРіСЂС‹. 
       */
       class GAMEEXECUTOR_EXPORT RestoreResolution : public HookInterface
       {
         Q_OBJECT
       public:
         explicit RestoreResolution(QObject *parent = 0);
-        ~RestoreResolution();
+        virtual ~RestoreResolution();
+
+        static QString id();
 
         virtual void PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state);
-
         virtual void PreExecute(Core::Service &service);
+
       private:
         DEVMODE _beforeExecuteDisplay;
         bool _enabled;

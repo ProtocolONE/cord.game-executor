@@ -7,14 +7,16 @@ ExecutorMock::ExecutorMock(QObject *parent) : ExecutorBase(parent)
 
 ExecutorMock::~ExecutorMock()
 {
-
 }
 
 void ExecutorMock::execute(
   const GGS::Core::Service &service, 
   GameExecutorService *executorService,
-  const GGS::RestApi::GameNetCredential& credential)
+  const GGS::RestApi::GameNetCredential& credential,
+  const GGS::RestApi::GameNetCredential& secondCredential)
 {
+  this->credential = credential;
+  this->secondCredential = secondCredential;
   emit this->started(service);
   emit this->finished(service, GGS::GameExecutor::Success);
 }

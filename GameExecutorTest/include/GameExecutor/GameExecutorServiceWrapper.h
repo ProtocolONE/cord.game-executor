@@ -25,17 +25,17 @@ class GameExecutorServiceWrapper : public QObject
   Q_OBJECT
 
 public:
-    GameExecutorServiceWrapper(QObject *parent = 0);
-    GameExecutorServiceWrapper(GGS::GameExecutor::GameExecutorService *_service) ;
-    ~GameExecutorServiceWrapper();
+  explicit GameExecutorServiceWrapper(QObject *parent = 0);
+  explicit GameExecutorServiceWrapper(GGS::GameExecutor::GameExecutorService *_service) ;
+  ~GameExecutorServiceWrapper();
 
-    void setGameExecutorService(GGS::GameExecutor::GameExecutorService *_service);
-    
-    void setCanExecuteCompleted(CanPreFunc func);
-    void setPreExecuteCompleted(CanPreFunc func);
-    void setStarted(StartedFunc func);
-    void setFinished(FinishedFunc func);
-    
+  void setGameExecutorService(GGS::GameExecutor::GameExecutorService *_service);
+
+  void setCanExecuteCompleted(CanPreFunc func);
+  void setPreExecuteCompleted(CanPreFunc func);
+  void setStarted(StartedFunc func);
+  void setFinished(FinishedFunc func);
+
 private slots:
   void canExecuteCompleted(const GGS::Core::Service &service);
   void preExecuteCompleted(const GGS::Core::Service &service);

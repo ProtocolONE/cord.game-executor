@@ -38,7 +38,8 @@ namespace GGS {
       void WebLink::execute(
         const GGS::Core::Service &service, 
         GameExecutorService *executorService,
-        const GGS::RestApi::GameNetCredential& credential)
+        const GGS::RestApi::GameNetCredential& credential,
+        const GGS::RestApi::GameNetCredential& secondCredential)
       {
         DEBUG_LOG;
 
@@ -46,12 +47,11 @@ namespace GGS {
 
         QUrl finalUrl;
         QString cookie;
-        RestApi::GameNetCredential baseCredential = RestApi::RestApiManager::commonInstance()->credential();
-
-        if (credential.cookie().isEmpty())
-          cookie = baseCredential.cookie();
-        else
+        
+        if (secondCredential.cookie().isEmpty())
           cookie = credential.cookie();
+        else
+          cookie = secondCredential.cookie();
 
         if (!cookie.isEmpty()) {
           finalUrl.setUrl("https://gnlogin.ru");

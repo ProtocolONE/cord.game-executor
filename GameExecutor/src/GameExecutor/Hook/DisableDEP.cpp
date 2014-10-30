@@ -32,7 +32,6 @@ namespace GGS {
         registry.value("SystemStartOptions", systemOptions);
 
         if (systemOptions.contains("NOEXECUTE=ALWAYSON")) {
-          //UNDONE Локализация
           Core::UI::Message::warning(QObject::tr("TITLE_ATTENTION"), QObject::tr("WARNING_DISABLEDEP"));
 
           emit this->preExecuteCompleted(service, GGS::GameExecutor::PreExecutionHookBreak);
@@ -44,6 +43,12 @@ namespace GGS {
         registry2.setValue(path, "DisableNXShowUI");
         emit this->preExecuteCompleted(service, GGS::GameExecutor::Success);
       }
+
+      QString DisableDEP::id()
+      {
+        return "54B0860B-215C-462F-A80E-F7664DEA984F";
+      }
+
     }
   }
 }

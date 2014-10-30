@@ -27,20 +27,22 @@ namespace GGS {
       void ExecutableFile::execute(
         const GGS::Core::Service &service, 
         GameExecutorService *executorService,
-        const GGS::RestApi::GameNetCredential& credential)
+        const GGS::RestApi::GameNetCredential& credential,
+        const GGS::RestApi::GameNetCredential& secondCredential)
       {
         QString id = service.id();
         ExecutableFilePrivate* executor = new ExecutableFilePrivate(this);
 
-        SIGNAL_CONNECT_CHECK(connect(executor, SIGNAL(started(const GGS::Core::Service &)), 
-          this, SIGNAL(started(const GGS::Core::Service &)), Qt::DirectConnection));
+        QObject::connect(executor, &ExecutableFilePrivate::started,
+          this, &ExecutableFile::started, Qt::DirectConnection);
 
-        SIGNAL_CONNECT_CHECK(connect(executor, SIGNAL(finished(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), 
-          this, SLOT(internalFinished(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), Qt::DirectConnection));
+        QObject::connect(executor, &ExecutableFilePrivate::finished,
+          this, &ExecutableFile::internalFinished, Qt::DirectConnection);
 
-        SIGNAL_CONNECT_CHECK(connect(executorService, SIGNAL(stopExecution()), executor, SLOT(shutdown())));
+        QObject::connect(executorService, &GameExecutorService::stopExecution,
+          executor, &ExecutableFilePrivate::shutdown);
 
-        executor->execute(service, executorService, credential);
+        executor->execute(service, executorService, credential, secondCredential);
       }
 
       void ExecutableFile::internalFinished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state)

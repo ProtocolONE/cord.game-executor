@@ -29,7 +29,9 @@ namespace GGS {
         Q_OBJECT
       public:
         explicit ExternalDependency(QObject *parent = 0);
-        ~ExternalDependency();
+        virtual ~ExternalDependency();
+
+        static QString id();
 
         virtual void PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state) override;
         void setExternalDepencyList(const QString& dependencyList);

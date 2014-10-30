@@ -11,23 +11,16 @@
 #include <GameExecutor/Executor/ExecutableFileClient.h>
 #include <GameExecutor/Executor/AppInitPatch.h>
 
-#include <QtCore/QFile>
-#include <QtCore/QTimer>
-#include <QtCore/QCoreApplication>
-#include <QtCore/QStringList>
 #include <QtCore/QDir>
-#include <QtCore/QSettings>
-#include <QtCore/QVariant>
-
-#include <QtConcurrent/QtConcurrentRun>
+#include <QtCore/QDebug>
+#include <QtCore/QWinEventNotifier>
 
 #include <RestApi/GameNetCredential>
 #include <RestApi/Commands/User/SetUserActivity>
 
-#include <windows.h>
-
 using GGS::RestApi::GameNetCredential;
 using GGS::RestApi::Commands::User::SetUserActivity;
+using GGS::RestApi::CommandBase;
 
 namespace GGS{
   namespace GameExecutor{
@@ -42,7 +35,8 @@ namespace GGS{
           str.toWCharArray(this->_data);
         }
 
-        ~QStringToWChar() {
+        ~QStringToWChar() 
+        {
           delete [] _data;
         }
 
@@ -58,79 +52,24 @@ namespace GGS{
         : QObject(parent)
         , _appinitPatch(new AppInitPatch(this))
         , _processHandle(NULL)
+        , _threadHandle(NULL)
       {
-        DEBUG_LOG;
-        SIGNAL_CONNECT_CHECK(connect(&this->_executeFeatureWatcher, SIGNAL(finished()), this, SLOT(processFinished())));
       }
 
       ExecutableFileClient::~ExecutableFileClient()
       {
+        this->stopProcess();
       }
 
-      void ExecutableFileClient::startProcess(QString startParams)
+      void ExecutableFileClient::startProcess(
+        const QString& pathToExe,
+        const QString& args,
+        const QString& workDirectory,
+        const QString& injectedDll,
+        const QString& injectedDll2)
       {
-        QStringList params = startParams.split("|", QString::KeepEmptyParts, Qt::CaseInsensitive);
-        if (params.at(0) != "start") {
-          CRITICAL_LOG << "unsupported command" << params.at(0);
-          emit this->exit(Fail);
-          return;
-        }
-
-        QString exeFile = params.at(1);
-
-        if (!QFile::exists(exeFile)) {
-          CRITICAL_LOG << "file not exists '" << exeFile << "'";
-          emit this->exit(Fail);
-          return;
-        }
-
-        bool gameIdCastResult = false;
-        this->_gameId = params.at(6).toInt(&gameIdCastResult);
-
-        if (false == gameIdCastResult) {
-          CRITICAL_LOG << params.at(6);
-          emit this->exit(Fail);
-          return;
-        }
-
-        this->_userId = params.at(4);
-        this->_appKey = params.at(5);
-
-        QString dir = params.at(2);
-        QString args = params.at(3);
-       
-        QString injectedDll;
-        if (params.length() > 7)
-          injectedDll = params.at(7);
-
-        QString injectedDll2;
-        if (params.length() > 8)
-          injectedDll2 = params.at(8);
-
-        QTimer::singleShot(1000, this, SLOT(setUserActivity()));
-
-        DEBUG_LOG << "Start " << this->_userId << exeFile << params.at(2)<< injectedDll;
-
-        // HACK переписать это на обычные потоки
-        this->_executeFeature = QtConcurrent::run(
-          this, 
-          &ExecutableFileClient::startProcessInternal, 
-          exeFile, 
-          params.at(2), 
-          params.at(3), 
-          injectedDll,
-          injectedDll2);
-
-        this->_executeFeatureWatcher.setFuture(this->_executeFeature);
-      }
-
-      unsigned int ExecutableFileClient::startProcessInternal(
-        QString pathToExe, 
-        QString workDirectory, 
-        QString args, 
-        QString dllPath /*= QString()*/,
-        QString dllPath2)
-      {
+        DEBUG_LOG << "Start " << pathToExe << workDirectory;
+        
         // HACK ППц нашел XP где обратные слешы не работают.!
         QString path = QDir::toNativeSeparators(pathToExe);
         QString commandLine = QString("\"%1\" %2").arg(path, args);
@@ -138,7 +77,7 @@ namespace GGS{
         QStringToWChar exe(path);
         QStringToWChar cmd(commandLine);
         QStringToWChar dir(workDirectory);
-        
+
         STARTUPINFO si;
         PROCESS_INFORMATION pi;
         ZeroMemory(&si, sizeof(STARTUPINFO));
@@ -153,18 +92,23 @@ namespace GGS{
         if (!CreateProcessW(exe.data(), cmd.data(), 0, 0, FALSE, CREATE_SUSPENDED, NULL, dir.data(), &si, &pi)) {
           this->_appinitPatch->restoreRegistry();
           DEBUG_LOG << "Create process failed" << GetLastError();
-          emit this->exit(Fail);
-          return 0xFFFFFFFF;
+          emit this->finished(Fail);
+          return;
         }
 
         if (pi.hProcess == INVALID_HANDLE_VALUE) {
           this->_appinitPatch->restoreRegistry();
           DEBUG_LOG << "Create process invalid handle" << GetLastError();
-          emit this->exit(Fail);
-          return 0xFFFFFFFE;
+          emit this->finished(Fail);
+          return;
         }
 
+        QWinEventNotifier *monitor = new QWinEventNotifier(pi.hProcess, this);
+        QObject::connect(monitor, &QWinEventNotifier::activated, 
+          this, &ExecutableFileClient::handleActivated);
+
         this->_processHandle = pi.hProcess;
+        this->_threadHandle = pi.hThread;
 
         this->_appinitPatch->patchAppinit(this->_processHandle);
 
@@ -172,13 +116,13 @@ namespace GGS{
         if (!nvidia.isEmpty())
           this->injectDll(this->_processHandle, nvidia);
 
-        if (!dllPath.isEmpty())
-          this->injectDll(this->_processHandle, dllPath, QString("Local\\QGNA_OVERLAY_EVENT"));
+        if (!injectedDll.isEmpty())
+          this->injectDll(this->_processHandle, injectedDll, QString("Local\\QGNA_OVERLAY_EVENT"));
 
         // UNDONE рефакторнуть это как-то. Например грузить все дополнительные дллки через общий хелпер.
-        if (!dllPath2.isEmpty()) {
+        if (!injectedDll2.isEmpty()) {
           this->_shareArgs(pi.dwProcessId, this->_processHandle);
-          this->injectDll(this->_processHandle, dllPath2, QString("Local\\QGNA_OVERLAY_EVENT2"));
+          this->injectDll(this->_processHandle, injectedDll2, QString("Local\\QGNA_OVERLAY_EVENT2"));
           this->_deleteSharedArgs();
         }
 
@@ -188,105 +132,14 @@ namespace GGS{
         // реестр.
         Sleep(500);
         this->_appinitPatch->restoreRegistry();
-        
-        WaitForSingleObject(pi.hProcess, INFINITE);
-
-        DWORD exitCode = 0;
-        GetExitCodeProcess(pi.hProcess, &exitCode);
-
-        CloseHandle(this->_processHandle);
-        CloseHandle(pi.hThread);
-
-        return exitCode;
       }
 
       void ExecutableFileClient::stopProcess()
       {
         if (this->_processHandle != NULL)
           TerminateProcess(this->_processHandle, 0);
-      }
 
-      void ExecutableFileClient::processFinished()
-      {
-        unsigned int result = this->_executeFeatureWatcher.result();
-        int realExitCode = (result != 0xC0000005 && result != 0) ? Fail : Success;
-        DEBUG_LOG << "with exit code" << result << "real result" << realExitCode;
-
-        this->setUserActivityLogout(realExitCode);
-        emit this->finished(realExitCode);
-      }
-
-      void ExecutableFileClient::setUserActivity()
-      {
-        SetUserActivity *cmd = new SetUserActivity();
-
-        cmd->setGameId(this->_gameId);  
-        cmd->setLogout(0);
-
-        cmd->setAuthRequire(false);
-        cmd->appendParameter("userId", this->_userId);
-        cmd->appendParameter("appKey", this->_appKey);
-
-        SIGNAL_CONNECT_CHECK(connect(cmd, SIGNAL(result(GGS::RestApi::CommandBase::CommandResults)), 
-          this, SLOT(setUserActivityResult(GGS::RestApi::CommandBase::CommandResults))));
-
-        cmd->execute();
-      }
-
-      void ExecutableFileClient::setUserActivityResult(GGS::RestApi::CommandBase::CommandResults result)
-      {
-        SetUserActivity *cmd = qobject_cast<SetUserActivity *>(QObject::sender());
-        if (!cmd) {
-          WARNING_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
-          return;
-        }
-
-        cmd->deleteLater();
-        if (result != CommandBase::NoError) {
-          WARNING_LOG << "error" << result << cmd->getGenericErrorMessageCode();
-          QTimer::singleShot(300000, this, SLOT(setUserActivity())); // default timeOut is 5 minutes;
-          return;
-        }
-
-        int timeOut = cmd->getTimeout();
-        if (timeOut <= 0) {
-          WARNING_LOG <<  "wrong timeOut" << timeOut;
-          QTimer::singleShot(300000, this, SLOT(setUserActivity()));
-          return;  
-        }
-
-        QTimer::singleShot(timeOut * 1000, this, SLOT(setUserActivity()));
-      }
-
-      void ExecutableFileClient::setUserActivityLogout(int code)
-      {
-        this->_code = code;
-
-        SetUserActivity *cmd = new SetUserActivity();
-
-        cmd->setGameId(this->_gameId);
-        cmd->setLogout(1);
-        cmd->setAuthRequire(false);
-        cmd->appendParameter("userId", this->_userId);
-        cmd->appendParameter("appKey", this->_appKey);
-
-        SIGNAL_CONNECT_CHECK(connect(cmd, SIGNAL(result(GGS::RestApi::CommandBase::CommandResults)), 
-          this, SLOT(setUserActivityLogoutResult(GGS::RestApi::CommandBase::CommandResults))));
-
-        cmd->execute();
-      }
-
-      void ExecutableFileClient::setUserActivityLogoutResult(GGS::RestApi::CommandBase::CommandResults result)
-      {
-        SetUserActivity *cmd = qobject_cast<SetUserActivity *>(QObject::sender());
-        if (!cmd) {
-          WARNING_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
-          return;
-        }
-
-        cmd->deleteLater();
-
-        emit this->exit(this->_code);
+        this->closeHandles();
       }
 
       void ExecutableFileClient::setShareArgs(std::function<void (unsigned int, HANDLE)> value)
@@ -330,6 +183,33 @@ namespace GGS{
           WaitForSingleObject(waitHandle, 15000);
           CloseHandle(waitHandle);
         }
+      }
+
+      void ExecutableFileClient::handleActivated(HANDLE handle)
+      {
+        QObject::sender()->deleteLater();
+        DWORD exitCode = 0;
+        GetExitCodeProcess(handle, &exitCode);
+
+        this->closeHandles();
+        
+        int realExitCode = (exitCode != 0xC0000005 && exitCode != 0) ? Fail : Success;
+        DEBUG_LOG << "with exit code" << exitCode << "real result" << realExitCode;
+
+        emit this->finished(realExitCode);
+      }
+
+      void ExecutableFileClient::closeHandles()
+      {
+        if (this->_threadHandle)
+          CloseHandle(this->_threadHandle);
+
+        this->_threadHandle = 0;
+
+        if (this->_processHandle)
+          CloseHandle(this->_processHandle);
+
+        this->_processHandle = 0;
       }
 
     }

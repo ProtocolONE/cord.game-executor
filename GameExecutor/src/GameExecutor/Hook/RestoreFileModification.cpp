@@ -119,6 +119,11 @@ namespace GGS {
         emit this->postExecuteCompleted(service);
       }
 
+      QString RestoreFileModification::id()
+      {
+        return "798E4925-8D98-4191-ACF6-F844A327E0F7";
+      }
+
     }
   }
 }

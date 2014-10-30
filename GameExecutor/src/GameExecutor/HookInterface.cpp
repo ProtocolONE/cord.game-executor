@@ -25,5 +25,11 @@ namespace GGS {
     {
       emit this->postExecuteCompleted(service);
     }
+
+    void HookInterface::setCredential(const GGS::RestApi::GameNetCredential& value)
+    {
+      this->_credential = value;
+    }
+
   }
 }

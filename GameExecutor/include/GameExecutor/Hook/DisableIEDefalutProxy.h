@@ -31,7 +31,9 @@ namespace GGS {
         Q_OBJECT
       public:
         explicit DisableIEDefalutProxy(QObject *parent = 0);
-        ~DisableIEDefalutProxy();
+        virtual ~DisableIEDefalutProxy();
+
+        static QString id();
 
         virtual void PreExecute(Core::Service &service);
       };

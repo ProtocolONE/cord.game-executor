@@ -64,6 +64,12 @@ namespace GGS {
 
         emit this->preExecuteCompleted(service, GGS::GameExecutor::Success);
       }
+
+      QString DisableIEDefalutProxy::id()
+      {
+        return "150EDADF-4B58-4E14-82D8-203832E57D3E";
+      }
+
     }
   }
 }

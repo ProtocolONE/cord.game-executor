@@ -1,7 +1,7 @@
 /****************************************************************************
 ** This file is a part of Syncopate Limited GameNet Application or it parts.
 **
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
+** Copyright (В©) 2011 - 2012, Syncopate Limited and/or affiliates. 
 ** All rights reserved.
 **
 ** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
@@ -14,6 +14,8 @@
 #include <GameExecutor/gameexecutor_global.h>
 #include <GameExecutor/Enum.h>
 
+#include <RestApi/GameNetCredential.h>
+
 #include <Core/Service>
 #include <QtCore/QObject>
 
@@ -23,7 +25,7 @@ namespace GGS {
     /*!
       \class HookInterface
     
-      \brief Интерфейс определяет механизм расширения процедуры запуска сервисов.
+      \brief РРЅС‚РµСЂС„РµР№СЃ РѕРїСЂРµРґРµР»СЏРµС‚ РјРµС…Р°РЅРёР·Рј СЂР°СЃС€РёСЂРµРЅРёСЏ РїСЂРѕС†РµРґСѓСЂС‹ Р·Р°РїСѓСЃРєР° СЃРµСЂРІРёСЃРѕРІ.
     */
     class GAMEEXECUTOR_EXPORT HookInterface : public QObject
     {
@@ -35,23 +37,23 @@ namespace GGS {
       /*!
         \fn virtual bool HookInterface::CanExecute(const Core::Service &service) = 0;
       
-        \brief Определяет может ли быть запущен сервис.
+        \brief РћРїСЂРµРґРµР»СЏРµС‚ РјРѕР¶РµС‚ Р»Рё Р±С‹С‚СЊ Р·Р°РїСѓС‰РµРЅ СЃРµСЂРІРёСЃ.
               
         \param service The service.
       
-        \return true, если сервис может быть запущен.
+        \return true, РµСЃР»Рё СЃРµСЂРІРёСЃ РјРѕР¶РµС‚ Р±С‹С‚СЊ Р·Р°РїСѓС‰РµРЅ.
       */
       virtual void CanExecute(Core::Service &service);
 
       /*!
         \fn virtual bool HookInterface::PreExecute(const Core::Service &service) = 0;
       
-        \brief Выполняется непосредственно перед запуском сервиса. Имеет возможность остановить запуск сервиса,
-               если вернут false. 
+        \brief Р’С‹РїРѕР»РЅСЏРµС‚СЃСЏ РЅРµРїРѕСЃСЂРµРґСЃС‚РІРµРЅРЅРѕ РїРµСЂРµРґ Р·Р°РїСѓСЃРєРѕРј СЃРµСЂРІРёСЃР°. РРјРµРµС‚ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РѕСЃС‚Р°РЅРѕРІРёС‚СЊ Р·Р°РїСѓСЃРє СЃРµСЂРІРёСЃР°,
+               РµСЃР»Рё РІРµСЂРЅСѓС‚ false. 
       
         \param service The service.
       
-        \return true, если сервис может быть запущен.
+        \return true, РµСЃР»Рё СЃРµСЂРІРёСЃ РјРѕР¶РµС‚ Р±С‹С‚СЊ Р·Р°РїСѓС‰РµРЅ.
       */
       virtual void PreExecute(Core::Service &service);
 
@@ -59,8 +61,8 @@ namespace GGS {
         \fn virtual void HookInterface::PostExecute(const Core::Service &service,
           GGS::GameExecutor::FinishState state) = 0;
       
-        \brief Выполняется по завершению работы сервиса. С помощью GGS::GameExecutor::FinishState функция узнаёт об
-               успешности или неудаче запуска.
+        \brief Р’С‹РїРѕР»РЅСЏРµС‚СЃСЏ РїРѕ Р·Р°РІРµСЂС€РµРЅРёСЋ СЂР°Р±РѕС‚С‹ СЃРµСЂРІРёСЃР°. РЎ РїРѕРјРѕС‰СЊСЋ GGS::GameExecutor::FinishState С„СѓРЅРєС†РёСЏ СѓР·РЅР°С‘С‚ РѕР±
+               СѓСЃРїРµС€РЅРѕСЃС‚Рё РёР»Рё РЅРµСѓРґР°С‡Рµ Р·Р°РїСѓСЃРєР°.
       
         \param service The service.
         \param state   The state.
@@ -69,10 +71,26 @@ namespace GGS {
       */
       virtual void PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state);
 
+      /**
+       * \fn  void HookInterface::setCredential(const GGS::RestApi::GameNetCredential& value);
+       *
+       * \brief РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р°РІС‚РѕСЂРёР·Р°С†РёСЋ, СЃ РєРѕС‚РѕСЂРѕР№ Р·Р°РїСѓСЃРєР°РµС‚СЃСЏ РёРіСЂР°.
+       *
+       * \author  Ilya Tkachenko
+       * \date  08.09.2014
+       *
+       * \param value РђРІС‚РѕСЂРёР·Р°С†РёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
+       */
+
+      void setCredential(const GGS::RestApi::GameNetCredential& value);
+
     signals:
       void canExecuteCompleted(const GGS::Core::Service &service, GGS::GameExecutor::FinishState result);
       void preExecuteCompleted(const GGS::Core::Service &service, GGS::GameExecutor::FinishState result);
       void postExecuteCompleted(const GGS::Core::Service &service);
+
+    protected:
+      GGS::RestApi::GameNetCredential _credential;
     };
   }
 }

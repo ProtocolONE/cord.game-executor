@@ -53,6 +53,12 @@ namespace GGS {
         ChangeDisplaySettings(&this->_beforeExecuteDisplay, CDS_UPDATEREGISTRY);
         emit this->postExecuteCompleted(service);
       }
+
+      QString RestoreResolution::id()
+      {
+        return "D6B4E0F4-1CE3-4226-967F-1C04A09BC59D";
+      }
+
     }
   }
 }

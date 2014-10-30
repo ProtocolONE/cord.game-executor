@@ -20,10 +20,16 @@ namespace GGS {
       class GAMEEXECUTOR_EXPORT DisableAeroHook : public HookInterface
       {
       public:
-        DisableAeroHook(QObject *parent = 0);
-        ~DisableAeroHook();
+        explicit DisableAeroHook(QObject *parent = 0);
+        virtual ~DisableAeroHook();
+
+        static QString id();
 
         virtual void CanExecute(Core::Service &service);
+
+      private:
+        void disableAero(const Core::Service &service);
+
       };
 
     }

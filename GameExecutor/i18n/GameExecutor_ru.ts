@@ -15,13 +15,13 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/GameExecutor/Hook/DisableDEP.cpp" line="36"/>
+        <location filename="../src/GameExecutor/Hook/DisableDEP.cpp" line="35"/>
         <location filename="../src/GameExecutor/Hook/DisableIEDefalutProxy.cpp" line="47"/>
         <source>TITLE_ATTENTION</source>
         <translation>Внимание</translation>
     </message>
     <message>
-        <location filename="../src/GameExecutor/Hook/DisableDEP.cpp" line="36"/>
+        <location filename="../src/GameExecutor/Hook/DisableDEP.cpp" line="35"/>
         <source>WARNING_DISABLEDEP</source>
         <translation>Игра не может быть запущена. В вашей ОС включена система предотвращения выполнения данных (DEP). Необходимо отключить DEP вручную. Если у вас возникнут проблемы с отключением, обратитесь в службу поддержки GameNet: https://support.gamenet.ru/</translation>
     </message>

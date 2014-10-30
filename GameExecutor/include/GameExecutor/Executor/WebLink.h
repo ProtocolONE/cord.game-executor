@@ -22,9 +22,7 @@ namespace GGS {
 
       /*!
       \class ExecutableFile
-      \brief Позволяет запустить игру, работающую по схеме `exe`
-
-      Позволяет запустить игру, работающую по схеме `http`. 
+      \brief Позволяет запустить игру, работающую по схеме `http`. 
 
       \code
       QUrl url("http://www.playga.ru");
@@ -48,7 +46,8 @@ namespace GGS {
         virtual void execute(
           const GGS::Core::Service &service, 
           GameExecutorService *executorService,
-          const GGS::RestApi::GameNetCredential& credential) override;
+          const GGS::RestApi::GameNetCredential& credential,
+          const GGS::RestApi::GameNetCredential& secondCredential = GGS::RestApi::GameNetCredential()) override;
 
       };
     }

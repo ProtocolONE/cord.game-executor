@@ -211,6 +211,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_AppInitPatch.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="src\GameExecutor\Hook\SendPlayingInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="include\GameExecutor\Executor\ExecutableFile.h">
@@ -291,6 +294,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\GameExecutor\Extension.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameExecutor\Hook\SendPlayingInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -35,6 +35,8 @@ namespace GGS {
         explicit RestoreFileModification(QObject *parent = 0);
         virtual ~RestoreFileModification();
 
+        static QString id();
+
         void PreExecute(Core::Service &service);
         void PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state);
 

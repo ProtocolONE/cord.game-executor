@@ -74,6 +74,12 @@ namespace GGS {
 
         emit this->postExecuteCompleted(service);
       }
+
+      QString ExternalDependency::id()
+      {
+        return "0EB5C99A-871B-4F7F-9161-00DDDA001759";
+      }
+
     }
   }
 }

@@ -34,7 +34,8 @@ namespace GGS {
       virtual void execute(
         const Core::Service &service, 
         GameExecutorService *executorService, 
-        const GGS::RestApi::GameNetCredential& credential) = 0;
+        const GGS::RestApi::GameNetCredential& credential,
+        const GGS::RestApi::GameNetCredential& secondCredential = GGS::RestApi::GameNetCredential()) = 0;
 
       const QString &scheme() const;
     

@@ -24,7 +24,9 @@ namespace GGS {
         Q_OBJECT
       public:
         explicit DisableDEP(QObject *parent = 0);
-        ~DisableDEP();
+        virtual ~DisableDEP();
+
+        static QString id();
 
         virtual void PreExecute(Core::Service &service);
       };

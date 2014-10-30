@@ -30,6 +30,7 @@ namespace GGS {
       void setExecutorService(GGS::GameExecutor::GameExecutorService *val);
       void setExecutor(GGS::GameExecutor::ExecutorBase *val);
       void setCredential(const GGS::RestApi::GameNetCredential& value);
+      void setSecondCredential(const GGS::RestApi::GameNetCredential& value);
       
       void execute();
 
@@ -59,6 +60,7 @@ namespace GGS {
       QPointer<GGS::GameExecutor::ExecutorBase> _executor;
       GGS::GameExecutor::FinishState _state;
       GGS::RestApi::GameNetCredential _credential;
+      GGS::RestApi::GameNetCredential _secondCredential;
       bool _stopExecution;
     };
   }

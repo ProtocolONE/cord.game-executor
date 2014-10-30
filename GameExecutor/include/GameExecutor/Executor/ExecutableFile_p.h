@@ -1,7 +1,7 @@
 /****************************************************************************
 ** This file is a part of Syncopate Limited GameNet Application or it parts.
 **
-** Copyright (�) 2011 - 2012, Syncopate Limited and/or affiliates. 
+** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
 ** All rights reserved.
 **
 ** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
@@ -42,9 +42,11 @@ namespace GGS {
         explicit ExecutableFilePrivate(QObject *parent);
         virtual ~ExecutableFilePrivate();
 
-        void execute(const GGS::Core::Service &service, 
+        void execute(
+          const GGS::Core::Service &service, 
           GameExecutorService *executorService,
-          const GGS::RestApi::GameNetCredential& credential);
+          const GGS::RestApi::GameNetCredential& credential,
+          const GGS::RestApi::GameNetCredential& secondCredential);
 
       public slots:
         void shutdown();
@@ -88,7 +90,10 @@ namespace GGS {
         QString _path;
         QString _workingDir;
         QString _args;
-        QString _activityRequestArgs;
+        
+        // Дллки для инжекта пока так идут, потом может заменить на лист строк
+        QString _injectDll1;
+        QString _injectDll2;
 
         QString _authSalt;
         bool _executorHelperAvailable;

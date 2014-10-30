@@ -14,11 +14,12 @@
 #include <GameExecutor/Executor/ExecutableFile_p.h>
 
 #include <Core/System/HardwareId.h>
-#include <RestApi/Commands/User/GetUserServiceAccount>
+#include <RestApi/Commands/User/GetUserServiceAccount.h>
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDateTime>
 #include <QtCore/QUrlQuery>
+#include <QtCore/QDebug>
 #include <QMetaObject>
 
 #include <sstream>
@@ -40,10 +41,14 @@ namespace GGS {
         , _data(0)
         , _executorHelperAvailable(false)
         , _stringShareHandle(INVALID_HANDLE_VALUE)
+        , _stringShareData(NULL)
       {
-        connect(&this->_client, SIGNAL(started()), this, SLOT(launcherStarted()));
-        connect(&this->_client, SIGNAL(finished(int)), this, SLOT(launcherFinished(int)));
+        QObject::connect(&this->_client, &ExecutableFileClient::started, 
+          this, &ExecutableFilePrivate::launcherStarted);
         
+        QObject::connect(&this->_client, &ExecutableFileClient::finished, 
+          this, &ExecutableFilePrivate::launcherFinished);
+
         this->_random.seed(QDateTime::currentMSecsSinceEpoch());
       }
 
@@ -54,9 +59,10 @@ namespace GGS {
       void ExecutableFilePrivate::execute(
         const GGS::Core::Service &service, 
         GameExecutorService *executorService,
-        const GGS::RestApi::GameNetCredential& credential)
+        const GGS::RestApi::GameNetCredential& credential,
+        const GGS::RestApi::GameNetCredential& secondCredential)
       {
-        this->shareServiceId(service);        
+        this->shareServiceId(service);
 
         this->_service = service;
         QUrl url = this->_service.url();
@@ -74,16 +80,8 @@ namespace GGS {
         QString executorHelper = urlQuery.queryItemValue("executorHelper", QUrl::FullyDecoded);
         this->_executorHelperAvailable = !executorHelper.isEmpty();
 
-        RestApi::GameNetCredential baseCredential = RestApi::RestApiManager::commonInstance()->credential();
-
-        bool isSecondAccount = !credential.userId().isEmpty();
-
-        if (isSecondAccount)
-          this->_activityRequestArgs = 
-            QString("%1|%2|%3|%4|%5").arg(credential.userId(), credential.appKey(), service.gameId(), injectDll, executorHelper);
-        else
-          this->_activityRequestArgs = 
-            QString("%1|%2|%3|%4|%5").arg(baseCredential.userId(), baseCredential.appKey(), service.gameId(), injectDll, executorHelper);
+        this->_injectDll1 = injectDll;
+        this->_injectDll2 = executorHelper;
 
         QRegExp rx("%(.+)%");
         rx.setMinimal(true);
@@ -97,17 +95,16 @@ namespace GGS {
           }
         }
 
-        if (isSecondAccount) {
-          this->_args.replace("%userId%", credential.userId(), Qt::CaseInsensitive);
-          this->_args.replace("%appKey%", credential.appKey(), Qt::CaseInsensitive);
-        } else {
-          this->_args.replace("%userId%", baseCredential.userId(), Qt::CaseInsensitive);
-          this->_args.replace("%appKey%", baseCredential.appKey(), Qt::CaseInsensitive);
-        }
+        bool isSecondAccount = !secondCredential.userId().isEmpty();
+        const GGS::RestApi::GameNetCredential& startingCredential(
+          isSecondAccount ? secondCredential : credential);
+
+        this->_args.replace("%userId%", startingCredential.userId(), Qt::CaseInsensitive);
+        this->_args.replace("%appKey%", startingCredential.appKey(), Qt::CaseInsensitive);
 
         if (-1 == this->_args.indexOf("%token%", 0, Qt::CaseInsensitive)
           && -1 == this->_args.indexOf("%login%", 0, Qt::CaseInsensitive)) {
-            QMetaObject::invokeMethod(this, "launcherStart");
+            this->launcherStart();
             return;
         }
 
@@ -130,13 +127,17 @@ namespace GGS {
 
         cmd->appendParameter("thettaVersion", "1");
 
+        cmd->setAuthRequire(false);
+        cmd->appendParameter("userId", credential.userId());
+        cmd->appendParameter("appKey", credential.appKey());
+
         if (isSecondAccount) {
-          cmd->appendParameter("secondUserId", credential.userId());
-          cmd->appendParameter("secondAppKey", credential.appKey());
+          cmd->appendParameter("secondUserId", secondCredential.userId());
+          cmd->appendParameter("secondAppKey", secondCredential.appKey());
         }
 
-        connect(cmd, SIGNAL(result(GGS::RestApi::CommandBase::CommandResults)), 
-          this, SLOT(getUserServiceAccountResult(GGS::RestApi::CommandBase::CommandResults)), Qt::DirectConnection);
+        QObject::connect(cmd, &GetUserServiceAccount::result,
+          this, &ExecutableFilePrivate::getUserServiceAccountResult, Qt::DirectConnection);
 
         cmd->execute();
       }
@@ -149,10 +150,8 @@ namespace GGS {
       void ExecutableFilePrivate::getUserServiceAccountResult(CommandBase::CommandResults result)
       {
         GetUserServiceAccount *cmd = qobject_cast<GetUserServiceAccount*>(QObject::sender());
-        if (!cmd) {
-          CRITICAL_LOG << "wrong sender" << QObject::sender()->metaObject()->className();
+        if (!cmd)
           return;
-        }
 
         cmd->deleteLater();  
 
@@ -191,7 +190,7 @@ namespace GGS {
           }
 
           this->_args.replace("%token%", token, Qt::CaseInsensitive);
-          QMetaObject::invokeMethod(this, "launcherStart");
+          this->launcherStart();
           return;
         }
 
@@ -272,10 +271,12 @@ namespace GGS {
 
       void ExecutableFilePrivate::launcherStart()
       {
-        QString startParams = 
-          QString("start|%1|%2|%3|%4").arg(this->_path, this->_workingDir, this->_args, this->_activityRequestArgs);
-
-        this->_client.startProcess(startParams);
+        this->_client.startProcess(
+          this->_path, 
+          this->_args,
+          this->_workingDir,
+          this->_injectDll1,
+          this->_injectDll2);
       }
 
       void ExecutableFilePrivate::shareServiceId(const GGS::Core::Service &service)

@@ -138,8 +138,6 @@ namespace GGS{
       {
         if (this->_processHandle != NULL)
           TerminateProcess(this->_processHandle, 0);
-
-        this->closeHandles();
       }
 
       void ExecutableFileClient::setShareArgs(std::function<void (unsigned int, HANDLE)> value)

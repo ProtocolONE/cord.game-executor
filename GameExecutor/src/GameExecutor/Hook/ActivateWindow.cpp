@@ -17,8 +17,10 @@ namespace GGS {
 
       void ActivateWindow::PreExecute(Core::Service &service)
       {
-        if (!this->_window || QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS8)
+        if (!this->_window || QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS8) {
+          this->preExecuteCompleted(service, GGS::GameExecutor::FinishState::Success);
           return;
+        }
 
         this->_window->show();
         GGS::Application::WindowHelper::activate(reinterpret_cast<HWND>(this->_window->winId()));

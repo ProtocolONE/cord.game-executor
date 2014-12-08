@@ -52,7 +52,7 @@ namespace GGS {
         Q_OBJECT
       public:
         explicit ExecutableFile(QObject *parent = 0);
-        ~ExecutableFile();
+        virtual ~ExecutableFile();
 
         virtual void execute(
           const GGS::Core::Service &service, 
@@ -60,9 +60,8 @@ namespace GGS {
           const GGS::RestApi::GameNetCredential& credential,
           const GGS::RestApi::GameNetCredential& secondCredential = GGS::RestApi::GameNetCredential()) override;
 
-      private slots:
+      private:
         void internalFinished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
-
       };
     }
   }

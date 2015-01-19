@@ -135,14 +135,9 @@ namespace GGS {
       loop->execute();
     }
 
-    void GameExecutorService::terminate(const QString& serviceId)
-    {
-      emit this->stopExecution(serviceId);
-    }
-
     void GameExecutorService::terminateAll()
     {
-      this->terminate(QString());
+      emit this->stopExecution();
     }
 
     void GameExecutorService::privateFinished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state)

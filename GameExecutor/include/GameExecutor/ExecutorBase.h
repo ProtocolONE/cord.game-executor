@@ -38,7 +38,9 @@ namespace GGS {
         const GGS::RestApi::GameNetCredential& secondCredential = GGS::RestApi::GameNetCredential()) = 0;
 
       const QString &scheme() const;
-    
+
+      static FinishState finishStateFromRestApiErrorCode(int errorCode);
+
     signals:
       void started(const GGS::Core::Service &service);
       void finished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);

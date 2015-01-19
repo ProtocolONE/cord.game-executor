@@ -3,7 +3,7 @@
 namespace GGS {
   namespace GameExecutor {
     ExecutorBase::ExecutorBase(QObject *parent /*= 0*/)
-			: QObject(parent)
+      : QObject(parent)
     {
     }
 
@@ -20,5 +20,41 @@ namespace GGS {
     {
       return this->_scheme;
     }
+
+    GGS::GameExecutor::FinishState ExecutorBase::finishStateFromRestApiErrorCode(int errorCode)
+    {
+      FinishState state;
+
+      switch(errorCode) {
+      case RestApi::CommandBase::AuthorizationFailed:
+      case RestApi::CommandBase::AccountNotExists:
+      case RestApi::CommandBase::AuthorizationLimitExceed:
+      case RestApi::CommandBase::UnknownAccountStatus:
+        state = AuthorizationError;
+        break;
+      case RestApi::CommandBase::GuestExpired:
+        state = GuestAccountExpired;
+        break;
+      case RestApi::CommandBase::ServiceAccountBlocked:
+        state = ServiceAccountBlockedError;
+        break;
+      case RestApi::CommandBase::ServiceAuthorizationImpossible:
+        state = ServiceAuthorizationImpossible;
+        break;
+      case RestApi::CommandBase::PakkanenPermissionDenied:
+        state = PakkanenPermissionDenied;
+        break;
+      case RestApi::CommandBase::PakkanenPhoneVerification:
+      case RestApi::CommandBase::PakkanenVkVerification:
+      case RestApi::CommandBase::PakkanenVkPhoneVerification:
+        state = PakkanenPhoneVerification;
+        break;
+      default:
+        state = UnhandledRestApiError;
+      }
+
+      return state;
+    }
+
   }
 };

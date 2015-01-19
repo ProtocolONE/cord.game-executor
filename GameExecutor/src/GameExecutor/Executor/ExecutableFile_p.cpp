@@ -142,11 +142,8 @@ namespace GGS {
         cmd->execute();
       }
       
-      void ExecutableFilePrivate::shutdown(const QString& serviceId)
+      void ExecutableFilePrivate::shutdown()
       {
-        if (!serviceId.isEmpty() && this->_service.id() != serviceId)
-          return;
-
         this->_client.stopProcess();
       }
 
@@ -200,7 +197,7 @@ namespace GGS {
         int errorCode = cmd->getGenericErrorMessageCode();
 
         FinishState state = (CommandBase::GenericError == result) 
-          ? this->finishStateFromRestApiErrorCode(errorCode) : ExternalFatalError;
+          ? ExecutorBase::finishStateFromRestApiErrorCode(errorCode) : ExternalFatalError;
 
         CRITICAL_LOG << "with error code" << errorCode;
         this->finished(this->_service, state);
@@ -235,41 +232,6 @@ namespace GGS {
 
         this->_service.setUrl(url);
         emit this->finished(this->_service, ExternalFatalError);
-      }
-
-      FinishState ExecutableFilePrivate::finishStateFromRestApiErrorCode(int errorCode)
-      {
-        FinishState state;
-
-        switch(errorCode) {
-        case RestApi::CommandBase::AuthorizationFailed:
-        case RestApi::CommandBase::AccountNotExists:
-        case RestApi::CommandBase::AuthorizationLimitExceed:
-        case RestApi::CommandBase::UnknownAccountStatus:
-          state = AuthorizationError;
-          break;
-        case RestApi::CommandBase::GuestExpired:
-          state = GuestAccountExpired;
-          break;
-        case RestApi::CommandBase::ServiceAccountBlocked:
-          state = ServiceAccountBlockedError;
-          break;
-        case RestApi::CommandBase::ServiceAuthorizationImpossible:
-          state = ServiceAuthorizationImpossible;
-          break;
-        case RestApi::CommandBase::PakkanenPermissionDenied:
-          state = PakkanenPermissionDenied;
-          break;
-        case RestApi::CommandBase::PakkanenPhoneVerification:
-        case RestApi::CommandBase::PakkanenVkVerification:
-        case RestApi::CommandBase::PakkanenVkPhoneVerification:
-          state = PakkanenPhoneVerification;
-          break;
-        default:
-          state = UnhandledRestApiError;
-        }	
-
-        return state;
       }
 
       void ExecutableFilePrivate::launcherStart()

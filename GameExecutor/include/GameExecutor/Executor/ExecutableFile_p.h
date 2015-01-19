@@ -49,7 +49,7 @@ namespace GGS {
           const GGS::RestApi::GameNetCredential& secondCredential);
 
       public slots:
-        void shutdown(const QString& serviceId);
+        void shutdown();
 
       signals:
         void started(const GGS::Core::Service &service);
@@ -66,7 +66,6 @@ namespace GGS {
 
       private:
         void createAndExecuteLauncherProcess();
-        FinishState finishStateFromRestApiErrorCode(int errorCode);
         void shareServiceId(const GGS::Core::Service &service);
         bool shareString(const std::wstring& name, const std::wstring& value);
 

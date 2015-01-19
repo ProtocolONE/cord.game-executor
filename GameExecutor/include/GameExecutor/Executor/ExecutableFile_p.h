@@ -49,7 +49,7 @@ namespace GGS {
           const GGS::RestApi::GameNetCredential& secondCredential);
 
       public slots:
-        void shutdown();
+        void shutdown(const QString& serviceId);
 
       signals:
         void started(const GGS::Core::Service &service);

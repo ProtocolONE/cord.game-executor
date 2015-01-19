@@ -142,8 +142,11 @@ namespace GGS {
         cmd->execute();
       }
       
-      void ExecutableFilePrivate::shutdown()
+      void ExecutableFilePrivate::shutdown(const QString& serviceId)
       {
+        if (!serviceId.isEmpty() && this->_service.id() != serviceId)
+          return;
+
         this->_client.stopProcess();
       }
 

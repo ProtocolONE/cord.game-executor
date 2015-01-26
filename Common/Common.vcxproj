@@ -72,6 +72,14 @@
   <ItemGroup>
     <None Include="ReadMe.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Common\ConfigReader.cpp" />
+    <ClCompile Include="src\Common\ConfigReader_p.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Common\ConfigReader.h" />
+    <ClInclude Include="include\Common\ConfigReader_p.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

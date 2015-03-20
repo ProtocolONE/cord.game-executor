@@ -41,7 +41,7 @@ namespace GGS {
         Q_OBJECT
       public:
         explicit WebLink(QObject *parent = 0);
-        ~WebLink();
+        virtual ~WebLink();
 
         virtual void execute(
           const GGS::Core::Service &service, 

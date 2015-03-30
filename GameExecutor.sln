@@ -23,6 +23,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleLauncher", "SimpleLau
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameExecutorHelper", "GameExecutorHelper\GameExecutorHelper.vcxproj", "{E0ACFFE1-274A-4D43-9DCB-0EA290BBB2CD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DAB8AF62-32E7-493D-A915-5C251A0E28A0} = {DAB8AF62-32E7-493D-A915-5C251A0E28A0}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "Common\Common.vcxproj", "{DAB8AF62-32E7-493D-A915-5C251A0E28A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +51,10 @@ Global
 		{E0ACFFE1-274A-4D43-9DCB-0EA290BBB2CD}.Debug|Win32.Build.0 = Debug|Win32
 		{E0ACFFE1-274A-4D43-9DCB-0EA290BBB2CD}.Release|Win32.ActiveCfg = Release|Win32
 		{E0ACFFE1-274A-4D43-9DCB-0EA290BBB2CD}.Release|Win32.Build.0 = Release|Win32
+		{DAB8AF62-32E7-493D-A915-5C251A0E28A0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DAB8AF62-32E7-493D-A915-5C251A0E28A0}.Debug|Win32.Build.0 = Debug|Win32
+		{DAB8AF62-32E7-493D-A915-5C251A0E28A0}.Release|Win32.ActiveCfg = Release|Win32
+		{DAB8AF62-32E7-493D-A915-5C251A0E28A0}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

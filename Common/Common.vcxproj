@@ -32,9 +32,11 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Deploy.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Deploy.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -60,6 +62,10 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -78,17 +84,31 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <None Include="ReadMe.txt" />
-  </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Common\ConfigReader.cpp" />
     <ClCompile Include="src\Common\ConfigReader_p.cpp" />
+    <ClCompile Include="src\Iat\Api.cpp" />
+    <ClCompile Include="src\Iat\FunctionTable.cpp" />
+    <ClCompile Include="src\Iat\ModuledUtils.cpp" />
+    <ClCompile Include="src\Iat\PeUtils.cpp" />
+    <ClCompile Include="src\Iat\WinVersion.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Common\ConfigReader.h" />
     <ClInclude Include="include\Common\ConfigReader_p.h" />
+    <ClInclude Include="include\Iat\Api.h" />
+    <ClInclude Include="include\Iat\FunctionPointerTypes.h" />
+    <ClInclude Include="include\Iat\FunctionTable.h" />
+    <ClInclude Include="include\Iat\HelperTypes.h" />
+    <ClInclude Include="include\Iat\Iat.h" />
+    <ClInclude Include="include\Iat\ModuledUtils.h" />
+    <ClInclude Include="include\Iat\PeUtils.h" />
+    <ClInclude Include="include\Iat\WinVersion.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

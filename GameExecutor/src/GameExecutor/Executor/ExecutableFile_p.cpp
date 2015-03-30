@@ -63,6 +63,7 @@ namespace GGS {
         const GGS::RestApi::GameNetCredential& secondCredential)
       {
         this->shareServiceId(service);
+        this->_client.setServiceId(service.id());
 
         this->_service = service;
         QUrl url = this->_service.url();
@@ -78,10 +79,12 @@ namespace GGS {
           injectDll = urlQuery.queryItemValue("injectDll");
 
         QString executorHelper = urlQuery.queryItemValue("executorHelper", QUrl::FullyDecoded);
-        this->_executorHelperAvailable = !executorHelper.isEmpty();
+        this->_executorHelperAvailable = executorHelper == "1";
+
+        this->_client.setInjectedParams(CommandLineCheck, this->_executorHelperAvailable);
+        this->_client.setInjectedParams(SpeedHackCheck, urlQuery.queryItemValue("disableTimersCheck", QUrl::FullyDecoded) != "1");
 
         this->_injectDll1 = injectDll;
-        this->_injectDll2 = executorHelper;
 
         QRegExp rx("%(.+)%");
         rx.setMinimal(true);
@@ -243,8 +246,7 @@ namespace GGS {
           this->_path, 
           this->_args,
           this->_workingDir,
-          this->_injectDll1,
-          this->_injectDll2);
+          this->_injectDll1);
       }
 
       void ExecutableFilePrivate::shareServiceId(const GGS::Core::Service &service)

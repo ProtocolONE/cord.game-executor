@@ -14,9 +14,12 @@
 #include <QtCore/QDir>
 #include <QtCore/QDebug>
 #include <QtCore/QWinEventNotifier>
+#include <QtCore/QCoreApplication>
 
 #include <RestApi/GameNetCredential>
 #include <RestApi/Commands/User/SetUserActivity>
+
+#include <Common/ConfigReader.h>
 
 using GGS::RestApi::GameNetCredential;
 using GGS::RestApi::Commands::User::SetUserActivity;
@@ -53,6 +56,7 @@ namespace GGS{
         , _appinitPatch(new AppInitPatch(this))
         , _processHandle(NULL)
         , _threadHandle(NULL)
+        , _shareArgs(nullptr)
       {
       }
 
@@ -65,8 +69,7 @@ namespace GGS{
         const QString& pathToExe,
         const QString& args,
         const QString& workDirectory,
-        const QString& injectedDll,
-        const QString& injectedDll2)
+        const QString& injectedDll)
       {
         DEBUG_LOG << "Start " << pathToExe << workDirectory;
         
@@ -112,25 +115,47 @@ namespace GGS{
 
         this->_appinitPatch->patchAppinit(this->_processHandle);
 
-        // INFO Инжектнем первой, ибо не умеем ждать пока загрузка пройдет успешно.
+        std::vector<std::wstring> toLoad;
+        toLoad.push_back(L"user32.dll");
+
         if (!nvidia.isEmpty())
-          this->injectDll(this->_processHandle, nvidia);
+          toLoad.push_back(nvidia.toStdWString());
+
+        bool cmdFix = false;
+        bool sphFix = false;
+
+        if (this->_paramHolder.count(CommandLineCheck))
+          cmdFix = this->_paramHolder[CommandLineCheck];
+
+        if (this->_paramHolder.count(SpeedHackCheck))
+          sphFix = this->_paramHolder[SpeedHackCheck];
+        
+        GGS::GameExecutorHelper::ConfigReader cfg;
+
+        cfg.setPid(pi.dwProcessId);
+        cfg.setCommandLineFlag(cmdFix);
+        cfg.setSpeedHackFlag(sphFix);
+        cfg.setStrings(toLoad);
+        cfg.setServiceId(this->_serviceId.toStdWString());
+        cfg.write();
 
         if (!injectedDll.isEmpty())
           this->injectDll(this->_processHandle, injectedDll, QString("Local\\QGNA_OVERLAY_EVENT"));
 
-        // UNDONE рефакторнуть это как-то. Например грузить все дополнительные дллки через общий хелпер.
-        if (!injectedDll2.isEmpty()) {
+#ifdef _DEBUG
+        QString executorHelper = QCoreApplication::applicationDirPath() + "/GameExecutorHelperX86d.dll"; 
+#else
+        QString executorHelper = QCoreApplication::applicationDirPath() + "/GameExecutorHelperX86.dll";
+#endif
+        if (cmdFix)
           this->_shareArgs(pi.dwProcessId, this->_processHandle);
-          this->injectDll(this->_processHandle, injectedDll2, QString("Local\\QGNA_OVERLAY_EVENT2"));
-          this->_deleteSharedArgs();
-        }
+
+        this->injectDll(this->_processHandle, executorHelper, QString("Local\\QGNA_OVERLAY_EVENT2"));
+
+        if (cmdFix)
+          this->_deleteSharedArgs(); 
 
         ResumeThread(pi.hThread);
-
-        // INFO этот код важен. Необходимо подождать пока проинициализируется user32.dll и только потом восстанавливать
-        // реестр.
-        Sleep(500);
         this->_appinitPatch->restoreRegistry();
       }
 
@@ -208,6 +233,16 @@ namespace GGS{
           CloseHandle(this->_processHandle);
 
         this->_processHandle = 0;
+      }
+
+      void ExecutableFileClient::setInjectedParams(HookType key, bool val)
+      {
+        this->_paramHolder[key] = val;
+      }
+
+      void ExecutableFileClient::setServiceId(const QString& value)
+      {
+        this->_serviceId = value;
       }
 
     }

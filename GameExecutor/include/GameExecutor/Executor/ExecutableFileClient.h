@@ -20,9 +20,20 @@
 #include <functional>
 #include <Windows.h>
 
+#include <map>
+#include <string>
+
 namespace GGS {
   namespace GameExecutor {
     namespace Executor {
+
+      enum HookType
+      {
+        CommandLineCheck,
+        SpeedHackCheck
+      };
+
+      typedef std::map<HookType, bool> paramHolderT;
 
       class AppInitPatch;
 
@@ -38,19 +49,20 @@ namespace GGS {
         const static int Fail    = 1;
 
         explicit ExecutableFileClient(QObject *parent = 0);
-        ~ExecutableFileClient();
+        virtual ~ExecutableFileClient();
 
         void startProcess(
           const QString& pathToExe,
           const QString& args,
           const QString& workingDir,
-          const QString& injectedDll,
-          const QString& injectedDll2);
+          const QString& injectedDll);
 
         void stopProcess();
 
         void setShareArgs(std::function<void (unsigned int, HANDLE)> value);
         void setDeleteSharedArgs(std::function<void ()> value);
+        void setInjectedParams(HookType key, bool val);
+        void setServiceId(const QString& value);
 
       signals:
         void finished(int exitCode);
@@ -68,6 +80,8 @@ namespace GGS {
 
         HANDLE _processHandle;
         HANDLE _threadHandle;
+        paramHolderT _paramHolder;
+        QString _serviceId;
       };
     }
   }

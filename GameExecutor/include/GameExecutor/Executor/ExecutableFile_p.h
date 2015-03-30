@@ -92,7 +92,6 @@ namespace GGS {
         
         // Дллки для инжекта пока так идут, потом может заменить на лист строк
         QString _injectDll1;
-        QString _injectDll2;
 
         QString _authSalt;
         bool _executorHelperAvailable;

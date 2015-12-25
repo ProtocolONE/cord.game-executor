@@ -7,19 +7,26 @@
 ** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 ** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 ****************************************************************************/
+#include <GameExecutor/GameExecutorService.h>
+#include <GameExecutor/Extension.h>
 
 #include <GameExecutor/Executor/ExecutableFileClient.h>
 #include <GameExecutor/Executor/AppInitPatch.h>
+
+#include <GameNetAuthHost/AuthWriter.h>
 
 #include <QtCore/QDir>
 #include <QtCore/QDebug>
 #include <QtCore/QWinEventNotifier>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QProcess>
 
 #include <RestApi/GameNetCredential>
 #include <RestApi/Commands/User/SetUserActivity>
 
 #include <Common/ConfigReader.h>
+
+#include <sstream>
 
 using GGS::RestApi::GameNetCredential;
 using GGS::RestApi::Commands::User::SetUserActivity;
@@ -57,12 +64,15 @@ namespace GGS{
         , _processHandle(NULL)
         , _threadHandle(NULL)
         , _shareArgs(nullptr)
+        , _authWriter(NULL)
+        , _executorService(NULL)
       {
       }
 
       ExecutableFileClient::~ExecutableFileClient()
       {
         this->stopProcess();
+        this->closeAuth();
       }
 
       void ExecutableFileClient::startProcess(
@@ -113,6 +123,8 @@ namespace GGS{
         this->_processHandle = pi.hProcess;
         this->_threadHandle = pi.hThread;
 
+        this->initAuth(pi.dwProcessId);
+
         this->_appinitPatch->patchAppinit(this->_processHandle);
 
         std::vector<std::wstring> toLoad;
@@ -123,12 +135,16 @@ namespace GGS{
 
         bool cmdFix = false;
         bool sphFix = false;
+        bool x64Helper = false;
 
-        if (this->_paramHolder.count(CommandLineCheck))
+        if (this->_paramHolder.count(CommandLineCheck) && !this->isAuthSdkEnabled())
           cmdFix = this->_paramHolder[CommandLineCheck];
 
         if (this->_paramHolder.count(SpeedHackCheck))
           sphFix = this->_paramHolder[SpeedHackCheck];
+
+        if (this->_paramHolder.count(Need64Load))
+          x64Helper = this->_paramHolder[Need64Load];
         
         GGS::GameExecutorHelper::ConfigReader cfg;
 
@@ -139,18 +155,29 @@ namespace GGS{
         cfg.setServiceId(this->_serviceId.toStdWString());
         cfg.write();
 
-        if (!injectedDll.isEmpty())
-          this->injectDll(this->_processHandle, injectedDll, QString("Local\\QGNA_OVERLAY_EVENT"));
+        // Данный код используется для инжекта в стартуемый прцесс.
+        // В случае 32 битов передается хэндл процесса, 64 бита - пид процесса.
+        InjectDllExtension *extension = reinterpret_cast<InjectDllExtension *>(
+          this->_executorService->extension(ExtensionTypes::InjectDll));
+
+        if (!injectedDll.isEmpty()) {
+          extension->get()(x64Helper, x64Helper ? pi.dwProcessId : (DWORD)pi.hProcess, injectedDll, QString("Local\\QGNA_OVERLAY_EVENT"));
+        }
+
+        QString dllHelper;
 
 #ifdef _DEBUG
-        QString executorHelper = QCoreApplication::applicationDirPath() + "/GameExecutorHelperX86d.dll"; 
+        dllHelper = x64Helper ? "/GameExecutorHelperX64d.dll" : "/GameExecutorHelperX86d.dll"; 
 #else
-        QString executorHelper = QCoreApplication::applicationDirPath() + "/GameExecutorHelperX86.dll";
+        dllHelper = x64Helper ? "/GameExecutorHelperX64.dll" : "/GameExecutorHelperX86.dll";
 #endif
+
+        QString executorHelper = QCoreApplication::applicationDirPath() + dllHelper;
+
         if (cmdFix)
           this->_shareArgs(pi.dwProcessId, this->_processHandle);
 
-        this->injectDll(this->_processHandle, executorHelper, QString("Local\\QGNA_OVERLAY_EVENT2"));
+        extension->get()(x64Helper, x64Helper ? pi.dwProcessId : (DWORD)pi.hProcess, executorHelper, QString("Local\\QGNA_OVERLAY_EVENT2"));
 
         if (cmdFix)
           this->_deleteSharedArgs(); 
@@ -173,39 +200,6 @@ namespace GGS{
       void ExecutableFileClient::setDeleteSharedArgs(std::function<void ()> value)
       {
         this->_deleteSharedArgs = value;
-      }
-
-      void ExecutableFileClient::injectDll(HANDLE handle, const QString& path, const QString& waitEvent /*= QString()*/)
-      {
-        HMODULE hModule = GetModuleHandleW(L"Kernel32");
-        QStringToWChar dll(path);
-        QStringToWChar waitEventName(waitEvent);
-        HANDLE waitHandle = NULL;
-
-        size_t len = (dll.size() + 1) * sizeof(wchar_t);
-        void* pLibRemote = ::VirtualAllocEx(handle, NULL, len, MEM_COMMIT, PAGE_READWRITE);
-        DWORD iLen = 0;
-        WriteProcessMemory(handle, pLibRemote, static_cast<void*>(dll.data()), len, &iLen);
-
-        if (!waitEvent.isEmpty())
-          waitHandle = CreateEvent(NULL, FALSE, FALSE, waitEventName.data());
-
-        HANDLE hThread = CreateRemoteThread(
-          handle, 
-          NULL, 
-          0, 
-          (LPTHREAD_START_ROUTINE)GetProcAddress(hModule, "LoadLibraryW"), 
-          pLibRemote, 
-          0, 
-          &iLen);
-
-        WaitForSingleObject(hThread, INFINITE);
-        CloseHandle(hThread);
-
-        if (waitHandle != NULL) {
-          WaitForSingleObject(waitHandle, 15000);
-          CloseHandle(waitHandle);
-        }
       }
 
       void ExecutableFileClient::handleActivated(HANDLE handle)
@@ -245,6 +239,45 @@ namespace GGS{
         this->_serviceId = value;
       }
 
+      void ExecutableFileClient::initAuth(const quint32 pid)
+      {
+        if (!this->isAuthSdkEnabled())
+          return;
+
+        std::stringstream ss;
+        ss << "Local\\GameNet_HelperInfo_" << pid << "_";
+        this->_authWriter = new GameNetAuthHost::AuthWriter();
+
+        const QString & userId = this->_authParam[UserIdData];
+        const QString & appKey = this->_authParam[AppKeyData];
+        const QString & token = this->_authParam[TokenData];
+
+        this->_authWriter->write(ss.str(), userId.toStdString(), appKey.toStdString(), token.toStdString(), "");
+      }
+
+      void ExecutableFileClient::closeAuth()
+      {
+        delete this->_authWriter;
+        this->_authWriter = NULL;
+      }
+
+      void ExecutableFileClient::setAuthParam(AuthData key, const QString & value)
+      {
+        this->_authParam[key] = value;
+      }
+
+      bool ExecutableFileClient::isAuthSdkEnabled()
+      {
+        if (!this->_authParam.count(UseAuthSdk))
+          return false;
+
+        return this->_authParam[UseAuthSdk] == "1";
+      }
+
+      void ExecutableFileClient::setService(GGS::GameExecutor::GameExecutorService * srv)
+      {
+        this ->_executorService = srv;
+      }
     }
   }
 }

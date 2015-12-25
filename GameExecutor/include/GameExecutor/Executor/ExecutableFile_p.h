@@ -54,6 +54,7 @@ namespace GGS {
       signals:
         void started(const GGS::Core::Service &service);
         void finished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
+        void corruptedData();
 
       private slots:
         void launcherStart();

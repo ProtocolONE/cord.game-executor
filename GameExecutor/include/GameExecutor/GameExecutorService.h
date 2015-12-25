@@ -96,6 +96,7 @@ namespace GGS {
       void started(const GGS::Core::Service &service);
       void finished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
       void stopExecution(const QString& serviceId);
+      void dataCorrupted();
 
     private slots:
       void privateFinished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);

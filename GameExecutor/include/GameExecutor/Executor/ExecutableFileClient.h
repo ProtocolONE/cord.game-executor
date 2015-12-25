@@ -23,17 +23,34 @@
 #include <map>
 #include <string>
 
+namespace GameNetAuthHost {
+  class AuthWriter;
+}
+
 namespace GGS {
   namespace GameExecutor {
+
+    class GameExecutorService;
+
     namespace Executor {
 
       enum HookType
       {
         CommandLineCheck,
-        SpeedHackCheck
+        SpeedHackCheck,
+        Need64Load
+      };
+
+      enum AuthData
+      {
+        UserIdData,
+        AppKeyData,
+        TokenData,
+        UseAuthSdk
       };
 
       typedef std::map<HookType, bool> paramHolderT;
+      typedef std::map<AuthData, QString> authParamT;
 
       class AppInitPatch;
 
@@ -64,14 +81,22 @@ namespace GGS {
         void setInjectedParams(HookType key, bool val);
         void setServiceId(const QString& value);
 
+        void setAuthParam(AuthData, const QString & value);
+        void setService(GGS::GameExecutor::GameExecutorService *);
+
       signals:
         void finished(int exitCode);
         void started();
+        void corruptedData();
 
       private:
-        void injectDll(HANDLE handle, const QString& path, const QString& waitEvent = QString());
+
         void handleActivated(HANDLE handle);
         void closeHandles();
+
+        void initAuth(const quint32 pid);
+        void closeAuth();
+        bool isAuthSdkEnabled();
 
         AppInitPatch *_appinitPatch;
 
@@ -81,7 +106,10 @@ namespace GGS {
         HANDLE _processHandle;
         HANDLE _threadHandle;
         paramHolderT _paramHolder;
+        authParamT _authParam;
         QString _serviceId;
+        GameNetAuthHost::AuthWriter *_authWriter;
+        GGS::GameExecutor::GameExecutorService *_executorService;
       };
     }
   }

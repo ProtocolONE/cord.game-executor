@@ -49,6 +49,9 @@ namespace GGS {
         QObject::connect(&this->_client, &ExecutableFileClient::finished, 
           this, &ExecutableFilePrivate::launcherFinished);
 
+        QObject::connect(&this->_client, &ExecutableFileClient::corruptedData,
+          this, &ExecutableFilePrivate::corruptedData);
+
         this->_random.seed(QDateTime::currentMSecsSinceEpoch());
       }
 
@@ -62,6 +65,10 @@ namespace GGS {
         const GGS::RestApi::GameNetCredential& credential,
         const GGS::RestApi::GameNetCredential& secondCredential)
       {
+        QString userIdTest;
+        QString appKeyTest;
+        QString tokenTest;
+
         this->shareServiceId(service);
         this->_client.setServiceId(service.id());
 
@@ -81,7 +88,10 @@ namespace GGS {
         QString executorHelper = urlQuery.queryItemValue("executorHelper", QUrl::FullyDecoded);
         this->_executorHelperAvailable = executorHelper == "1";
 
+        QString executerHelperX64 = urlQuery.queryItemValue("start64", QUrl::FullyDecoded);
+
         this->_client.setInjectedParams(CommandLineCheck, this->_executorHelperAvailable);
+        this->_client.setInjectedParams(Need64Load, executerHelperX64 == "1");
         this->_client.setInjectedParams(SpeedHackCheck, urlQuery.queryItemValue("disableTimersCheck", QUrl::FullyDecoded) != "1");
 
         this->_injectDll1 = injectDll;
@@ -102,19 +112,32 @@ namespace GGS {
         const GGS::RestApi::GameNetCredential& startingCredential(
           isSecondAccount ? secondCredential : credential);
 
+        QString authSdk = urlQuery.queryItemValue("authsdk", QUrl::FullyDecoded);
+        this->_client.setAuthParam(UseAuthSdk, authSdk);
+        this->_client.setAuthParam(UserIdData, startingCredential.userId());
+        this->_client.setAuthParam(AppKeyData, startingCredential.appKey());
+
         this->_args.replace("%userId%", startingCredential.userId(), Qt::CaseInsensitive);
         this->_args.replace("%appKey%", startingCredential.appKey(), Qt::CaseInsensitive);
 
-        if (-1 == this->_args.indexOf("%token%", 0, Qt::CaseInsensitive)
-          && -1 == this->_args.indexOf("%login%", 0, Qt::CaseInsensitive)) {
-            this->launcherStart();
-            return;
-        }
+        bool needAuth = authSdk == "1"
+          || -1 != this->_args.indexOf("%token%", 0, Qt::CaseInsensitive)
+          || -1 != this->_args.indexOf("%login%", 0, Qt::CaseInsensitive);
 
         this->_executorService = executorService;
-        
+
+        QObject::connect(this, &ExecutableFilePrivate::corruptedData,
+          this->_executorService, &GameExecutorService::dataCorrupted);
+
+        if (!needAuth) {
+          this->launcherStart();
+          return;
+        }
+
         GetSaltExtension *extension = reinterpret_cast<GetSaltExtension *>(
           this->_executorService->extension(ExtensionTypes::GetSalt));
+
+        this->_client.setService(this->_executorService);
 
         if (extension) 
           this->_authSalt = extension->get()();
@@ -174,6 +197,8 @@ namespace GGS {
             tokenEx = extension->get()(this->_authSalt, token);
           else
             tokenEx = token;
+
+          this->_client.setAuthParam(TokenData, tokenEx);
 
           if (!this->_executorHelperAvailable)
             token = tokenEx;

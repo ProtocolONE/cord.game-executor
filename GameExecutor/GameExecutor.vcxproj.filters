@@ -232,6 +232,15 @@
     <ClCompile Include="src\GameExecutor\Executor\WebLinkSsl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_PreventWinXpLaunch.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_PreventWinXpLaunch.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameExecutor\Hook\PreventWinXpLaunch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="include\GameExecutor\Executor\ExecutableFile.h">
@@ -292,6 +301,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="include\GameExecutor\Executor\WebLinkSsl.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="include\GameExecutor\Hook\PreventWinXpLaunch.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

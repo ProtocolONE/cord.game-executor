@@ -43,7 +43,7 @@ class ExecutableFileTest : public ::testing::Test
 protected:
   virtual void SetUp() 
   {
-    restapi.setUri(QString("https://gnapi.com/restapi"));
+    restapi.setUri(QString("http://api.stg.gamenet.ru/restapi"));
     restapi.setCache(&cache);
     restapi.setRequest(GGS::RestApi::RequestFactory::Http);
     GGS::RestApi::RestApiManager::setCommonInstance(&restapi);
@@ -181,8 +181,9 @@ TEST_F(ExecutableFileTest, AuthorizationError)
 TEST_F(ExecutableFileTest, ServiceAuthorizationImpossibleError) 
 {
   GameNetCredential auth; 
-  auth.setUserId("400001000025914750"); //gna_blocked_acc@unit.test
-  auth.setAppKey("60472d5bc9f7dee91d0a113ff481a99a8091b503");
+
+  auth.setUserId("400001000133689350"); //gna_blocked_acc@unit.test
+  auth.setAppKey("c68dc3316c48868c243db70bb878f473b22c457b");
 
   QUrl url;
   url.setScheme("exe");
@@ -193,8 +194,8 @@ TEST_F(ExecutableFileTest, ServiceAuthorizationImpossibleError)
   url.setQuery(query);
 
   GGS::Core::Service srv;
-  srv.setId("300007020000000000"); //GA TEST
-  srv.setGameId("83");
+  srv.setId("40000000000"); //Black Desert TEST
+  srv.setGameId("1022");
   srv.setUrl(url);
 
   ExecutionFlow(srv, 0, GGS::GameExecutor::ServiceAuthorizationImpossible, auth);
@@ -203,8 +204,8 @@ TEST_F(ExecutableFileTest, ServiceAuthorizationImpossibleError)
 TEST_F(ExecutableFileTest, ServiceAccountBlockedError) 
 {
   GameNetCredential auth; 
-  auth.setUserId("400001000025914750"); //gna_blocked_acc@unit.test
-  auth.setAppKey("60472d5bc9f7dee91d0a113ff481a99a8091b503");
+  auth.setUserId("400001000133689350"); //gna_blocked_acc@unit.test
+  auth.setAppKey("c68dc3316c48868c243db70bb878f473b22c457b");
 
   QUrl url;
   url.setScheme("exe");
@@ -215,8 +216,8 @@ TEST_F(ExecutableFileTest, ServiceAccountBlockedError)
   url.setQuery(query);
 
   GGS::Core::Service srv;
-  srv.setId("300007010000000000"); //GA TEST
-  srv.setGameId("83");
+  srv.setId("300003010000000000"); //BS
+  srv.setGameId("71");
   srv.setUrl(url);
 
   ExecutionFlow(srv, 0, GGS::GameExecutor::ServiceAccountBlockedError, auth);

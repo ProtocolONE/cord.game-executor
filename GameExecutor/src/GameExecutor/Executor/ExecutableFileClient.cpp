@@ -125,14 +125,6 @@ namespace GGS{
 
         this->initAuth(pi.dwProcessId);
 
-        this->_appinitPatch->patchAppinit(this->_processHandle);
-
-        std::vector<std::wstring> toLoad;
-        toLoad.push_back(L"user32.dll");
-
-        if (!nvidia.isEmpty())
-          toLoad.push_back(nvidia.toStdWString());
-
         bool cmdFix = false;
         bool sphFix = false;
         bool x64Helper = false;
@@ -145,6 +137,21 @@ namespace GGS{
 
         if (this->_paramHolder.count(Need64Load))
           x64Helper = this->_paramHolder[Need64Load];
+
+        // Данный код используется для защиты от AppInit_Dll.
+        // В случае 32 битов передается хэндл процесса, 64 бита - пид процесса.
+        AppInitDllPatchExtension *appInitDllPatch = reinterpret_cast<AppInitDllPatchExtension *>(
+          this->_executorService->extension(ExtensionTypes::AppInitDllPatch));
+        if (appInitDllPatch) {
+          // UNDONE Урать условие - защита должна быть всегда
+          appInitDllPatch->get()(x64Helper, x64Helper ? pi.dwProcessId : (DWORD)pi.hProcess);
+        }
+        
+        std::vector<std::wstring> toLoad;
+        toLoad.push_back(L"user32.dll");
+
+        if (!nvidia.isEmpty())
+          toLoad.push_back(nvidia.toStdWString());
         
         GGS::GameExecutorHelper::ConfigReader cfg;
 

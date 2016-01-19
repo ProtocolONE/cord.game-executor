@@ -38,7 +38,8 @@ namespace GGS {
       {
         CommandLineCheck,
         SpeedHackCheck,
-        Need64Load
+        Need64Load,
+        WinHookDefendCheck
       };
 
       enum AuthData

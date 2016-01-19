@@ -93,6 +93,7 @@ namespace GGS {
         this->_client.setInjectedParams(CommandLineCheck, this->_executorHelperAvailable);
         this->_client.setInjectedParams(Need64Load, executerHelperX64 == "1");
         this->_client.setInjectedParams(SpeedHackCheck, urlQuery.queryItemValue("disableTimersCheck", QUrl::FullyDecoded) != "1");
+        this->_client.setInjectedParams(WinHookDefendCheck, urlQuery.queryItemValue("disableHookCheck", QUrl::FullyDecoded) != "1");
 
         this->_injectDll1 = injectDll;
 

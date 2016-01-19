@@ -20,6 +20,7 @@
 #include <QtCore/QWinEventNotifier>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QProcess>
+#include <QtCore/QSysInfo>
 
 #include <RestApi/GameNetCredential>
 #include <RestApi/Commands/User/SetUserActivity>
@@ -120,14 +121,23 @@ namespace GGS{
         QObject::connect(monitor, &QWinEventNotifier::activated, 
           this, &ExecutableFileClient::handleActivated);
 
+
         this->_processHandle = pi.hProcess;
         this->_threadHandle = pi.hThread;
 
-        this->initAuth(pi.dwProcessId);
+        {
+          ProcessHandleCheckExtension *extension = reinterpret_cast<ProcessHandleCheckExtension *>(
+            this->_executorService->extension(ExtensionTypes::ProcessHandleCheck));
+
+          if (extension->get()(pi.dwProcessId, this->_processHandle))
+            this->initAuth(pi.dwProcessId);
+        }
 
         bool cmdFix = false;
         bool sphFix = false;
         bool x64Helper = false;
+        bool winHook = false;
+        uint8_t winVersion = 0;
 
         if (this->_paramHolder.count(CommandLineCheck) && !this->isAuthSdkEnabled())
           cmdFix = this->_paramHolder[CommandLineCheck];
@@ -146,6 +156,36 @@ namespace GGS{
           // UNDONE Урать условие - защита должна быть всегда
           appInitDllPatch->get()(x64Helper, x64Helper ? pi.dwProcessId : (DWORD)pi.hProcess);
         }
+
+        if (this->_paramHolder.count(WinHookDefendCheck))
+          winHook = this->_paramHolder[WinHookDefendCheck];
+
+        QSysInfo::WinVersion winVer = QSysInfo::windowsVersion();
+
+        switch (winVer)
+        {
+        case QSysInfo::WV_XP:
+          winVersion = 0;
+          break;
+        case QSysInfo::WV_VISTA:
+          winVersion = 1;
+          break;
+        case QSysInfo::WV_WINDOWS7:
+          winVersion = 2;
+          break;
+        case QSysInfo::WV_WINDOWS8:
+          winVersion = 3;
+          break;
+        case QSysInfo::WV_WINDOWS8_1:
+          winVersion = 4;
+          break;
+        case QSysInfo::WV_WINDOWS10:
+          winVersion = 5;
+          break;
+        default:
+          winVersion = 6;
+          break;
+        }
         
         std::vector<std::wstring> toLoad;
         toLoad.push_back(L"user32.dll");
@@ -158,6 +198,8 @@ namespace GGS{
         cfg.setPid(pi.dwProcessId);
         cfg.setCommandLineFlag(cmdFix);
         cfg.setSpeedHackFlag(sphFix);
+        cfg.setWinHookDefeneder(winHook);
+        cfg.setWindowsVersion(winVersion);
         cfg.setStrings(toLoad);
         cfg.setServiceId(this->_serviceId.toStdWString());
         cfg.write();
@@ -248,6 +290,12 @@ namespace GGS{
 
       void ExecutableFileClient::initAuth(const quint32 pid)
       {
+        ProcessHandleCheckExtension *extension = reinterpret_cast<ProcessHandleCheckExtension *>(
+          this->_executorService->extension(ExtensionTypes::ProcessHandleCheck));
+
+        if (!extension->get()(pid, this->_processHandle))
+          return;
+
         if (!this->isAuthSdkEnabled())
           return;
 
@@ -258,6 +306,9 @@ namespace GGS{
         const QString & userId = this->_authParam[UserIdData];
         const QString & appKey = this->_authParam[AppKeyData];
         const QString & token = this->_authParam[TokenData];
+
+        if (!extension->get()(pid, this->_processHandle))
+          return;
 
         this->_authWriter->write(ss.str(), userId.toStdString(), appKey.toStdString(), token.toStdString(), "");
       }

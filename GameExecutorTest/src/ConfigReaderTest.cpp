@@ -26,6 +26,7 @@ protected:
     //Setting flags
     this->_writer.setCommandLineFlag(true);
     this->_writer.setSpeedHackFlag(true);
+    this->_writer.setWinHookDefeneder(true);
     this->_writer.setServiceId(this->_serviceId);
 
     //Setting strings
@@ -62,6 +63,11 @@ TEST_F(ConfigTest, testCommandLineTest)
 TEST_F(ConfigTest, testSpeedHackFlag)
 {
   EXPECT_EQ(true, _reader.isSpeedHackEnabled());
+}
+
+TEST_F(ConfigTest, testWinHookDefeneder)
+{
+  EXPECT_EQ(true, _reader.isWinHookDefenederEnabled());
 }
 
 TEST_F(ConfigTest, testNumberOfStrings)

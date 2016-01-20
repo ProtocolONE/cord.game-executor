@@ -61,7 +61,7 @@ namespace GGS{
 
       ExecutableFileClient::ExecutableFileClient(QObject *parent) 
         : QObject(parent)
-        , _appinitPatch(new AppInitPatch(this))
+        , _appinitPatch(new AppInitPatch)
         , _processHandle(NULL)
         , _threadHandle(NULL)
         , _shareArgs(nullptr)
@@ -99,7 +99,8 @@ namespace GGS{
 
         emit this->started();
 
-        QString nvidia = this->_appinitPatch->nvidiaDriverPath();
+        QString nvidia32 = this->_appinitPatch->nvidiaDriverPath();
+        QString nvidia64 = this->_appinitPatch->nvidiaDriverPath64();
 
         this->_appinitPatch->eraseRegistry();
 
@@ -190,6 +191,7 @@ namespace GGS{
         std::vector<std::wstring> toLoad;
         toLoad.push_back(L"user32.dll");
 
+        QString nvidia = x64Helper ? nvidia64 : nvidia32;
         if (!nvidia.isEmpty())
           toLoad.push_back(nvidia.toStdWString());
         

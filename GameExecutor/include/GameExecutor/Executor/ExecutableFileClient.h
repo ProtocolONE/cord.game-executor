@@ -23,6 +23,8 @@
 #include <map>
 #include <string>
 
+#include <memory>
+
 namespace GameNetAuthHost {
   class AuthWriter;
 }
@@ -99,7 +101,7 @@ namespace GGS {
         void closeAuth();
         bool isAuthSdkEnabled();
 
-        AppInitPatch *_appinitPatch;
+        std::unique_ptr<AppInitPatch> _appinitPatch;
 
         std::function<void (unsigned int, HANDLE)> _shareArgs;
         std::function<void ()> _deleteSharedArgs;

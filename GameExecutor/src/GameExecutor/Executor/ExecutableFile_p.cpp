@@ -152,7 +152,7 @@ namespace GGS {
         if (this->_authSalt.size() > 0)
           cmd->appendParameter("salt", this->_authSalt);
 
-        cmd->appendParameter("thettaVersion", "1");
+        cmd->appendParameter("thettaVersion", "2");
 
         cmd->setAuthRequire(false);
         cmd->appendParameter("userId", credential.userId());

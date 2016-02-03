@@ -25,9 +25,10 @@ protected:
     this->_writer.setPid(GetCurrentProcessId());
     //Setting flags
     this->_writer.setCommandLineFlag(true);
-    this->_writer.setSpeedHackFlag(true);
-    this->_writer.setWinHookDefeneder(true);
+    this->_writer.setSpeedHackFlag(false);
+    this->_writer.setWinHookDefeneder(false);
     this->_writer.setServiceId(this->_serviceId);
+    this->_writer.setWindowsVersion(42);
 
     //Setting strings
     std::vector<std::wstring> strHolder;
@@ -62,12 +63,12 @@ TEST_F(ConfigTest, testCommandLineTest)
 
 TEST_F(ConfigTest, testSpeedHackFlag)
 {
-  EXPECT_EQ(true, _reader.isSpeedHackEnabled());
+  EXPECT_EQ(false, _reader.isSpeedHackEnabled());
 }
 
 TEST_F(ConfigTest, testWinHookDefeneder)
 {
-  EXPECT_EQ(true, _reader.isWinHookDefenederEnabled());
+  EXPECT_EQ(false, _reader.isWinHookDefenederEnabled());
 }
 
 TEST_F(ConfigTest, testNumberOfStrings)
@@ -86,4 +87,8 @@ TEST_F(ConfigTest, testMatchStrings)
 TEST_F(ConfigTest, testServiceId)
 {
   EXPECT_EQ(this->_serviceId, _reader.serviceId());
+}
+TEST_F(ConfigTest, windowsVersion)
+{
+  EXPECT_EQ(42, _reader.windowsVersion());
 }

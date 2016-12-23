@@ -49,6 +49,10 @@ namespace GGS {
       case RestApi::CommandBase::PakkanenVkPhoneVerification:
         state = PakkanenPhoneVerification;
         break;
+      case RestApi::CommandBase::PakkanenGeoIpBlocked:
+        state = PakkanenGeoIpBlocked;
+        break;
+
       default:
         state = UnhandledRestApiError;
       }

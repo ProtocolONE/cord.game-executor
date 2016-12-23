@@ -31,6 +31,7 @@ namespace GGS {
       ServiceAuthorizationImpossible = 125,
       PakkanenPermissionDenied = 601,
       PakkanenPhoneVerification = 603,
+      PakkanenGeoIpBlocked = 605,
     };
 
     Q_ENUMS(GGS::GameExecutor::FinishState);

@@ -15,7 +15,7 @@
 
 namespace GGS {
   namespace GameExecutor {
-    enum FinishState {
+    enum FinishState : quint32 {
       Success = 0, 
       InvalidService,
       UnknownSchemeError, 

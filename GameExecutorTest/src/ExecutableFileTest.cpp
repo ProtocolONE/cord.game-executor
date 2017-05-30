@@ -178,7 +178,7 @@ TEST_F(ExecutableFileTest, AuthorizationError)
   ExecutionFlow(srv, 0, GGS::GameExecutor::AuthorizationError, wrongAuth);
 }
 
-TEST_F(ExecutableFileTest, ServiceAuthorizationImpossibleError) 
+TEST_F(ExecutableFileTest, DISABLED_ServiceAuthorizationImpossibleError) 
 {
   GameNetCredential auth; 
 
@@ -201,7 +201,7 @@ TEST_F(ExecutableFileTest, ServiceAuthorizationImpossibleError)
   ExecutionFlow(srv, 0, GGS::GameExecutor::ServiceAuthorizationImpossible, auth);
 }
 
-TEST_F(ExecutableFileTest, ServiceAccountBlockedError) 
+TEST_F(ExecutableFileTest, DISABLED_ServiceAccountBlockedError)
 {
   GameNetCredential auth; 
   auth.setUserId("400001000133689350"); //gna_blocked_acc@unit.test

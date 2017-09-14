@@ -26,6 +26,7 @@
 #include <RestApi/Commands/User/SetUserActivity>
 
 #include <Common/ConfigReader.h>
+#include <Core/System/ProcessTools.h>
 
 #include <sstream>
 
@@ -240,7 +241,7 @@ namespace GGS{
       void ExecutableFileClient::stopProcess()
       {
         if (this->_processHandle != NULL)
-          TerminateProcess(this->_processHandle, 0);
+          GGS::Core::System::ProcessTools::killProcessTree(::GetProcessId(this->_processHandle), 0);
       }
 
       void ExecutableFileClient::setShareArgs(std::function<void (unsigned int, HANDLE)> value)

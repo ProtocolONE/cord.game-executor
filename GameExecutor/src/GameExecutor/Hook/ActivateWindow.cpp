@@ -2,7 +2,7 @@
 
 #include <Application/WindowHelper.h>
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
     namespace Hook {
 
@@ -18,14 +18,14 @@ namespace GGS {
       void ActivateWindow::PreExecute(Core::Service &service)
       {
         if (!this->_window || QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS8) {
-          this->preExecuteCompleted(service, GGS::GameExecutor::FinishState::Success);
+          this->preExecuteCompleted(service, P1::GameExecutor::FinishState::Success);
           return;
         }
 
         this->_window->show();
-        GGS::Application::WindowHelper::activate(reinterpret_cast<HWND>(this->_window->winId()));
+        P1::Application::WindowHelper::activate(reinterpret_cast<HWND>(this->_window->winId()));
 
-        this->preExecuteCompleted(service, GGS::GameExecutor::FinishState::Success);
+        this->preExecuteCompleted(service, P1::GameExecutor::FinishState::Success);
       }
 
       QString ActivateWindow::id()

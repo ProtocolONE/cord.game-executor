@@ -1,12 +1,3 @@
-/****************************************************************************
-** This file is a part of Syncopate Limited GameNet Application or it parts.
-**
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
-** All rights reserved.
-**
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-****************************************************************************/
 #include <GameExecutor/ExecutionLoop_p.h>
 #include <GameExecutor/gameexecutorservice.h>
 
@@ -14,7 +5,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QMutexLocker>
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
 
     GameExecutorService::GameExecutorService(QObject *parent) 
@@ -42,7 +33,7 @@ namespace GGS {
       return this->_executors.contains(scheme);
     }
 
-    bool GameExecutorService::addHook(const GGS::Core::Service &service, HookInterface *hook, int priority /*= 0*/)
+    bool GameExecutorService::addHook(const P1::Core::Service &service, HookInterface *hook, int priority /*= 0*/)
     {
       QString id = service.id();
       if (id.isEmpty())
@@ -52,7 +43,7 @@ namespace GGS {
       return true;
     }
 
-    void GameExecutorService::clearHooks(const GGS::Core::Service &service)
+    void GameExecutorService::clearHooks(const P1::Core::Service &service)
     {
       QString id = service.id();
       if (id.isEmpty())
@@ -61,23 +52,9 @@ namespace GGS {
       this->_hooks[id].clear();
     }
 
-    void GameExecutorService::execute(const GGS::Core::Service &service)
-    {
-      this->execute(service, RestApi::GameNetCredential());
-    }
-
-    void GameExecutorService::execute(const GGS::Core::Service &service, const GGS::RestApi::GameNetCredential &credential)
-    {
-      this->executeEx(
-        service, 
-        RestApi::RestApiManager::commonInstance()->credential(),
-        credential);
-    }
-
-    void GameExecutorService::executeEx(
-      const GGS::Core::Service &service, 
-      const GGS::RestApi::GameNetCredential &credential, 
-      const GGS::RestApi::GameNetCredential &secondCredential /*= GGS::RestApi::GameNetCredential()*/)
+    void GameExecutorService::execute(
+      const P1::Core::Service &service, 
+      const P1::RestApi::GameNetCredential &credential)
     {
       QString id = service.id();
       if (id.isEmpty()) {
@@ -115,7 +92,6 @@ namespace GGS {
       loop->setExecutor(this->_executors[scheme]);
       loop->setExecutorService(this);
       loop->setCredential(credential);
-      loop->setSecondCredential(secondCredential);
 
       QObject::connect(this, &GameExecutorService::stopExecution, 
         loop, &ExecutionLoopPrivate::onStopExecution);
@@ -145,7 +121,7 @@ namespace GGS {
       this->terminate(QString());
     }
 
-    void GameExecutorService::privateFinished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state)
+    void GameExecutorService::privateFinished(const P1::Core::Service &service, P1::GameExecutor::FinishState state)
     {
       QObject::sender()->deleteLater();
 
@@ -168,27 +144,11 @@ namespace GGS {
         delete executor;
 
       this->_executors.clear();
-
-      Q_FOREACH(void* extension, this->_extensionsMap)
-        delete extension;
     }
 
     bool GameExecutorService::isGameStarted(const QString& serviceId)
     {
       return this->_startedServices.contains(serviceId);
-    }
-    void GameExecutorService::setExtension(ExtensionTypes::Values type, void* extension)
-    {
-      Q_ASSERT(!this->_extensionsMap.contains(type));
-      this->_extensionsMap[type] = extension;
-    }
-
-    void* GameExecutorService::extension(ExtensionTypes::Values type)
-    {
-      if (!this->_extensionsMap.contains(type))
-        return nullptr;
-
-      return this->_extensionsMap[type];
     }
 
   }

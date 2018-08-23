@@ -1,6 +1,6 @@
 #include <GameExecutor/hookinterface.h>
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
 
     HookInterface::HookInterface(QObject *parent /*= 0*/)
@@ -13,20 +13,20 @@ namespace GGS {
 
     void HookInterface::CanExecute(Core::Service &service)
     {
-      emit this->canExecuteCompleted(service, GGS::GameExecutor::Success);
+      emit this->canExecuteCompleted(service, P1::GameExecutor::Success);
     }
 
     void HookInterface::PreExecute(Core::Service &service)
     {
-      emit this->preExecuteCompleted(service, GGS::GameExecutor::Success);
+      emit this->preExecuteCompleted(service, P1::GameExecutor::Success);
     }
 
-    void HookInterface::PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state)
+    void HookInterface::PostExecute(Core::Service &service, P1::GameExecutor::FinishState state)
     {
       emit this->postExecuteCompleted(service);
     }
 
-    void HookInterface::setCredential(const GGS::RestApi::GameNetCredential& value)
+    void HookInterface::setCredential(const P1::RestApi::GameNetCredential& value)
     {
       this->_credential = value;
     }

@@ -1,7 +1,7 @@
 #include <GameExecutor/Hooks/HookMock.h>
 
 HookMock::HookMock(QObject *parent) 
-  : GGS::GameExecutor::HookInterface(parent)
+  : P1::GameExecutor::HookInterface(parent)
 {
 }
 
@@ -11,7 +11,7 @@ HookMock::~HookMock()
 
 void HookMock::CanExecute(Core::Service &service)
 {
-  GGS::GameExecutor::FinishState ret = GGS::GameExecutor::Success;
+  P1::GameExecutor::FinishState ret = P1::GameExecutor::Success;
   if (this->_canFunc) {
     ret = this->_canFunc(service);
   }
@@ -21,7 +21,7 @@ void HookMock::CanExecute(Core::Service &service)
 
 void HookMock::PreExecute(Core::Service &service)
 {
-  GGS::GameExecutor::FinishState ret = GGS::GameExecutor::Success;
+  P1::GameExecutor::FinishState ret = P1::GameExecutor::Success;
   if (this->_preFunc) {
     ret = this->_preFunc(service);
   }
@@ -29,7 +29,7 @@ void HookMock::PreExecute(Core::Service &service)
   emit this->preExecuteCompleted(service, ret);
 }
 
-void HookMock::PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state)
+void HookMock::PostExecute(Core::Service &service, P1::GameExecutor::FinishState state)
 {
   if (this->_postFunc) {
     this->_postFunc(service, state);

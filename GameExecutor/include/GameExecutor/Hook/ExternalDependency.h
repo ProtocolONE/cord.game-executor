@@ -1,22 +1,13 @@
-/****************************************************************************
-** This file is a part of Syncopate Limited GameNet Application or it parts.
-**
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
-** All rights reserved.
-**
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-****************************************************************************/
-
 #pragma once
-#include <Core/Service>
+
+#include <Core/Service.h>
 #include <GameExecutor/gameexecutor_global.h>
 #include <GameExecutor/HookInterface.h>
 
 #include <QStringList>
 #include <QObject>
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
     namespace Hook {
       /*!
@@ -33,7 +24,7 @@ namespace GGS {
 
         static QString id();
 
-        virtual void PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state) override;
+        virtual void PostExecute(Core::Service &service, P1::GameExecutor::FinishState state) override;
         void setExternalDepencyList(const QString& dependencyList);
 
       private:

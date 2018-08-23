@@ -4,7 +4,7 @@
 #include <QtCore/QDateTime>
 #include <QtCore/QMutexLocker>
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
     ServiceInfoCounter::ServiceInfoCounter(QObject *parent) : QObject(parent)
     {
@@ -27,13 +27,13 @@ namespace GGS {
       this->_storage.endGroup();
     }
 
-    void ServiceInfoCounter::finished(const Core::Service &service, GGS::GameExecutor::FinishState state)
+    void ServiceInfoCounter::finished(const Core::Service &service, P1::GameExecutor::FinishState state)
     {
       QMutexLocker lock(&this->_lock);
 
       this->_storage.beginGroup(service.id());
 
-      QString key = (GGS::GameExecutor::Success == state) ? "successCount" : "failedCount";
+      QString key = (P1::GameExecutor::Success == state) ? "successCount" : "failedCount";
       this->_storage.setValue(key, this->_storage.value(key, 0).toInt() + 1);
 
       QDateTime currentTime = QDateTime::currentDateTime();
@@ -50,7 +50,7 @@ namespace GGS {
       this->_storage.endGroup();
     }
 
-    GGS::GameExecutor::ServiceInfo ServiceInfoCounter::queryInfo(const Core::Service &service)
+    P1::GameExecutor::ServiceInfo ServiceInfoCounter::queryInfo(const Core::Service &service)
     {
       Settings::Settings storage;
       storage.beginGroup("gameExecutor");

@@ -1,6 +1,6 @@
 #include <GameExecutor/ExecutorBase.h>
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
     ExecutorBase::ExecutorBase(QObject *parent /*= 0*/)
       : QObject(parent)
@@ -21,7 +21,7 @@ namespace GGS {
       return this->_scheme;
     }
 
-    GGS::GameExecutor::FinishState ExecutorBase::finishStateFromRestApiErrorCode(int errorCode)
+    P1::GameExecutor::FinishState ExecutorBase::finishStateFromRestApiErrorCode(int errorCode)
     {
       FinishState state;
 

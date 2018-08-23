@@ -1,15 +1,4 @@
-/****************************************************************************
-** This file is a part of Syncopate Limited GameNet Application or it parts.
-**
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
-** All rights reserved.
-**
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-****************************************************************************/
-
-#ifndef _GGS_GAMEEXECUTOR_HOOK_RESTORERESOLUTION_H
-#define _GGS_GAMEEXECUTOR_HOOK_RESTORERESOLUTION_H
+#pragma once
 
 #include <GameExecutor/gameexecutor_global.h>
 #include <GameExecutor/HookInterface.h>
@@ -17,7 +6,7 @@
 #include <QObject>
 #include <windows.h>
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
     namespace Hook {
       /*!
@@ -34,7 +23,7 @@ namespace GGS {
 
         static QString id();
 
-        virtual void PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state);
+        virtual void PostExecute(Core::Service &service, P1::GameExecutor::FinishState state);
         virtual void PreExecute(Core::Service &service);
 
       private:
@@ -45,5 +34,3 @@ namespace GGS {
   }
 }
 
-
-#endif // _GGS_GAMEEXECUTOR_HOOK_RESTORERESOLUTION_H

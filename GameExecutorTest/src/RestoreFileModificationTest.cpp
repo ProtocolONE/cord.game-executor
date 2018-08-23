@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <GameExecutor/Hook/RestoreFileModification.h>
-#include <Core/Service>
+#include <Core/Service.h>
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
@@ -40,8 +40,8 @@ TEST(RestoreFileModification, simpleTest)
   ASSERT_TRUE(GetFileTime(handle, 0, 0, &time1));
   CloseHandle(handle);
 
-  GGS::GameExecutor::Hook::RestoreFileModification hook;
-  GGS::Core::Service service;
+  P1::GameExecutor::Hook::RestoreFileModification hook;
+  P1::Core::Service service;
   service.setInstallPath(dirPath);
   hook.PreExecute(service);
 
@@ -52,7 +52,7 @@ TEST(RestoreFileModification, simpleTest)
   SetFileTime(handle, 0, 0, &timeFake);
   CloseHandle(handle);
 
-  hook.PostExecute(service, GGS::GameExecutor::Success);
+  hook.PostExecute(service, P1::GameExecutor::Success);
 
   handle = openFile(filePath);
   ASSERT_NE(INVALID_HANDLE_VALUE, handle);

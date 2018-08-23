@@ -1,27 +1,15 @@
-/****************************************************************************
-** This file is a part of Syncopate Limited GameNet Application or it parts.
-**
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
-** All rights reserved.
-**
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-****************************************************************************/
-
-#ifndef EXECUTORWRAPPER_H
-#define EXECUTORWRAPPER_H
-
+#pragma once
 #include <GameExecutor/ExecutorBase.h>
 
-#include <Core/Service>
+#include <Core/Service.h>
 
 #include <functional>
 #include <QObject>
 
-using namespace GGS;
+using namespace P1;
 
-typedef std::tr1::function<void(const Core::Service &)> ExecutorStartedFunc;
-typedef std::tr1::function<void(const Core::Service &, GGS::GameExecutor::FinishState)> ExecutorFinishedFunc;
+typedef std::function<void(const Core::Service &)> ExecutorStartedFunc;
+typedef std::function<void(const Core::Service &, P1::GameExecutor::FinishState)> ExecutorFinishedFunc;
 
 class ExecutorWrapper : public QObject
 {
@@ -29,21 +17,19 @@ class ExecutorWrapper : public QObject
 
 public:
   ExecutorWrapper(QObject *parent = 0);
-  ExecutorWrapper(GGS::GameExecutor::ExecutorBase *executor);
+  ExecutorWrapper(P1::GameExecutor::ExecutorBase *executor);
   ~ExecutorWrapper();
 
   void setStarted(ExecutorStartedFunc func);
   void setFinished(ExecutorFinishedFunc func);
-  void setExecutor(GGS::GameExecutor::ExecutorBase *executor);
+  void setExecutor(P1::GameExecutor::ExecutorBase *executor);
 
 private slots:
-  void started(const GGS::Core::Service &service);
-  void finished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
+  void started(const P1::Core::Service &service);
+  void finished(const P1::Core::Service &service, P1::GameExecutor::FinishState state);
 
 private:
   ExecutorStartedFunc _startedFunc;
   ExecutorFinishedFunc _finishedFunc;
 };
-
-#endif // EXECUTORWRAPPER_H
 

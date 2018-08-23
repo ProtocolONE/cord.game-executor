@@ -1,13 +1,3 @@
-/****************************************************************************
-** This file is a part of Syncopate Limited GameNet Application or it parts.
-**
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
-** All rights reserved.
-**
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-****************************************************************************/
-
 #include <GameExecutor/Hook/RestoreFileModification.h>
 
 #include <QtCore/QString>
@@ -16,7 +6,7 @@
 
 #include <Windows.h>
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
     namespace Hook {
 
@@ -91,10 +81,10 @@ namespace GGS {
           }
         }
 
-        emit this->preExecuteCompleted(service, GGS::GameExecutor::Success);
+        emit this->preExecuteCompleted(service, P1::GameExecutor::Success);
       }
 
-      void RestoreFileModification::PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state)
+      void RestoreFileModification::PostExecute(Core::Service &service, P1::GameExecutor::FinishState state)
       {
         QHash<QString, QPair<quint32, quint32> >::const_iterator it = this->_modifiedTime.constBegin();
         QHash<QString, QPair<quint32, quint32> >::const_iterator end = this->_modifiedTime.constEnd();

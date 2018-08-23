@@ -1,29 +1,18 @@
-/****************************************************************************
-** This file is a part of Syncopate Limited GameNet Application or it parts.
-**
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
-** All rights reserved.
-**
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-****************************************************************************/
-
-#ifndef HOOKMOCK_H
-#define HOOKMOCK_H
+#pragma once
 
 #include <GameExecutor/HookInterface.h>
-#include <Core/Service>
+#include <Core/Service.h>
 
 #include <functional>
 #include <QObject>
 
-using namespace GGS;
-using namespace GGS::GameExecutor;
+using namespace P1;
+using namespace P1::GameExecutor;
 
-typedef std::tr1::function<GGS::GameExecutor::FinishState(const Core::Service &)> HookCanPreFunc;
-typedef std::tr1::function<void(const Core::Service &, GGS::GameExecutor::FinishState)> HookPostFunc;
+typedef std::function<P1::GameExecutor::FinishState(const Core::Service &)> HookCanPreFunc;
+typedef std::function<void(const Core::Service &, P1::GameExecutor::FinishState)> HookPostFunc;
 
-class HookMock : public GGS::GameExecutor::HookInterface
+class HookMock : public P1::GameExecutor::HookInterface
 {
   Q_OBJECT
 
@@ -33,7 +22,7 @@ public:
 
   void CanExecute(Core::Service &service );
 
-  void PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state);
+  void PostExecute(Core::Service &service, P1::GameExecutor::FinishState state);
 
   void PreExecute(Core::Service &service );
 
@@ -46,5 +35,3 @@ private:
   HookCanPreFunc _preFunc;
   HookPostFunc _postFunc;
 };
-
-#endif // HOOKMOCK_H

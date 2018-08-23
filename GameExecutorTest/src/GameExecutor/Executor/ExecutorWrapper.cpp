@@ -5,7 +5,7 @@ ExecutorWrapper::ExecutorWrapper(QObject *parent) : QObject(parent)
 
 }
 
-ExecutorWrapper::ExecutorWrapper(GGS::GameExecutor::ExecutorBase *executor) : QObject(executor)
+ExecutorWrapper::ExecutorWrapper(P1::GameExecutor::ExecutorBase *executor) : QObject(executor)
 {
   this->setExecutor(executor);
 }
@@ -25,11 +25,11 @@ void ExecutorWrapper::setFinished( ExecutorFinishedFunc func )
   this->_finishedFunc = func;
 }
 
-void ExecutorWrapper::setExecutor(GGS::GameExecutor::ExecutorBase *executor)
+void ExecutorWrapper::setExecutor(P1::GameExecutor::ExecutorBase *executor)
 {
-  connect(executor, SIGNAL(started(const GGS::Core::Service)), this, SLOT(started(const GGS::Core::Service)));
-  connect(executor, SIGNAL(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)), 
-          this, SLOT(finished(const GGS::Core::Service, GGS::GameExecutor::FinishState)));
+  connect(executor, SIGNAL(started(const P1::Core::Service)), this, SLOT(started(const P1::Core::Service)));
+  connect(executor, SIGNAL(finished(const P1::Core::Service, P1::GameExecutor::FinishState)), 
+          this, SLOT(finished(const P1::Core::Service, P1::GameExecutor::FinishState)));
 }
 
 void ExecutorWrapper::started(const Core::Service &service)
@@ -38,7 +38,7 @@ void ExecutorWrapper::started(const Core::Service &service)
     this->_startedFunc(service);
 }
 
-void ExecutorWrapper::finished(const Core::Service &service, GGS::GameExecutor::FinishState state)
+void ExecutorWrapper::finished(const Core::Service &service, P1::GameExecutor::FinishState state)
 {
   if (this->_finishedFunc)
     this->_finishedFunc(service, state);

@@ -12,16 +12,16 @@
 class DisableAeroHookTest : public ::testing::Test {
 public:
   void SetUp() {
-    service.setArea(GGS::Core::Service::Live);
+    service.setArea(P1::Core::Service::Live);
     service.setId("300009010000000000");
     service.setInstallPath(QCoreApplication::applicationDirPath());
   }
 
   void executeCanHook()
   {
-    QSignalSpy spy(&hook, SIGNAL(canExecuteCompleted(const GGS::Core::Service &, GGS::GameExecutor::FinishState)));
+    QSignalSpy spy(&hook, SIGNAL(canExecuteCompleted(const P1::Core::Service &, P1::GameExecutor::FinishState)));
     QEventLoop loop;
-    QObject::connect(&hook, SIGNAL(canExecuteCompleted(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), &loop, SLOT(quit()), Qt::QueuedConnection);
+    QObject::connect(&hook, SIGNAL(canExecuteCompleted(const P1::Core::Service &, P1::GameExecutor::FinishState)), &loop, SLOT(quit()), Qt::QueuedConnection);
 
     hook.CanExecute(service);
     loop.exec();
@@ -32,13 +32,13 @@ public:
   void executePostHook()
   {
     QEventLoop loop;
-    QObject::connect(&hook, SIGNAL(postExecuteCompleted(const GGS::Core::Service &)), &loop, SLOT(quit()), Qt::QueuedConnection);
-    hook.PostExecute(service, GGS::GameExecutor::FinishState::Success);
+    QObject::connect(&hook, SIGNAL(postExecuteCompleted(const P1::Core::Service &)), &loop, SLOT(quit()), Qt::QueuedConnection);
+    hook.PostExecute(service, P1::GameExecutor::FinishState::Success);
     loop.exec();
   }
 
-  GGS::Core::Service service;
-  GGS::GameExecutor::Hook::DisableAeroHook hook;
+  P1::Core::Service service;
+  P1::GameExecutor::Hook::DisableAeroHook hook;
   QList<QVariant> resultEvent;
 
 };

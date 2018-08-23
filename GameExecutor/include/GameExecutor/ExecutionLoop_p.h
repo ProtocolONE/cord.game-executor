@@ -1,17 +1,16 @@
-#ifndef EXECUTIONLOOP_H
-#define EXECUTIONLOOP_H
+#pragma once
 
 #include <GameExecutor/Enum.h>
 
-#include <Core/Service>
+#include <Core/Service.h>
 
-#include <RestApi/RestApiManager>
+#include <RestApi/RestApiManager.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QList>
 #include <QtCore/QPointer>
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
 
     class HookInterface;
@@ -22,15 +21,14 @@ namespace GGS {
     {
       Q_OBJECT
     public:
-      ExecutionLoopPrivate(QObject *parent);
-      ~ExecutionLoopPrivate();
+      explicit ExecutionLoopPrivate(QObject *parent);
+      virtual ~ExecutionLoopPrivate();
 
-      void setService(const GGS::Core::Service &val);
+      void setService(const P1::Core::Service &val);
       void setHookList(QList<HookInterface*> &val);
-      void setExecutorService(GGS::GameExecutor::GameExecutorService *val);
-      void setExecutor(GGS::GameExecutor::ExecutorBase *val);
-      void setCredential(const GGS::RestApi::GameNetCredential& value);
-      void setSecondCredential(const GGS::RestApi::GameNetCredential& value);
+      void setExecutorService(P1::GameExecutor::GameExecutorService *val);
+      void setExecutor(P1::GameExecutor::ExecutorBase *val);
+      void setCredential(const P1::RestApi::GameNetCredential& value);
       
       void execute();
 
@@ -38,32 +36,30 @@ namespace GGS {
       void onStopExecution();
 
     signals:
-      void canExecuteCompleted(const GGS::Core::Service &service);
-      void preExecuteCompleted(const GGS::Core::Service &service);
-      void started(const GGS::Core::Service &service);
-      void finished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
+      void canExecuteCompleted(const P1::Core::Service &service);
+      void preExecuteCompleted(const P1::Core::Service &service);
+      void started(const P1::Core::Service &service);
+      void finished(const P1::Core::Service &service, P1::GameExecutor::FinishState state);
 
     private slots:
-      void executeHookCanStep(const GGS::Core::Service &serivce, GGS::GameExecutor::FinishState result);
-      void executeHookPreStep(const GGS::Core::Service &service, GGS::GameExecutor::FinishState result);
+      void executeHookCanStep(const P1::Core::Service &serivce, P1::GameExecutor::FinishState result);
+      void executeHookPreStep(const P1::Core::Service &service, P1::GameExecutor::FinishState result);
       void executorStep();
-      void executorCompletedStep(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
-      void executeHookPostStep(const GGS::Core::Service &service);
+      void executorCompletedStep(const P1::Core::Service &service, P1::GameExecutor::FinishState state);
+      void executeHookPostStep(const P1::Core::Service &service);
 
-      void startedStep(const GGS::Core::Service &service);
+      void startedStep(const P1::Core::Service &service);
   
     private:
-      GGS::Core::Service _service;
+      P1::Core::Service _service;
       QList<HookInterface*> _list;
       quint32 _listIndex;
-      QPointer<GGS::GameExecutor::GameExecutorService> _executorService;
-      QPointer<GGS::GameExecutor::ExecutorBase> _executor;
-      GGS::GameExecutor::FinishState _state;
-      GGS::RestApi::GameNetCredential _credential;
-      GGS::RestApi::GameNetCredential _secondCredential;
+      QPointer<P1::GameExecutor::GameExecutorService> _executorService;
+      QPointer<P1::GameExecutor::ExecutorBase> _executor;
+      P1::GameExecutor::FinishState _state;
+      P1::RestApi::GameNetCredential _credential;
       bool _stopExecution;
     };
   }
 }
 
-#endif // EXECUTIONLOOP_H

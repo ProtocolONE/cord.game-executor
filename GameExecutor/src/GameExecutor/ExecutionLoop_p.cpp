@@ -1,19 +1,10 @@
-/****************************************************************************
-** This file is a part of Syncopate Limited GameNet Application or it parts.
-**
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
-** All rights reserved.
-**
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-****************************************************************************/
 #include <GameExecutor/ExecutionLoop_p.h>
 
 #include <GameExecutor/HookInterface.h>
 #include <GameExecutor/ExecutorBase.h>
 #include <GameExecutor/GameExecutorService.h>
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
     ExecutionLoopPrivate::ExecutionLoopPrivate(QObject *parent)
       : QObject(parent)
@@ -29,14 +20,9 @@ namespace GGS {
     void ExecutionLoopPrivate::execute()
     {
       this->_listIndex = 0;
-      bool useMain = this->_secondCredential.userId().isEmpty();
-
-      const GGS::RestApi::GameNetCredential& credential(useMain 
-        ? this->_credential
-        : this->_secondCredential);
 
       Q_FOREACH(HookInterface *hook, this->_list) {
-        hook->setCredential(credential);
+        hook->setCredential(this->_credential);
 
         QObject::connect(hook, &HookInterface::canExecuteCompleted,
           this, &ExecutionLoopPrivate::executeHookCanStep, Qt::QueuedConnection);
@@ -54,15 +40,15 @@ namespace GGS {
       QObject::connect(this->_executor.data(), &ExecutorBase::finished,
         this, &ExecutionLoopPrivate::executorCompletedStep, Qt::QueuedConnection);
 
-      this->executeHookCanStep(this->_service, GGS::GameExecutor::Success);
+      this->executeHookCanStep(this->_service, P1::GameExecutor::Success);
     }
 
-    void ExecutionLoopPrivate::executeHookCanStep(const GGS::Core::Service &service, GGS::GameExecutor::FinishState result) 
+    void ExecutionLoopPrivate::executeHookCanStep(const P1::Core::Service &service, P1::GameExecutor::FinishState result) 
     {
       if (this->_service.id() != service.id())
         return;
 
-      if (GGS::GameExecutor::Success != result) {
+      if (P1::GameExecutor::Success != result) {
         emit this->finished(this->_service, result);
         return;
       }
@@ -72,8 +58,8 @@ namespace GGS {
 
         this->_listIndex = 0;
         QMetaObject::invokeMethod(this, "executeHookPreStep",  Qt::QueuedConnection, 
-          Q_ARG(const GGS::Core::Service&, this->_service),
-          Q_ARG(GGS::GameExecutor::FinishState, GGS::GameExecutor::Success));
+          Q_ARG(const P1::Core::Service&, this->_service),
+          Q_ARG(P1::GameExecutor::FinishState, P1::GameExecutor::Success));
 
         return;
       }
@@ -82,12 +68,12 @@ namespace GGS {
       hook->CanExecute(this->_service);
     }
 
-    void ExecutionLoopPrivate::executeHookPreStep(const GGS::Core::Service &service, GGS::GameExecutor::FinishState result) 
+    void ExecutionLoopPrivate::executeHookPreStep(const P1::Core::Service &service, P1::GameExecutor::FinishState result) 
     {
       if (this->_service.id() != service.id())
         return;
 
-      if (GGS::GameExecutor::Success != result) {
+      if (P1::GameExecutor::Success != result) {
         emit this->finished(this->_service, result);
         return;
       }
@@ -107,13 +93,13 @@ namespace GGS {
     void ExecutionLoopPrivate::executorStep()
     {
       if (this->_stopExecution) {
-        emit this->finished(this->_service, GGS::GameExecutor::Success);
+        emit this->finished(this->_service, P1::GameExecutor::Success);
       } else {
-        this->_executor->execute(this->_service, this->_executorService, this->_credential, this->_secondCredential);
+        this->_executor->execute(this->_service, this->_executorService, this->_credential);
       }
     }
 
-    void ExecutionLoopPrivate::executorCompletedStep(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state)
+    void ExecutionLoopPrivate::executorCompletedStep(const P1::Core::Service &service, P1::GameExecutor::FinishState state)
     {
       if (this->_service.id() != service.id())
         return;
@@ -124,7 +110,7 @@ namespace GGS {
       this->executeHookPostStep(this->_service);
     }
 
-    void ExecutionLoopPrivate::executeHookPostStep(const GGS::Core::Service &service)
+    void ExecutionLoopPrivate::executeHookPostStep(const P1::Core::Service &service)
     {
       if (this->_service.id() != service.id())
         return;
@@ -138,7 +124,7 @@ namespace GGS {
       hook->PostExecute(this->_service, this->_state);
     }
 
-    void ExecutionLoopPrivate::setService(const GGS::Core::Service &val)
+    void ExecutionLoopPrivate::setService(const P1::Core::Service &val)
     {
       this->_service = val;
     }
@@ -148,17 +134,17 @@ namespace GGS {
       this->_list = val;
     }
 
-    void ExecutionLoopPrivate::setExecutorService(GGS::GameExecutor::GameExecutorService *val)
+    void ExecutionLoopPrivate::setExecutorService(P1::GameExecutor::GameExecutorService *val)
     {
       this->_executorService = val;
     }
 
-    void ExecutionLoopPrivate::setExecutor(GGS::GameExecutor::ExecutorBase *val)
+    void ExecutionLoopPrivate::setExecutor(P1::GameExecutor::ExecutorBase *val)
     {
       this->_executor = val;
     }
 
-    void ExecutionLoopPrivate::startedStep(const GGS::Core::Service &service)
+    void ExecutionLoopPrivate::startedStep(const P1::Core::Service &service)
     {
       if (this->_service.id() != service.id())
         return;
@@ -173,15 +159,9 @@ namespace GGS {
       this->_stopExecution = true;
     }
 
-    void ExecutionLoopPrivate::setCredential(const GGS::RestApi::GameNetCredential& value)
+    void ExecutionLoopPrivate::setCredential(const P1::RestApi::GameNetCredential& value)
     {
       this->_credential = value;
     }
-
-    void ExecutionLoopPrivate::setSecondCredential(const GGS::RestApi::GameNetCredential& value)
-    {
-      this->_secondCredential = value;
-    }
-
   }
 }

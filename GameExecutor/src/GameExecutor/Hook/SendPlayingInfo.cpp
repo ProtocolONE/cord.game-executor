@@ -3,10 +3,10 @@
 
 #include <QtCore/QTimer>
 
-using GGS::RestApi::Commands::User::SetUserActivity;
-using GGS::RestApi::CommandBase;
+using P1::RestApi::Commands::User::SetUserActivity;
+using P1::RestApi::CommandBase;
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
     namespace Hook {
 
@@ -29,7 +29,7 @@ namespace GGS {
         bool gameIdCastResult = false;
         int gameId = service.gameId().toInt(&gameIdCastResult);
         if (!gameIdCastResult) {
-          emit this->preExecuteCompleted(service, GGS::GameExecutor::InternalFatalError);
+          emit this->preExecuteCompleted(service, P1::GameExecutor::InternalFatalError);
           return;
         }
 
@@ -45,10 +45,10 @@ namespace GGS {
 
         this->sendPlaying();
 
-        emit this->preExecuteCompleted(service, GGS::GameExecutor::Success);
+        emit this->preExecuteCompleted(service, P1::GameExecutor::Success);
       }
 
-      void SendPlayingInfo::PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state)
+      void SendPlayingInfo::PostExecute(Core::Service &service, P1::GameExecutor::FinishState state)
       {
         this->_timer->stop();
         this->_playingCmd->deleteLater();
@@ -75,7 +75,7 @@ namespace GGS {
         this->_playingCmd->execute();
       }
 
-      void SendPlayingInfo::playingResult(GGS::RestApi::CommandBase::CommandResults result)
+      void SendPlayingInfo::playingResult(P1::RestApi::CommandBase::CommandResults result)
       {
         SetUserActivity *cmd = qobject_cast<SetUserActivity *>(QObject::sender());
         int timeout = 300000;

@@ -1,25 +1,15 @@
-/****************************************************************************
-** This file is a part of Syncopate Limited GameNet Application or it parts.
-**
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
-** All rights reserved.
-**
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-****************************************************************************/
-
-#ifndef _GGS_GAMEEXECUTOR_HOOKINTERFACE_H
-#define _GGS_GAMEEXECUTOR_HOOKINTERFACE_H
+#pragma once
 
 #include <GameExecutor/gameexecutor_global.h>
 #include <GameExecutor/Enum.h>
 
 #include <RestApi/GameNetCredential.h>
 
-#include <Core/Service>
+#include <Core/Service.h>
+
 #include <QtCore/QObject>
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
 
     /*!
@@ -59,20 +49,20 @@ namespace GGS {
 
       /*!
         \fn virtual void HookInterface::PostExecute(const Core::Service &service,
-          GGS::GameExecutor::FinishState state) = 0;
+          P1::GameExecutor::FinishState state) = 0;
       
-        \brief Выполняется по завершению работы сервиса. С помощью GGS::GameExecutor::FinishState функция узнаёт об
+        \brief Выполняется по завершению работы сервиса. С помощью P1::GameExecutor::FinishState функция узнаёт об
                успешности или неудаче запуска.
       
         \param service The service.
         \param state   The state.
 
-        \sa GGS::GameExecutor::FinishState
+        \sa P1::GameExecutor::FinishState
       */
-      virtual void PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state);
+      virtual void PostExecute(Core::Service &service, P1::GameExecutor::FinishState state);
 
       /**
-       * \fn  void HookInterface::setCredential(const GGS::RestApi::GameNetCredential& value);
+       * \fn  void HookInterface::setCredential(const P1::RestApi::GameNetCredential& value);
        *
        * \brief Установить авторизацию, с которой запускается игра.
        *
@@ -82,17 +72,15 @@ namespace GGS {
        * \param value Авторизация пользователя.
        */
 
-      void setCredential(const GGS::RestApi::GameNetCredential& value);
+      void setCredential(const P1::RestApi::GameNetCredential& value);
 
     signals:
-      void canExecuteCompleted(const GGS::Core::Service &service, GGS::GameExecutor::FinishState result);
-      void preExecuteCompleted(const GGS::Core::Service &service, GGS::GameExecutor::FinishState result);
-      void postExecuteCompleted(const GGS::Core::Service &service);
+      void canExecuteCompleted(const P1::Core::Service &service, P1::GameExecutor::FinishState result);
+      void preExecuteCompleted(const P1::Core::Service &service, P1::GameExecutor::FinishState result);
+      void postExecuteCompleted(const P1::Core::Service &service);
 
     protected:
-      GGS::RestApi::GameNetCredential _credential;
+      P1::RestApi::GameNetCredential _credential;
     };
   }
 }
-
-#endif _GGS_GAMEEXECUTOR_HOOKINTERFACE_H

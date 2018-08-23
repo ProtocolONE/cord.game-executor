@@ -1,29 +1,16 @@
-/****************************************************************************
-** This file is a part of Syncopate Limited GameNet Application or it parts.
-**
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
-** All rights reserved.
-**
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-****************************************************************************/
-
-#ifndef _GGS_GAMEEXECUTOR_SERVICEINFOCOUNTER_H
-#define _GGS_GAMEEXECUTOR_SERVICEINFOCOUNTER_H
+#pragma once
 
 #include <GameExecutor/gameexecutor_global.h>
 #include <GameExecutor/Enum.h>
 #include <GameExecutor/ServiceInfo.h>
 
-#include <Settings/Settings>
+#include <Settings/Settings.h>
 
-#include <Core/Service>
+#include <Core/Service.h>
 
 #include <QtCore/QMutex>
 
-using GGS::Settings::Settings;
-
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
     class GAMEEXECUTOR_EXPORT ServiceInfoCounter : public QObject
     {
@@ -35,14 +22,12 @@ namespace GGS {
       static ServiceInfo queryInfo(const Core::Service &service);
 
     public slots:
-      void started(const GGS::Core::Service &service);
-      void finished(const GGS::Core::Service &service, GGS::GameExecutor::FinishState state);
+      void started(const P1::Core::Service &service);
+      void finished(const P1::Core::Service &service, P1::GameExecutor::FinishState state);
 
     private:
-      Settings::Settings _storage;
+      P1::Settings::Settings _storage;
       QMutex _lock;
     };
   }
 }
-
-#endif // _GGS_GAMEEXECUTOR_SERVICEINFOCOUNTER_H

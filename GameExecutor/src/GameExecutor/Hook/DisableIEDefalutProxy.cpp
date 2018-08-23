@@ -1,6 +1,6 @@
 #include <GameExecutor/Hook/DisableIEDefalutProxy.h>
 
-#include <Core/UI/Message>
+#include <Core/UI/Message.h>
 #include <Core/System/Registry/RegistryKey.h>
 
 #include <QtCore/QSettings>
@@ -9,9 +9,9 @@
 #include <Windows.h>
 #include <Wininet.h>
 
-using namespace GGS::Core::System::Registry;
+using namespace P1::Core::System::Registry;
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
     namespace Hook {
 
@@ -38,7 +38,7 @@ namespace GGS {
 
         if (proxyEnable == 0
           && globalUserOffline == 0) {
-            emit this->preExecuteCompleted(service, GGS::GameExecutor::Success);
+            emit this->preExecuteCompleted(service, P1::GameExecutor::Success);
             return;
         }
 
@@ -49,7 +49,7 @@ namespace GGS {
           static_cast<Message::StandardButton>(Message::Yes | Message::No));
         
         if (reply == Message::No) {
-           emit this->preExecuteCompleted(service, GGS::GameExecutor::Success);
+           emit this->preExecuteCompleted(service, P1::GameExecutor::Success);
            return;
         } 
 
@@ -62,7 +62,7 @@ namespace GGS {
         InternetSetOption(NULL, INTERNET_OPTION_SETTINGS_CHANGED, NULL, 0);
         InternetSetOption(NULL, INTERNET_OPTION_REFRESH, NULL, 0);
 
-        emit this->preExecuteCompleted(service, GGS::GameExecutor::Success);
+        emit this->preExecuteCompleted(service, P1::GameExecutor::Success);
       }
 
       QString DisableIEDefalutProxy::id()

@@ -1,5 +1,5 @@
 #include <GameExecutor/Hook/DownloadCustomFile.h>
-#include <Settings/Settings>
+#include <Settings/Settings.h>
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
@@ -10,7 +10,7 @@
 #include <QtNetwork/QNetworkReply>
 #include <QtXml/QXmlSimpleReader>
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
     namespace Hook {
       DownloadCustomFile::DownloadCustomFile(QObject *parent) : HookInterface(parent)
@@ -21,20 +21,20 @@ namespace GGS {
       {
       }
 
-      void DownloadCustomFile::CanExecute(GGS::Core::Service &service)
+      void DownloadCustomFile::CanExecute(P1::Core::Service &service)
       {
         QUrl url = service.url();
         QUrlQuery urlQuery(url);
 
         if (!urlQuery.hasQueryItem("downloadCustomFile")) {
-          emit this->canExecuteCompleted(service, GGS::GameExecutor::Success);
+          emit this->canExecuteCompleted(service, P1::GameExecutor::Success);
           return;
         }
 
         this->_args = urlQuery.queryItemValue("downloadCustomFile", QUrl::FullyDecoded).split(',');
 
         if ((this->_args.count() % 3)) {
-          emit this->canExecuteCompleted(service, GGS::GameExecutor::CanExecutionHookBreak);
+          emit this->canExecuteCompleted(service, P1::GameExecutor::CanExecutionHookBreak);
           return;
         }
 
@@ -48,7 +48,7 @@ namespace GGS {
       void DownloadCustomFile::downloadNextFile()
       {
         if (this->_args.isEmpty()) {
-          emit this->canExecuteCompleted(this->_service, GGS::GameExecutor::Success);
+          emit this->canExecuteCompleted(this->_service, P1::GameExecutor::Success);
           return;
         }
 
@@ -64,7 +64,7 @@ namespace GGS {
         QFileInfo fileInfo(this->_file);
 
         if (!fileInfo.absoluteDir().mkpath(fileInfo.absoluteDir().absolutePath())) {
-          emit this->canExecuteCompleted(this->_service, GGS::GameExecutor::CanExecutionHookBreak);
+          emit this->canExecuteCompleted(this->_service, P1::GameExecutor::CanExecutionHookBreak);
           return;
         }
 
@@ -97,7 +97,7 @@ namespace GGS {
         this->_infoIndex = this->_info.addresses().size();
 
         if (!this->_file.open(QIODevice::ReadWrite)) {
-          emit this->canExecuteCompleted(this->_service, GGS::GameExecutor::CanExecutionHookBreak);
+          emit this->canExecuteCompleted(this->_service, P1::GameExecutor::CanExecutionHookBreak);
           return;
         }
 
@@ -106,7 +106,7 @@ namespace GGS {
 
       void DownloadCustomFile::slotError(QNetworkReply::NetworkError error) 
       {
-        emit this->canExecuteCompleted(this->_service, GGS::GameExecutor::CanExecutionHookBreak);
+        emit this->canExecuteCompleted(this->_service, P1::GameExecutor::CanExecutionHookBreak);
       }
 
       void DownloadCustomFile::slotReplyDownloadFinished() 
@@ -123,7 +123,7 @@ namespace GGS {
         // 304 Not Modified
         if (httpCode != 304 && httpCode != 200) {
           CRITICAL_LOG << "Http error" << httpCode;
-          emit this->canExecuteCompleted(this->_service, GGS::GameExecutor::CanExecutionHookBreak);
+          emit this->canExecuteCompleted(this->_service, P1::GameExecutor::CanExecutionHookBreak);
           return;
         } 
 
@@ -131,12 +131,12 @@ namespace GGS {
 
         if (httpCode == 304 &&
           QFile::exists(this->_downloadFilePath)) {
-            emit this->canExecuteCompleted(this->_service, GGS::GameExecutor::Success);
+            emit this->canExecuteCompleted(this->_service, P1::GameExecutor::Success);
             return;
         }
 
         if (!this->_file.open(QIODevice::ReadWrite)) {
-          emit this->canExecuteCompleted(this->_service, GGS::GameExecutor::CanExecutionHookBreak);
+          emit this->canExecuteCompleted(this->_service, P1::GameExecutor::CanExecutionHookBreak);
           return;
         }
 
@@ -168,7 +168,7 @@ namespace GGS {
       void DownloadCustomFile::downloadFile()
       {
         if (--this->_infoIndex < 0) {
-          emit this->canExecuteCompleted(this->_service, GGS::GameExecutor::CanExecutionHookBreak);
+          emit this->canExecuteCompleted(this->_service, P1::GameExecutor::CanExecutionHookBreak);
           return;
         }
 

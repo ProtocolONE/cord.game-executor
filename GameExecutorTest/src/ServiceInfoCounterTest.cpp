@@ -1,18 +1,8 @@
-/****************************************************************************
-** This file is a part of Syncopate Limited GameNet Application or it parts.
-**
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
-** All rights reserved.
-**
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-****************************************************************************/
-
 #include <GameExecutor/ServiceInfoCounter.h>
 #include <GameExecutor/ServiceInfo.h>
 
-#include <Core/Service>
-#include <Settings/Settings>
+#include <Core/Service.h>
+#include <Settings/Settings.h>
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QFile>
@@ -24,7 +14,7 @@
 #include <gtest/gtest.h>
 #include <Windows.h>
 
-using namespace GGS;
+using namespace P1;
 
 class ServiceInfoCounterTest : public ::testing::Test 
 {
@@ -51,7 +41,7 @@ protected:
       } 
     }
  
-    GGS::Settings::Settings::setConnection(db.connectionName());
+    P1::Settings::Settings::setConnection(db.connectionName());
   }
 
   GameExecutor::ServiceInfoCounter counter;
@@ -74,8 +64,8 @@ TEST_F(ServiceInfoCounterTest, BasicTest)
 
   Sleep(1000);
 
-  counter.finished(srv, GGS::GameExecutor::Success);
-  counter.finished(srv, GGS::GameExecutor::ExternalFatalError);
+  counter.finished(srv, P1::GameExecutor::Success);
+  counter.finished(srv, P1::GameExecutor::ExternalFatalError);
 
   info = GameExecutor::ServiceInfoCounter::queryInfo(srv);
   ASSERT_EQ(1, info.successCount());

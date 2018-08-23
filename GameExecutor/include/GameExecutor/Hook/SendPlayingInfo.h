@@ -1,12 +1,3 @@
-/****************************************************************************
-** This file is a part of Syncopate Limited GameNet Application or it parts.
-**
-** Copyright (©) 2014, Syncopate Limited and/or affiliates. 
-** All rights reserved.
-**
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-****************************************************************************/
 #pragma once
 
 #include <GameExecutor/gameexecutor_global.h>
@@ -16,7 +7,7 @@
 
 class QTimer;
 
-namespace GGS {
+namespace P1 {
   namespace RestApi {
     namespace Commands {
       namespace User {
@@ -37,13 +28,13 @@ namespace GGS {
         static QString id();
 
         virtual void PreExecute(Core::Service &service) override;
-        virtual void PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state) override;
+        virtual void PostExecute(Core::Service &service, P1::GameExecutor::FinishState state) override;
 
       private:
-        GGS::RestApi::Commands::User::SetUserActivity *_playingCmd;
+        P1::RestApi::Commands::User::SetUserActivity *_playingCmd;
         QTimer *_timer;
 
-        void playingResult(GGS::RestApi::CommandBase::CommandResults result);
+        void playingResult(P1::RestApi::CommandBase::CommandResults result);
         void sendPlaying();
       };
 

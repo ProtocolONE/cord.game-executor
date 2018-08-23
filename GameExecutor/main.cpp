@@ -1,11 +1,8 @@
-#include <GameExecutor/Enum.h>
-#include <Windows.h>
-#include <QtCore/QMetaType>
+#ifndef GAMEEXECUTOR_STATIC_LIB
 
-void registerTypes()
-{
-  qRegisterMetaType<GGS::GameExecutor::FinishState>("GGS::GameExecutor::FinishState");
-}
+#include <Windows.h>
+
+#include <GameExecutor/RegisterTypes.h>
 
 BOOL WINAPI DllMain(
   HINSTANCE hinstDLL,  // handle to DLL module
@@ -18,7 +15,7 @@ BOOL WINAPI DllMain(
   case DLL_PROCESS_ATTACH:
     // Initialize once for each new process.
     // Return FALSE to fail DLL load.
-    registerTypes();
+    P1::GameExecutor::registerTypes();
     break;
 
   case DLL_THREAD_ATTACH:
@@ -35,3 +32,5 @@ BOOL WINAPI DllMain(
   }
   return TRUE;  // Successful DLL_PROCESS_ATTACH.
 }
+
+#endif

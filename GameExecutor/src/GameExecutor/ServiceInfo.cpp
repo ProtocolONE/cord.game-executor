@@ -1,6 +1,6 @@
 #include <GameExecutor/ServiceInfo.h>
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
     ServiceInfo::ServiceInfo(int successCount, int failedCount, int playedTime, const QDateTime &lastExecutionTime)
       : _successCount(successCount), 

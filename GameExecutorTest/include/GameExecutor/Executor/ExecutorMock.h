@@ -1,25 +1,14 @@
-/****************************************************************************
-** This file is a part of Syncopate Limited GameNet Application or it parts.
-**
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
-** All rights reserved.
-**
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-****************************************************************************/
-
-#ifndef EXECUTORMOCK_H
-#define EXECUTORMOCK_H
+#pragma once
 
 #include <GameExecutor/ExecutorBase.h>
 
 #include <RestApi/GameNetCredential.h>
 
-#include <Core/Service>
+#include <Core/Service.h>
 #include <QObject>
 
-using namespace GGS;
-using namespace GGS::GameExecutor;
+using namespace P1;
+using namespace P1::GameExecutor;
 
 class ExecutorMock : public ExecutorBase
 {
@@ -30,13 +19,10 @@ public:
     ~ExecutorMock();
 
     virtual void execute(
-      const GGS::Core::Service &service, 
+      const P1::Core::Service &service, 
       GameExecutorService *executorService,
-      const GGS::RestApi::GameNetCredential& credential,
-      const GGS::RestApi::GameNetCredential& secondCredential) override;
+      const P1::RestApi::GameNetCredential& credential) override;
 
-    GGS::RestApi::GameNetCredential credential;
-    GGS::RestApi::GameNetCredential secondCredential;
+    P1::RestApi::GameNetCredential credential;
+    P1::RestApi::GameNetCredential secondCredential;
 };
-
-#endif // EXECUTORMOCK_H

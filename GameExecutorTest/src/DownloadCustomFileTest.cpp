@@ -1,15 +1,6 @@
-/****************************************************************************
-** This file is a part of Syncopate Limited GameNet Application or it parts.
-**
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
-** All rights reserved.
-**
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-****************************************************************************/
 #include <GameExecutor/Hook/DownloadCustomFile.h>
 
-#include <Core/Service>
+#include <Core/Service.h>
 
 #include <QtCore/QUrl>
 #include <QtCore/QUrlQuery>
@@ -23,31 +14,31 @@
 
 #include <gtest/gtest.h>
 
-using namespace GGS;
+using namespace P1;
 
 class DownloadCustomFileTest : public ::testing::Test 
 {
 public:
   void SetUp() {
-     srvHook.setArea(GGS::Core::Service::Live);
+     srvHook.setArea(P1::Core::Service::Live);
      srvHook.setInstallPath(QCoreApplication::applicationDirPath());
      srvHook.setTorrentUrl(QUrl("http://files.gamenet.ru/update/bs/"));
   }
 
-  GGS::GameExecutor::FinishState executeHookCanStep(GGS::Core::Service &service) 
+  P1::GameExecutor::FinishState executeHookCanStep(P1::Core::Service &service) 
   {
     GameExecutor::Hook::DownloadCustomFile hook1;
-    QSignalSpy spy(&hook1, SIGNAL(canExecuteCompleted(const GGS::Core::Service &, GGS::GameExecutor::FinishState)));
+    QSignalSpy spy(&hook1, SIGNAL(canExecuteCompleted(const P1::Core::Service &, P1::GameExecutor::FinishState)));
     
     QEventLoop loop;
-    QObject::connect(&hook1, SIGNAL(canExecuteCompleted(const GGS::Core::Service &, GGS::GameExecutor::FinishState)), &loop, SLOT(quit()), Qt::QueuedConnection);
+    QObject::connect(&hook1, SIGNAL(canExecuteCompleted(const P1::Core::Service &, P1::GameExecutor::FinishState)), &loop, SLOT(quit()), Qt::QueuedConnection);
 
     hook1.CanExecute(service);
     loop.exec();
-    return spy.at(0).at(1).value<GGS::GameExecutor::FinishState>();
+    return spy.at(0).at(1).value<P1::GameExecutor::FinishState>();
   }
 
-  GGS::Core::Service srvHook;
+  P1::Core::Service srvHook;
 };
 
 TEST_F(DownloadCustomFileTest, Success) 
@@ -73,7 +64,7 @@ TEST_F(DownloadCustomFileTest, Success)
   QFile fileLogin(QCoreApplication::applicationDirPath() + "/live/config/lastlogin.xml");
   fileLogin.remove();
   
-  ASSERT_EQ(GGS::GameExecutor::Success, executeHookCanStep(srvHook));
+  ASSERT_EQ(P1::GameExecutor::Success, executeHookCanStep(srvHook));
   ASSERT_TRUE(fileInfo.exists());
   ASSERT_TRUE(fileInfo.size() > 0);
   ASSERT_TRUE(fileLogin.exists());
@@ -97,7 +88,7 @@ TEST_F(DownloadCustomFileTest, SuccessNotOverrideMode)
   fileInfo.resize(0);
   fileInfo.close();
     
-  ASSERT_EQ(GGS::GameExecutor::Success, executeHookCanStep(srvHook));
+  ASSERT_EQ(P1::GameExecutor::Success, executeHookCanStep(srvHook));
   ASSERT_TRUE(fileInfo.exists());
   ASSERT_EQ(0, fileInfo.size());
 }
@@ -113,7 +104,7 @@ TEST_F(DownloadCustomFileTest, UncorrectDomainFail)
 
   QDir().mkpath(QCoreApplication::applicationDirPath() + "/live/launcher");
     
-  ASSERT_EQ(GGS::GameExecutor::CanExecutionHookBreak, executeHookCanStep(srvHook));
+  ASSERT_EQ(P1::GameExecutor::CanExecutionHookBreak, executeHookCanStep(srvHook));
 }
 
 TEST_F(DownloadCustomFileTest, WrongArgsCount) 
@@ -124,11 +115,11 @@ TEST_F(DownloadCustomFileTest, WrongArgsCount)
   url.setQuery(query);
   srvHook.setUrl(url);
 
-  ASSERT_EQ(GGS::GameExecutor::CanExecutionHookBreak, executeHookCanStep(srvHook));
+  ASSERT_EQ(P1::GameExecutor::CanExecutionHookBreak, executeHookCanStep(srvHook));
 
   query.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,1,someFile,3");
   url.setQuery(query);
   srvHook.setUrl(url);
 
-  ASSERT_EQ(GGS::GameExecutor::CanExecutionHookBreak, executeHookCanStep(srvHook));
+  ASSERT_EQ(P1::GameExecutor::CanExecutionHookBreak, executeHookCanStep(srvHook));
 }

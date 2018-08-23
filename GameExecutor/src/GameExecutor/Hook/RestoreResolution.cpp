@@ -1,7 +1,7 @@
 #include <GameExecutor/Hook/RestoreResolution.h>
 #include <QtCore/QDebug>
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
     namespace Hook {
       RestoreResolution::RestoreResolution(QObject *parent/*=0*/) : HookInterface(parent)
@@ -18,10 +18,10 @@ namespace GGS {
 
         //http://msdn.microsoft.com/en-us/library/dd162611(v=vs.85).aspx
         this->_enabled = EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &this->_beforeExecuteDisplay);
-        emit this->preExecuteCompleted(service, GGS::GameExecutor::Success);
+        emit this->preExecuteCompleted(service, P1::GameExecutor::Success);
       }
 
-      void RestoreResolution::PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state)
+      void RestoreResolution::PostExecute(Core::Service &service, P1::GameExecutor::FinishState state)
       {
         DEBUG_LOG << "for" << service.id();
 

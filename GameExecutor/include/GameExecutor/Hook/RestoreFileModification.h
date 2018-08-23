@@ -1,15 +1,4 @@
-/****************************************************************************
-** This file is a part of Syncopate Limited GameNet Application or it parts.
-**
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
-** All rights reserved.
-**
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-****************************************************************************/
-
-#ifndef _GGS_GAMEEXCUTOR_HOOK_RESTOREFILEMODIFICATION_H_
-#define _GGS_GAMEEXCUTOR_HOOK_RESTOREFILEMODIFICATION_H_
+#pragma once
 
 #include <GameExecutor/gameexecutor_global.h>
 #include <GameExecutor/HookInterface.h>
@@ -18,7 +7,7 @@
 #include <QtCore/QPair>
 #include <QtCore/QString>
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
     namespace Hook {
 
@@ -38,7 +27,7 @@ namespace GGS {
         static QString id();
 
         void PreExecute(Core::Service &service);
-        void PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state);
+        void PostExecute(Core::Service &service, P1::GameExecutor::FinishState state);
 
       private:
         QHash<QString, QPair<quint32, quint32> > _modifiedTime;
@@ -47,4 +36,3 @@ namespace GGS {
     }
   }
 }
-#endif // _GGS_GAMEEXCUTOR_HOOK_RESTOREFILEMODIFICATION_H_

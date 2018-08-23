@@ -10,13 +10,12 @@ ExecutorMock::~ExecutorMock()
 }
 
 void ExecutorMock::execute(
-  const GGS::Core::Service &service, 
+  const P1::Core::Service &service, 
   GameExecutorService *executorService,
-  const GGS::RestApi::GameNetCredential& credential,
-  const GGS::RestApi::GameNetCredential& secondCredential)
+  const P1::RestApi::GameNetCredential& credential)
 {
   this->credential = credential;
   this->secondCredential = secondCredential;
   emit this->started(service);
-  emit this->finished(service, GGS::GameExecutor::Success);
+  emit this->finished(service, P1::GameExecutor::Success);
 }

@@ -1,20 +1,10 @@
-/****************************************************************************
-** This file is a part of Syncopate Limited GameNet Application or it parts.
-**
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
-** All rights reserved.
-**
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-****************************************************************************/
-
 #include <GameExecutor/Hook/ExternalDependency.h>
 #include <QtCore/QDebug>
 #include <QtCore/QProcess>
 #include <QtCore/QFile>
 #include <QtCore/QUrlQuery>
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
     namespace Hook {
       ExternalDependency::ExternalDependency(QObject *parent/*=0*/) : HookInterface(parent), _isInstalled(true)
@@ -60,12 +50,12 @@ namespace GGS {
         }
       }
 
-      void ExternalDependency::PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state)
+      void ExternalDependency::PostExecute(Core::Service &service, P1::GameExecutor::FinishState state)
       {
         this->_isInstalled = !this->_isInstalled;
 
         QUrlQuery query(service.url());
-        if (state == GGS::GameExecutor::ExternalFatalError &&
+        if (state == P1::GameExecutor::ExternalFatalError &&
           query.queryItemValue("exitCode") == "1" &&
           !this->_isInstalled) {
             this->install(service);

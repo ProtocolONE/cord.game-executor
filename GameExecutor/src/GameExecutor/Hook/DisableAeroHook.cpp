@@ -1,13 +1,3 @@
-/****************************************************************************
-** This file is a part of Syncopate Limited GameNet Application or it parts.
-**
-** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
-** All rights reserved.
-**
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-****************************************************************************/
-
 #include <GameExecutor/Hook/DisableAeroHook.h>
 #include <Core/System/Registry/RegistryKey.h>
 
@@ -17,9 +7,9 @@
 
 #include <Windows.h>
 
-using namespace GGS::Core::System::Registry;
+using namespace P1::Core::System::Registry;
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
     namespace Hook {
 
@@ -42,7 +32,7 @@ namespace GGS {
         if (!oldVersion)
           this->disableAero(service);
 
-        emit this->canExecuteCompleted(service, GGS::GameExecutor::Success);
+        emit this->canExecuteCompleted(service, P1::GameExecutor::Success);
       }
 
       QString DisableAeroHook::id()

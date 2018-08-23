@@ -1,15 +1,15 @@
 #include <GameExecutor/Hook/DisableDEP.h>
 
-#include <Core/UI/Message>
+#include <Core/UI/Message.h>
 #include <Core/System/Registry/RegistryKey.h>
 
 #include <QtCore/QSettings>
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
 
-using namespace GGS::Core::System::Registry;
+using namespace P1::Core::System::Registry;
 
-namespace GGS {
+namespace P1 {
   namespace GameExecutor {
     namespace Hook {
 
@@ -34,14 +34,14 @@ namespace GGS {
         if (systemOptions.contains("NOEXECUTE=ALWAYSON")) {
           Core::UI::Message::warning(QObject::tr("TITLE_ATTENTION"), QObject::tr("WARNING_DISABLEDEP"));
 
-          emit this->preExecuteCompleted(service, GGS::GameExecutor::PreExecutionHookBreak);
+          emit this->preExecuteCompleted(service, P1::GameExecutor::PreExecutionHookBreak);
           return;
         }
 
         RegistryKey registry2(RegistryKey::HKLM, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Layers");
         QString path = QDir::toNativeSeparators(serviceUrl.path());
         registry2.setValue(path, "DisableNXShowUI");
-        emit this->preExecuteCompleted(service, GGS::GameExecutor::Success);
+        emit this->preExecuteCompleted(service, P1::GameExecutor::Success);
       }
 
       QString DisableDEP::id()

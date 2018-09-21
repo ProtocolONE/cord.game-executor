@@ -2,7 +2,7 @@
 #include <GameExecutor/Executor/WebLink.h>
 
 #include <RestApi/RestApiManager.h>
-#include <RestApi/GameNetCredential.h>
+#include <RestApi/ProtocolOneCredential.h>
 
 #include <QtCore/QUrl>
 #include <QtCore/QUrlQuery>
@@ -28,7 +28,7 @@ namespace P1 {
       void WebLink::execute(
         const P1::Core::Service &service, 
         GameExecutorService *executorService,
-        const P1::RestApi::GameNetCredential& credential)
+        const P1::RestApi::ProtocolOneCredential& credential)
       {
         DEBUG_LOG;
 

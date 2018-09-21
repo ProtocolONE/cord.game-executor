@@ -6,9 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameExecutor", "GameExecutor\GameExecutor.vcxproj", "{752C4584-1D8C-4DDA-9AC0-5016DB47E4AC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4D818193-3242-4244-92A3-E5CDC2CAA0AA}"
-	ProjectSection(SolutionItems) = preProject
-		Deploy.props = Deploy.props
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameExecutorTest", "GameExecutorTest\GameExecutorTest.vcxproj", "{C7724855-BC5D-4AD1-933B-A862B62AF209}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -19,26 +16,16 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Release|Win32 = Release|Win32
-		Static Debug|Win32 = Static Debug|Win32
-		Static Release|Win32 = Static Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{752C4584-1D8C-4DDA-9AC0-5016DB47E4AC}.Debug|Win32.ActiveCfg = Debug|Win32
 		{752C4584-1D8C-4DDA-9AC0-5016DB47E4AC}.Debug|Win32.Build.0 = Debug|Win32
 		{752C4584-1D8C-4DDA-9AC0-5016DB47E4AC}.Release|Win32.ActiveCfg = Release|Win32
 		{752C4584-1D8C-4DDA-9AC0-5016DB47E4AC}.Release|Win32.Build.0 = Release|Win32
-		{752C4584-1D8C-4DDA-9AC0-5016DB47E4AC}.Static Debug|Win32.ActiveCfg = Static Debug|Win32
-		{752C4584-1D8C-4DDA-9AC0-5016DB47E4AC}.Static Debug|Win32.Build.0 = Static Debug|Win32
-		{752C4584-1D8C-4DDA-9AC0-5016DB47E4AC}.Static Release|Win32.ActiveCfg = Static Release|Win32
-		{752C4584-1D8C-4DDA-9AC0-5016DB47E4AC}.Static Release|Win32.Build.0 = Static Release|Win32
 		{C7724855-BC5D-4AD1-933B-A862B62AF209}.Debug|Win32.ActiveCfg = Debug|Win32
 		{C7724855-BC5D-4AD1-933B-A862B62AF209}.Debug|Win32.Build.0 = Debug|Win32
 		{C7724855-BC5D-4AD1-933B-A862B62AF209}.Release|Win32.ActiveCfg = Release|Win32
 		{C7724855-BC5D-4AD1-933B-A862B62AF209}.Release|Win32.Build.0 = Release|Win32
-		{C7724855-BC5D-4AD1-933B-A862B62AF209}.Static Debug|Win32.ActiveCfg = Static Debug|Win32
-		{C7724855-BC5D-4AD1-933B-A862B62AF209}.Static Debug|Win32.Build.0 = Static Debug|Win32
-		{C7724855-BC5D-4AD1-933B-A862B62AF209}.Static Release|Win32.ActiveCfg = Static Release|Win32
-		{C7724855-BC5D-4AD1-933B-A862B62AF209}.Static Release|Win32.Build.0 = Static Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

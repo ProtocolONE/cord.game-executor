@@ -9,13 +9,13 @@
 #include <QtCore/QProcess>
 #include <QtCore/QSysInfo>
 
-#include <RestApi/GameNetCredential.h>
+#include <RestApi/ProtocolOneCredential.h>
 
 #include <Core/System/ProcessTools.h>
 
 #include <sstream>
 
-using P1::RestApi::GameNetCredential;
+using P1::RestApi::ProtocolOneCredential;
 
 namespace P1{
   namespace GameExecutor{

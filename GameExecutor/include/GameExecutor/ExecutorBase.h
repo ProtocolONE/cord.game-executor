@@ -24,7 +24,7 @@ namespace P1 {
       virtual void execute(
         const Core::Service &service, 
         GameExecutorService *executorService, 
-        const P1::RestApi::GameNetCredential& credential) = 0;
+        const P1::RestApi::ProtocolOneCredential& credential) = 0;
 
       const QString &scheme() const;
 

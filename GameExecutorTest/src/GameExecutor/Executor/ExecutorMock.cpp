@@ -12,7 +12,7 @@ ExecutorMock::~ExecutorMock()
 void ExecutorMock::execute(
   const P1::Core::Service &service, 
   GameExecutorService *executorService,
-  const P1::RestApi::GameNetCredential& credential)
+  const P1::RestApi::ProtocolOneCredential& credential)
 {
   this->credential = credential;
   this->secondCredential = secondCredential;

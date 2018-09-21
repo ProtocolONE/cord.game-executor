@@ -28,7 +28,7 @@ namespace P1 {
       void setHookList(QList<HookInterface*> &val);
       void setExecutorService(P1::GameExecutor::GameExecutorService *val);
       void setExecutor(P1::GameExecutor::ExecutorBase *val);
-      void setCredential(const P1::RestApi::GameNetCredential& value);
+      void setCredential(const P1::RestApi::ProtocolOneCredential& value);
       
       void execute();
 
@@ -57,7 +57,7 @@ namespace P1 {
       QPointer<P1::GameExecutor::GameExecutorService> _executorService;
       QPointer<P1::GameExecutor::ExecutorBase> _executor;
       P1::GameExecutor::FinishState _state;
-      P1::RestApi::GameNetCredential _credential;
+      P1::RestApi::ProtocolOneCredential _credential;
       bool _stopExecution;
     };
   }

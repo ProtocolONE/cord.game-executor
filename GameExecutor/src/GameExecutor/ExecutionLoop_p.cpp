@@ -159,7 +159,7 @@ namespace P1 {
       this->_stopExecution = true;
     }
 
-    void ExecutionLoopPrivate::setCredential(const P1::RestApi::GameNetCredential& value)
+    void ExecutionLoopPrivate::setCredential(const P1::RestApi::ProtocolOneCredential& value)
     {
       this->_credential = value;
     }

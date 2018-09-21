@@ -15,10 +15,6 @@
 
 #include <memory>
 
-namespace GameNetAuthHost {
-  class AuthWriter;
-}
-
 namespace P1 {
   namespace GameExecutor {
 

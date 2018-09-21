@@ -2,7 +2,7 @@
 
 #include <GameExecutor/ExecutorBase.h>
 
-#include <RestApi/GameNetCredential.h>
+#include <RestApi/ProtocolOneCredential.h>
 
 #include <Core/Service.h>
 #include <QObject>
@@ -21,8 +21,8 @@ public:
     virtual void execute(
       const P1::Core::Service &service, 
       GameExecutorService *executorService,
-      const P1::RestApi::GameNetCredential& credential) override;
+      const P1::RestApi::ProtocolOneCredential& credential) override;
 
-    P1::RestApi::GameNetCredential credential;
-    P1::RestApi::GameNetCredential secondCredential;
+    P1::RestApi::ProtocolOneCredential credential;
+    P1::RestApi::ProtocolOneCredential secondCredential;
 };

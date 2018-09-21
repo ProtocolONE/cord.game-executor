@@ -37,7 +37,7 @@ namespace P1 {
       void ExecutableFilePrivate::execute(
         const P1::Core::Service &service, 
         GameExecutorService *executorService,
-        const P1::RestApi::GameNetCredential& credential)
+        const P1::RestApi::ProtocolOneCredential& credential)
       {
         QString userIdTest;
         QString appKeyTest;

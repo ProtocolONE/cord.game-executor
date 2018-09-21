@@ -36,7 +36,7 @@ protected:
 
   ExecutorMock mockExecutor;
   P1::RestApi::RestApiManager restapiManger;
-  P1::RestApi::GameNetCredential defaultCredential;
+  P1::RestApi::ProtocolOneCredential defaultCredential;
   GameExecutorService executorService;
   Core::Service service;
 

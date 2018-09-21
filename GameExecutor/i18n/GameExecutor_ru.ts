@@ -18,12 +18,12 @@
     <message>
         <location filename="../src/GameExecutor/Hook/DisableIEDefalutProxy.cpp" line="48"/>
         <source>WARNING_DISABLE_IE_DEFALUT_PROXY</source>
-        <translation>Во избежание проблем с подключением к игровому серверу не рекомендуется использовать функции «Автономная работа» и «Использовать прокси сервер для подключений LAN»; в браузере Internet Explorer. Вы хотите, чтобы GameNet автоматически отключил эти функции?</translation>
+        <translation>Во избежание проблем с подключением к игровому серверу не рекомендуется использовать функции «Автономная работа» и «Использовать прокси сервер для подключений LAN»; в браузере Internet Explorer. Вы хотите, чтобы ProtocolOne автоматически отключил эти функции?</translation>
     </message>
     <message>
         <location filename="../src/GameExecutor/Hook/DisableDEP.cpp" line="35"/>
         <source>WARNING_DISABLEDEP</source>
-        <translation>Игра не может быть запущена. В вашей ОС включена система предотвращения выполнения данных (DEP). Необходимо отключить DEP вручную. Если у вас возникнут проблемы с отключением, обратитесь в службу поддержки GameNet: https://support.gamenet.ru/</translation>
+        <translation>Игра не может быть запущена. В вашей ОС включена система предотвращения выполнения данных (DEP). Необходимо отключить DEP вручную. Если у вас возникнут проблемы с отключением, обратитесь в службу поддержки ProtocolOne: https://support.protocol.one/</translation>
     </message>
 </context>
 </TS>

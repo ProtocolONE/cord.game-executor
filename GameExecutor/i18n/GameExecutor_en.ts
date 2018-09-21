@@ -18,12 +18,12 @@
     <message>
         <location filename="../src/GameExecutor/Hook/DisableIEDefalutProxy.cpp" line="48"/>
         <source>WARNING_DISABLE_IE_DEFALUT_PROXY</source>
-        <translation type="unfinished">To avoid problems when connecting to the game server, do not use the &quot;Autonomous&quot; or &quot;Use a proxy server for LAN connections&quot; options in Internet Explorer. Would you like GameNet to disable these functions automatically?</translation>
+        <translation type="unfinished">To avoid problems when connecting to the game server, do not use the &quot;Autonomous&quot; or &quot;Use a proxy server for LAN connections&quot; options in Internet Explorer. Would you like ProtocolOne to disable these functions automatically?</translation>
     </message>
     <message>
         <location filename="../src/GameExecutor/Hook/DisableDEP.cpp" line="35"/>
         <source>WARNING_DISABLEDEP</source>
-        <translation type="unfinished">The game cannot be launched. Your OS has data execution prevention (DEP) enabled. You will have to disable DEP manually. If you encounter any problems disabling it, contact GameNet support at https://support.gamenet.ru/</translation>
+        <translation type="unfinished">The game cannot be launched. Your OS has data execution prevention (DEP) enabled. You will have to disable DEP manually. If you encounter any problems disabling it, contact ProtocolOne support at https://support.protocol.one/</translation>
     </message>
 </context>
 </TS>

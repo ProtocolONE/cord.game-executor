@@ -10,7 +10,7 @@ namespace P1 {
         \brief Позволяет запустить игру, работающую по схеме `https`. 
 
         \code
-        QUrl url("https://gamenet.ru");
+        QUrl url("https://protocol.one");
       
         Core::Service service;
         service.setUrl(url);

@@ -19,7 +19,7 @@ namespace P1 {
       void ExecutableFile::execute(
         const P1::Core::Service &service, 
         GameExecutorService *executorService,
-        const P1::RestApi::GameNetCredential& credential)
+        const P1::RestApi::ProtocolOneCredential& credential)
       {
         ExecutableFilePrivate* executor = new ExecutableFilePrivate(this);
 

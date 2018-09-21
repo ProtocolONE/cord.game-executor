@@ -31,7 +31,7 @@ namespace P1 {
         void execute(
           const P1::Core::Service &service, 
           GameExecutorService *executorService,
-          const P1::RestApi::GameNetCredential& credential);
+          const P1::RestApi::ProtocolOneCredential& credential);
 
       public slots:
         void shutdown(const QString& serviceId);

@@ -26,7 +26,7 @@ namespace P1 {
       emit this->postExecuteCompleted(service);
     }
 
-    void HookInterface::setCredential(const P1::RestApi::GameNetCredential& value)
+    void HookInterface::setCredential(const P1::RestApi::ProtocolOneCredential& value)
     {
       this->_credential = value;
     }

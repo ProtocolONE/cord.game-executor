@@ -9,7 +9,7 @@
 
 #include <RestApi/RestApiManager.h>
 #include <RestApi/RequestFactory.h>
-#include <RestApi/GameNetCredential.h>
+#include <RestApi/ProtocolOneCredential.h>
 #include <RestApi/HttpCommandRequest.h>
 #include <RestApi/FakeCache.h>
 #include <gtest/gtest.h>
@@ -25,14 +25,14 @@
 #include <QtConcurrent/QtConcurrentRun>
 
 using namespace P1;
-using P1::RestApi::GameNetCredential;
+using P1::RestApi::ProtocolOneCredential;
 
 class ExecutableFileTest : public ::testing::Test 
 {
 protected:
   virtual void SetUp() 
   {
-    restapi.setUri(QString("http://api.stg.gamenet.ru/restapi"));
+    restapi.setUri(QString("http://api.stg.protocol.one/restapi"));
     restapi.setCache(&cache);
     restapi.setRequest(P1::RestApi::RequestFactory::Http);
     P1::RestApi::RestApiManager::setCommonInstance(&restapi);
@@ -46,7 +46,7 @@ protected:
     const P1::Core::Service &srv, 
     int startCount, 
     P1::GameExecutor::FinishState finishState, 
-    P1::RestApi::GameNetCredential credential)
+    P1::RestApi::ProtocolOneCredential credential)
   {
     GameExecutor::Executor::ExecutableFile executor;
 
@@ -77,7 +77,7 @@ protected:
   RestApi::RestApiManager restapi;
   RestApi::HttpCommandRequest request;
   RestApi::FakeCache cache;
-  RestApi::GameNetCredential auth;
+  RestApi::ProtocolOneCredential auth;
 };
 
 TEST_F(ExecutableFileTest, Scheme) 
@@ -110,7 +110,7 @@ TEST_F(ExecutableFileTest, DISABLED_ArgumentParsing)
   QFile successOutput(QCoreApplication::applicationDirPath() + "/output.txt");
   successOutput.remove();
   
-  ExecutionFlow(srv, 1, P1::GameExecutor::Success, P1::RestApi::GameNetCredential());
+  ExecutionFlow(srv, 1, P1::GameExecutor::Success, P1::RestApi::ProtocolOneCredential());
 
   QString output;
   if (successOutput.open(QIODevice::ReadOnly)) {
@@ -142,12 +142,12 @@ TEST_F(ExecutableFileTest, DISABLED_ExternalFatalError)
   srv.setGameId("71");
   srv.setUrl(url);
 
-  ExecutionFlow(srv, 1, P1::GameExecutor::ExternalFatalError, P1::RestApi::GameNetCredential());
+  ExecutionFlow(srv, 1, P1::GameExecutor::ExternalFatalError, P1::RestApi::ProtocolOneCredential());
 }
 
 TEST_F(ExecutableFileTest, AuthorizationError) 
 {
-  GameNetCredential wrongAuth;
+    ProtocolOneCredential wrongAuth;
 
   QUrl url;
   url.setScheme("exe");
@@ -168,7 +168,7 @@ TEST_F(ExecutableFileTest, AuthorizationError)
 
 TEST_F(ExecutableFileTest, DISABLED_ServiceAuthorizationImpossibleError) 
 {
-  GameNetCredential auth; 
+    ProtocolOneCredential auth;
 
   auth.setUserId("400001000133689350"); //gna_blocked_acc@unit.test
   auth.setAppKey("c68dc3316c48868c243db70bb878f473b22c457b");
@@ -191,7 +191,7 @@ TEST_F(ExecutableFileTest, DISABLED_ServiceAuthorizationImpossibleError)
 
 TEST_F(ExecutableFileTest, DISABLED_ServiceAccountBlockedError)
 {
-  GameNetCredential auth; 
+    ProtocolOneCredential auth;
   auth.setUserId("400001000133689350"); //gna_blocked_acc@unit.test
   auth.setAppKey("c68dc3316c48868c243db70bb878f473b22c457b");
 

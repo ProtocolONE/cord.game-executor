@@ -34,7 +34,7 @@ namespace P1 {
         virtual void execute(
           const P1::Core::Service &service, 
           GameExecutorService *executorService,
-          const P1::RestApi::GameNetCredential& credential) override;
+          const P1::RestApi::ProtocolOneCredential& credential) override;
 
       };
     }

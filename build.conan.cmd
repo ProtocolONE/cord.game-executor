@@ -1,10 +1,8 @@
 set PackageName=GameExecutor/1.0.0@common/stable
 
-conan install . -pr msvcprofile
-conan create . %PackageName% -pr msvcprofile
+@call install.deps.cmd
 
-conan install . -pr msvcprofiled
-conan create . %PackageName% -pr msvcprofiled
+conan create . %PackageName% -pr conan/msvcprofile
+conan create . %PackageName% -pr conan/msvcprofiled
 
-@rem conan test CoreTest Core/1.0.0@common/stable -pr msvcprofile
 conan upload %PackageName% --all -r=p1

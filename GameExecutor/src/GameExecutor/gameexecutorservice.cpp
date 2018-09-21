@@ -54,7 +54,7 @@ namespace P1 {
 
     void GameExecutorService::execute(
       const P1::Core::Service &service, 
-      const P1::RestApi::GameNetCredential &credential)
+      const P1::RestApi::ProtocolOneCredential &credential)
     {
       QString id = service.id();
       if (id.isEmpty()) {

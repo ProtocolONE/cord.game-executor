@@ -42,7 +42,7 @@ namespace P1 {
 
       void execute(
         const P1::Core::Service &service, 
-        const P1::RestApi::GameNetCredential &credential);
+        const P1::RestApi::ProtocolOneCredential &credential);
 
       void terminateAll();
       void terminate(const QString& serviceId);

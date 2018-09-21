@@ -3,7 +3,7 @@
 #include <GameExecutor/gameexecutor_global.h>
 #include <GameExecutor/Enum.h>
 
-#include <RestApi/GameNetCredential.h>
+#include <RestApi/ProtocolOneCredential.h>
 
 #include <Core/Service.h>
 
@@ -62,7 +62,7 @@ namespace P1 {
       virtual void PostExecute(Core::Service &service, P1::GameExecutor::FinishState state);
 
       /**
-       * \fn  void HookInterface::setCredential(const P1::RestApi::GameNetCredential& value);
+       * \fn  void HookInterface::setCredential(const P1::RestApi::ProtocolOneCredential& value);
        *
        * \brief Установить авторизацию, с которой запускается игра.
        *
@@ -72,7 +72,7 @@ namespace P1 {
        * \param value Авторизация пользователя.
        */
 
-      void setCredential(const P1::RestApi::GameNetCredential& value);
+      void setCredential(const P1::RestApi::ProtocolOneCredential& value);
 
     signals:
       void canExecuteCompleted(const P1::Core::Service &service, P1::GameExecutor::FinishState result);
@@ -80,7 +80,7 @@ namespace P1 {
       void postExecuteCompleted(const P1::Core::Service &service);
 
     protected:
-      P1::RestApi::GameNetCredential _credential;
+      P1::RestApi::ProtocolOneCredential _credential;
     };
   }
 }

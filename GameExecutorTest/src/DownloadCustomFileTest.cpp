@@ -22,7 +22,7 @@ public:
   void SetUp() {
      srvHook.setArea(P1::Core::Service::Live);
      srvHook.setInstallPath(QCoreApplication::applicationDirPath());
-     srvHook.setTorrentUrl(QUrl("http://files.gamenet.ru/update/bs/"));
+     srvHook.setTorrentUrl(QUrl("http://files.protocol.one/update/bs/"));
   }
 
   P1::GameExecutor::FinishState executeHookCanStep(P1::Core::Service &service) 
@@ -47,8 +47,8 @@ TEST_F(DownloadCustomFileTest, Success)
   QUrlQuery query;
 
   query.addQueryItem("downloadCustomFile", 
-    "./launcher/serverinfo_back.xml,http://files.gamenet.ru/update/bs/,1,"\
-    "./config/lastlogin.xml,http://files.gamenet.ru/update/bs/,1");
+    "./launcher/serverinfo_back.xml,http://files.protocol.one/update/bs/,1,"\
+    "./config/lastlogin.xml,http://files.protocol.one/update/bs/,1");
   
   url.setQuery(query);
   srvHook.setUrl(url);
@@ -75,7 +75,7 @@ TEST_F(DownloadCustomFileTest, SuccessNotOverrideMode)
 {
   QUrl url;
   QUrlQuery query;
-  query.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,http://files.gamenet.ru/update/bs/,0");
+  query.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,http://files.protocol.one/update/bs/,0");
 
   url.setQuery(query);
   srvHook.setUrl(url);
@@ -111,7 +111,7 @@ TEST_F(DownloadCustomFileTest, WrongArgsCount)
 {
   QUrl url;
   QUrlQuery query;
-  query.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,http://files.gamenet.ru/update/bs/");
+  query.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,http://files.protocol.one/update/bs/");
   url.setQuery(query);
   srvHook.setUrl(url);
 

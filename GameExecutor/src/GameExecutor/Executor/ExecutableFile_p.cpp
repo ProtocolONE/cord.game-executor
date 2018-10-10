@@ -1,7 +1,7 @@
 /****************************************************************************
 ** This file is a part of Syncopate Limited GameNet Application or it parts.
 **
-** Copyright (ï¿½) 2011 - 2012, Syncopate Limited and/or affiliates. 
+** Copyright (©) 2011 - 2012, Syncopate Limited and/or affiliates. 
 ** All rights reserved.
 **
 ** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
@@ -15,9 +15,7 @@
 #include <RestApi/Commands/User/GetUserServiceAccount>
 
 #include <QtCore/QCoreApplication>
-#include <QtCore/QUrl>
-#include <QtCore/QUrlQuery>
-#include <QtCore/QMetaObject>
+#include <QMetaObject>
 
 using RestApi::Commands::User::GetUserServiceAccount;
 using RestApi::Commands::User::Response::UserServiceAccountResponse;
@@ -70,13 +68,12 @@ namespace GGS {
 
         this->_service = service;
         QUrl url = this->_service.url();
-        QUrlQuery urlQuery(url);
 
         this->_path = url.path();
-        this->_workingDir = urlQuery.queryItemValue("workingDir");
-        this->_args = urlQuery.queryItemValue("args");
+        this->_workingDir = url.queryItemValue("workingDir");
+        this->_args = url.queryItemValue("args");
 
-        QString injectDll = urlQuery.queryItemValue("injectDll");
+        QString injectDll = url.queryItemValue("injectDll");
         RestApi::GameNetCredential credential = RestApi::RestApiManager::commonInstance()->credential();
 
         this->_activityRequestArgs = 
@@ -89,8 +86,8 @@ namespace GGS {
         while ((pos = rx.indexIn(this->_args, pos)) != -1) {
           pos += rx.matchedLength();
           QString entry = rx.cap(1);
-          if (urlQuery.hasQueryItem(entry)) {
-            this->_args.replace("%" + entry + "%", urlQuery.queryItemValue(entry), Qt::CaseInsensitive);
+          if (url.hasQueryItem(entry)) {
+            this->_args.replace("%" + entry + "%", url.queryItemValue(entry), Qt::CaseInsensitive);
           }
         }
 
@@ -165,24 +162,25 @@ namespace GGS {
         _PROCESS_INFORMATION* pi = process->pid();
         DEBUG_LOG << "launcher process pid" << (pi ? pi->dwProcessId : 0);
         
-        this->_syncJob = CreateJobObject(NULL, NULL);
-        if (this->_syncJob) {
-          JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
-          jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
-          if (!SetInformationJobObject(this->_syncJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli))) {
-            DWORD res = GetLastError();
-            DEBUG_LOG << "SetInformationJobObject error " << res;
-          }
+        // 22.07.2013 Îòêëþ÷èë ïî òðåáîâàíèþ.
+        //this->_syncJob = CreateJobObject(NULL, NULL);
+        //if (this->_syncJob) {
+        //  JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
+        //  jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+        //  if (!SetInformationJobObject(this->_syncJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli))) {
+        //    DWORD res = GetLastError();
+        //    DEBUG_LOG << "SetInformationJobObject error " << res;
+        //  }
 
-          if (!AssignProcessToJobObject(this->_syncJob, process->pid()->hProcess)) {
-            DWORD res = GetLastError();
-            DEBUG_LOG << "AssignProcessToJobObject error " << res;
-          }
+        //  if (!AssignProcessToJobObject(this->_syncJob, process->pid()->hProcess)) {
+        //    DWORD res = GetLastError();
+        //    DEBUG_LOG << "AssignProcessToJobObject error " << res;
+        //  }
 
-        } else {
-          DWORD res = GetLastError();
-          DEBUG_LOG << "Create job error " << res;
-        }
+        //} else {
+        //  DWORD res = GetLastError();
+        //  DEBUG_LOG << "Create job error " << res;
+        //}
 
         emit this->started(this->_service);
       }
@@ -215,9 +213,7 @@ namespace GGS {
         CRITICAL_LOG << "with error code" << exitCode;
 
         QUrl url = this->_service.url();
-        QUrlQuery urlQuery;
-        urlQuery.addQueryItem("exitCode", QString::number(exitCode));
-        url.setQuery(urlQuery);
+        url.addQueryItem("exitCode", QString::number(exitCode));
         this->_service.setUrl(url);
         emit this->finished(this->_service, ExternalFatalError);
       }
@@ -309,11 +305,7 @@ namespace GGS {
         if (!this->_data)
           return;
 
-<<<<<<< HEAD
-        QByteArray serviceId = service.id().toLatin1();
-=======
         QByteArray serviceId = service.id().toAscii();
->>>>>>> c737ca4... QGNA-260 Ð”Ð¾Ð±Ð°Ð²Ð¸Ð» Ð·Ð°Ð¿Ð¸ÑÑŒ Ð² Ð¼ÐµÐ¼Ð¾Ñ€Ð¸ Ñ„Ð°Ð¹Ð» serviceId
         memcpy_s(this->_data, SERVICE_ID_SIZE_MAX, serviceId.data(), serviceId.size());
         reinterpret_cast<char *>(this->_data)[serviceId.size()] = '\0';
       }

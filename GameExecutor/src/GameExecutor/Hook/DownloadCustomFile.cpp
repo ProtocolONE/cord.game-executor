@@ -3,7 +3,6 @@
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
-#include <QtCore/QUrlQuery>
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
@@ -23,14 +22,12 @@ namespace GGS {
       void DownloadCustomFile::CanExecute(GGS::Core::Service &service)
       {
         QUrl url = service.url();
-        QUrlQuery urlQuery(url);
-
-        if (!urlQuery.hasQueryItem("downloadCustomFile")) {
+        if (!url.hasQueryItem("downloadCustomFile")) {
           emit this->canExecuteCompleted(service, GGS::GameExecutor::Success);
           return;
         }
         
-        this->_args = urlQuery.queryItemValue("downloadCustomFile").split(',');
+        this->_args = url.queryItemValue("downloadCustomFile").split(',');
 
         if ((this->_args.count() % 3)) {
           emit this->canExecuteCompleted(service, GGS::GameExecutor::CanExecutionHookBreak);
@@ -82,7 +79,7 @@ namespace GGS {
 
 			QNetworkRequest request(this->_url);
 			QString oldLastModifed = this->loadLastModifiedDate(this->_url.toString());
-			request.setRawHeader("If-Modified-Since", oldLastModifed.toLatin1());
+			request.setRawHeader("If-Modified-Since", oldLastModifed.toAscii());
 
 			QNetworkReply *reply = this->_manager.head(request);
 			connect(reply, SIGNAL(finished()), this, SLOT(slotReplyDownloadFinished()));
@@ -126,7 +123,7 @@ namespace GGS {
 			  return;
 		  } 
 
-		  this->_lastModified = QString::fromLatin1(reply->rawHeader(QByteArray("Last-Modified")));
+		  this->_lastModified = QString::fromAscii(reply->rawHeader(QByteArray("Last-Modified")));
 
 		  if (httpCode == 304 &&
 			  QFile::exists(this->_downloadFilePath)) {

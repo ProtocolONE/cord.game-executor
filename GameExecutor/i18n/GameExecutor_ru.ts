@@ -10,11 +10,6 @@
         <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="95"/>
         <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="156"/>
         <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="179"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="59"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="79"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="86"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="105"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="149"/>
         <source>HOOK_CANEXECUTE_FAIL</source>
         <translation>Ошибка</translation>
     </message>
@@ -25,11 +20,6 @@
         <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="95"/>
         <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="156"/>
         <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="179"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="59"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="79"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="86"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="105"/>
-        <location filename="../src/GameExecutor/Hook/Mw2DownloadAndCheckXmlConfig.cpp" line="149"/>
         <source>MW2_DOWNLOAD_CUSTOM_FILE_INFO</source>
         <translation>Не удалось корректно обновить файл настроек. Попробуйте запустить игру ещё раз или обратитесь в службу технической поддержки https://support.gamenet.ru</translation>
     </message>

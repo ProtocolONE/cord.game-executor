@@ -26,7 +26,6 @@
 #include <iostream>
 
 #include <QtCore/QCoreApplication>
-#include <QtCore/QUrlQuery>
 #include <QMetaType>
 
 using GGS::RestApi::RestApiManager;
@@ -54,10 +53,8 @@ int main(int argc, char *argv[])
        
 
     QUrl url;
-    QUrlQuery query;
-    query.addQueryItem("downloadCustomFile", "launcher/serverinfo_back.xml");
-    query.addQueryItem("downloadCustomFileOverride", "1");
-    url.setQuery(query);
+    url.addQueryItem("downloadCustomFile", "launcher/serverinfo_back.xml");
+    url.addQueryItem("downloadCustomFileOverride", "1");
 
 
     Service srvHook;

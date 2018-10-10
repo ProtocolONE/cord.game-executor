@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /****************************************************************************
 ** This file is a part of Syncopate Limited GameNet Application or it parts.
 **
@@ -9,17 +8,10 @@
 ** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 ****************************************************************************/
 
-=======
->>>>>>> 9a72277... QGNA-293 Запуск установки редистра для МВ2 при ошибке запуска игры
 #include <GameExecutor/Hook/ExternalDependency.h>
 #include <QtCore/QDebug>
 #include <QtCore/QProcess>
 #include <QtCore/QFile>
-<<<<<<< HEAD
-#include <QtCore/QUrl>
-#include <QtCore/QUrlQuery>
-=======
->>>>>>> 9a72277... QGNA-293 Запуск установки редистра для МВ2 при ошибке запуска игры
 
 namespace GGS {
   namespace GameExecutor {
@@ -70,16 +62,9 @@ namespace GGS {
       void ExternalDependency::PostExecute(Core::Service &service, GGS::GameExecutor::FinishState state)
       {
         this->_isInstalled = !this->_isInstalled;
-<<<<<<< HEAD
-        QUrlQuery query(service.url());
-
-        if (state == GGS::GameExecutor::ExternalFatalError &&
-          query.queryItemValue("exitCode") == "1" &&
-=======
 
         if (state == GGS::GameExecutor::ExternalFatalError &&
           service.url().queryItemValue("exitCode") == "1" &&
->>>>>>> 9a72277... QGNA-293 Запуск установки редистра для МВ2 при ошибке запуска игры
           !this->_isInstalled) {
             this->install(service);
             return;

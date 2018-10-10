@@ -12,7 +12,6 @@
 #include <Core/Service>
 
 #include <QtCore/QUrl>
-#include <QtCore/QUrlQuery>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
@@ -53,11 +52,10 @@ public:
 TEST_F(DownloadCustomFileTest, Success) 
 {
   QUrl url;
-  QUrlQuery query;
-  query.addQueryItem("downloadCustomFile", 
+  url.addQueryItem("downloadCustomFile", 
     "./launcher/serverinfo_back.xml,http://files.gamenet.ru/update/bs/,1,"\
     "./config/lastlogin.xml,http://files.gamenet.ru/update/bs/,1");
-  url.setQuery(query);
+  
   srvHook.setUrl(url);
 
   QDir().mkpath(QCoreApplication::applicationDirPath() + "/live/launcher");
@@ -81,9 +79,8 @@ TEST_F(DownloadCustomFileTest, Success)
 TEST_F(DownloadCustomFileTest, SuccessNotOverrideMode) 
 {
   QUrl url;
-  QUrlQuery query;
-  query.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,http://files.gamenet.ru/update/bs/,0");
-  url.setQuery(query);
+  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,http://files.gamenet.ru/update/bs/,0");
+
   srvHook.setUrl(url);
 
   QDir().mkpath(QCoreApplication::applicationDirPath() + "/live/launcher");
@@ -103,9 +100,7 @@ TEST_F(DownloadCustomFileTest, SuccessNotOverrideMode)
 TEST_F(DownloadCustomFileTest, UncorrectDomainFail) 
 {
   QUrl url;
-  QUrlQuery query;
-  query.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,http://someVeryBadDomain.yes/update/bs/,1");
-  url.setQuery(query);
+  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,http://someVeryBadDomain.yes/update/bs/,1");
 
   srvHook.setUrl(url);
 
@@ -117,18 +112,13 @@ TEST_F(DownloadCustomFileTest, UncorrectDomainFail)
 TEST_F(DownloadCustomFileTest, WrongArgsCount) 
 {
   QUrl url;
-  QUrlQuery query;
-  query.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,http://files.gamenet.ru/update/bs/");
-  url.setQuery(query);
+  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,http://files.gamenet.ru/update/bs/");
 
   srvHook.setUrl(url);
 
   ASSERT_EQ(GGS::GameExecutor::CanExecutionHookBreak, executeHookCanStep(srvHook));
 
-  QUrlQuery query2;
-  query2.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,1,someFile,3");
-  url.setQuery(query2);
-
+  url.addQueryItem("downloadCustomFile", "./launcher/serverinfo_back.xml,1,someFile,3");
   srvHook.setUrl(url);
 
   ASSERT_EQ(GGS::GameExecutor::CanExecutionHookBreak, executeHookCanStep(srvHook));

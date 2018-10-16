@@ -34,18 +34,11 @@ namespace P1 {
 
         emit this->started(service);
 
-        QUrl finalUrl;
-        QString cookie = credential.cookie();
-
-        if (!cookie.isEmpty()) {
-          finalUrl.setUrl("https://gnlogin.ru");
-          QUrlQuery urlQuery(finalUrl);
-          urlQuery.addQueryItem("auth", cookie);
-          urlQuery.addQueryItem("rp", QUrl::toPercentEncoding(service.url().toString()));
-          finalUrl.setQuery(urlQuery);
-        } else {
-          finalUrl = service.url();
-        }
+        // UNDONE refresh token, when add method getToken
+        QUrl finalUrl = service.url();
+        QUrlQuery urlQuery(finalUrl);
+        urlQuery.addQueryItem("jwt", credential.acccessTokent());
+        finalUrl.setQuery(urlQuery);
 
         HINSTANCE result = 
           ShellExecute(0, 0, reinterpret_cast<const WCHAR*>(finalUrl.toString().utf16()), 0, 0, SW_NORMAL);

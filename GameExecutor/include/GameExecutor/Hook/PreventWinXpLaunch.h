@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <Core/Service.h>
+#include <Core/service.h>
 #include <GameExecutor/gameexecutor_global.h>
 #include <GameExecutor/HookInterface.h>
 

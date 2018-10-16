@@ -26,33 +26,13 @@ namespace P1 {
       FinishState state;
 
       switch(errorCode) {
-      case RestApi::CommandBase::AuthorizationFailed:
-      case RestApi::CommandBase::AccountNotExists:
-      case RestApi::CommandBase::AuthorizationLimitExceed:
-      case RestApi::CommandBase::UnknownAccountStatus:
+      case RestApi::Command::CommandBase::Unauthorized:
         state = AuthorizationError;
         break;
-      case RestApi::CommandBase::GuestExpired:
-        state = GuestAccountExpired;
+      case RestApi::Command::CommandBase::NetworkError:
+      case RestApi::Command::CommandBase::BadFormat:
+        state = ExternalFatalError;
         break;
-      case RestApi::CommandBase::ServiceAccountBlocked:
-        state = ServiceAccountBlockedError;
-        break;
-      case RestApi::CommandBase::ServiceAuthorizationImpossible:
-        state = ServiceAuthorizationImpossible;
-        break;
-      case RestApi::CommandBase::PakkanenPermissionDenied:
-        state = PakkanenPermissionDenied;
-        break;
-      case RestApi::CommandBase::PakkanenPhoneVerification:
-      case RestApi::CommandBase::PakkanenVkVerification:
-      case RestApi::CommandBase::PakkanenVkPhoneVerification:
-        state = PakkanenPhoneVerification;
-        break;
-      case RestApi::CommandBase::PakkanenGeoIpBlocked:
-        state = PakkanenGeoIpBlocked;
-        break;
-
       default:
         state = UnhandledRestApiError;
       }

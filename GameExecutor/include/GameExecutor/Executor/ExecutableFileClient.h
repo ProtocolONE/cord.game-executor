@@ -3,7 +3,6 @@
 #include <GameExecutor/gameexecutor_global.h>
 
 #include <RestApi/RestApiManager.h>
-#include <RestApi/CommandBase.h>
 
 #include <QtCore/QObject>
 

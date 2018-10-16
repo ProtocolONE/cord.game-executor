@@ -3,18 +3,12 @@
 #include <GameExecutor/Executor/ExecutableFile_p.h>
 
 #include <Core/System/HardwareId.h>
-#include <RestApi/Commands/User/GetUserServiceAccount.h>
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDateTime>
 #include <QtCore/QUrlQuery>
 #include <QtCore/QDebug>
-#include <QMetaObject>
 
-#include <sstream>
-
-using P1::RestApi::Commands::User::GetUserServiceAccount;
-using P1::RestApi::Commands::User::Response::UserServiceAccountResponse;
 
 namespace P1 {
   namespace GameExecutor {
@@ -28,10 +22,6 @@ namespace P1 {
         
         QObject::connect(&this->_client, &ExecutableFileClient::finished, 
           this, &ExecutableFilePrivate::launcherFinished);
-      }
-
-      ExecutableFilePrivate::~ExecutableFilePrivate()
-      {
       }
 
       void ExecutableFilePrivate::execute(
@@ -65,32 +55,35 @@ namespace P1 {
         }
         
         this->_args.replace("%userId%", credential.userId(), Qt::CaseInsensitive);
-        this->_args.replace("%appKey%", credential.appKey(), Qt::CaseInsensitive);
+        this->launcherStart();
 
-        bool needAuth = 
-          -1 != this->_args.indexOf("%token%", 0, Qt::CaseInsensitive)
-          || -1 != this->_args.indexOf("%login%", 0, Qt::CaseInsensitive);
 
-        this->_executorService = executorService;
+        // INFO Auth unsupported for now.
 
-        if (!needAuth) {
-          this->launcherStart();
-          return;
-        }
+        //bool needAuth = 
+        //  -1 != this->_args.indexOf("%token%", 0, Qt::CaseInsensitive)
+        //  || -1 != this->_args.indexOf("%login%", 0, Qt::CaseInsensitive);
 
-        GetUserServiceAccount *cmd = new GetUserServiceAccount();
-        cmd->setVersion("1");
-        cmd->setServiceId(service.id());
-        cmd->setHwid(P1::Core::System::HardwareId::value());
+        //this->_executorService = executorService;
 
-        cmd->setAuthRequire(false);
-        cmd->appendParameter("userId", credential.userId());
-        cmd->appendParameter("appKey", credential.appKey());
+        //if (!needAuth) {
+        //  this->launcherStart();
+        //  return;
+        //}
 
-        QObject::connect(cmd, &GetUserServiceAccount::result,
-          this, &ExecutableFilePrivate::getUserServiceAccountResult, Qt::DirectConnection);
+        //GetUserServiceAccount *cmd = new GetUserServiceAccount();
+        //cmd->setVersion("1");
+        //cmd->setServiceId(service.id());
+        //cmd->setHwid(P1::Core::System::HardwareId::value());
 
-        cmd->execute();
+        //cmd->setAuthRequire(false);
+        //cmd->appendParameter("userId", credential.userId());
+        //cmd->appendParameter("appKey", credential.appKey());
+
+        //QObject::connect(cmd, &GetUserServiceAccount::result,
+        //  this, &ExecutableFilePrivate::getUserServiceAccountResult, Qt::DirectConnection);
+
+        //cmd->execute();
       }
       
       void ExecutableFilePrivate::shutdown(const QString& serviceId)
@@ -101,31 +94,31 @@ namespace P1 {
         this->_client.stopProcess();
       }
 
-      void ExecutableFilePrivate::getUserServiceAccountResult(P1::RestApi::CommandBase::CommandResults result)
-      {
-        GetUserServiceAccount *cmd = qobject_cast<GetUserServiceAccount*>(QObject::sender());
-        if (!cmd)
-          return;
+      //void ExecutableFilePrivate::getUserServiceAccountResult(P1::RestApi::CommandBase::CommandResults result)
+      //{
+      //  GetUserServiceAccount *cmd = qobject_cast<GetUserServiceAccount*>(QObject::sender());
+      //  if (!cmd)
+      //    return;
 
-        cmd->deleteLater();  
+      //  cmd->deleteLater();  
 
-        if (result == P1::RestApi::CommandBase::NoError) {
-          UserServiceAccountResponse *response = cmd->response();
+      //  if (result == P1::RestApi::CommandBase::NoError) {
+      //    UserServiceAccountResponse *response = cmd->response();
 
-          this->_args.replace("%login%", response->getLogin(), Qt::CaseInsensitive);
-          this->_args.replace("%token%", response->getToken(), Qt::CaseInsensitive);
-          this->launcherStart();
-          return;
-        }
+      //    this->_args.replace("%login%", response->getLogin(), Qt::CaseInsensitive);
+      //    this->_args.replace("%token%", response->getToken(), Qt::CaseInsensitive);
+      //    this->launcherStart();
+      //    return;
+      //  }
 
-        int errorCode = cmd->getGenericErrorMessageCode();
+      //  int errorCode = cmd->getGenericErrorMessageCode();
 
-        FinishState state = (P1::RestApi::CommandBase::GenericError == result)
-          ? ExecutorBase::finishStateFromRestApiErrorCode(errorCode) : ExternalFatalError;
+      //  FinishState state = (P1::RestApi::CommandBase::GenericError == result)
+      //    ? ExecutorBase::finishStateFromRestApiErrorCode(errorCode) : ExternalFatalError;
 
-        CRITICAL_LOG << "with error code" << errorCode;
-        this->finished(this->_service, state);
-      }
+      //  CRITICAL_LOG << "with error code" << errorCode;
+      //  this->finished(this->_service, state);
+      //}
 
       void ExecutableFilePrivate::launcherStarted()
       {

@@ -55,9 +55,6 @@
     <ClCompile Include="src\DownloadCustomFileTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ExecutableFileTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\GameExecutorTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

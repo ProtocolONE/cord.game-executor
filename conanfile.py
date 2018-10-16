@@ -26,7 +26,12 @@ class CoreConan(ConanFile):
       self.output.warn('Using Qt: conan-{0}'.format(self.info.requires["Qt"].full_package_id))
 
       if self.options.shared == "False":
-        tools.replace_in_file("{0}/{0}.vcxproj".format(componentName), "<ConfigurationType>DynamicLibrary</ConfigurationType>", "<ConfigurationType>StaticLibrary</ConfigurationType>")
+        tools.replace_in_file("{0}/{0}.vcxproj".format(componentName), "<ConfigurationType>DynamicLibrary</ConfigurationType>", "<ConfigurationType>StaticLibrary</ConfigurationType>", strict=False)
+        tools.replace_in_file("{0}/{0}.vcxproj".format(componentName), "GAMEEXECUTOR_LIB;", "GAMEEXECUTOR_STATIC_LIB;", strict=False)
+      
+      if self.options.shared == "True":
+        tools.replace_in_file("{0}/{0}.vcxproj".format(componentName), "<ConfigurationType>StaticLibrary</ConfigurationType>", "<ConfigurationType>DynamicLibrary</ConfigurationType>", strict=False)
+        tools.replace_in_file("{0}/{0}.vcxproj".format(componentName), "GAMEEXECUTOR_STATIC_LIB;", "GAMEEXECUTOR_LIB;", strict=False)
 
       libMachine = {
         "x86" : "MachineX86"

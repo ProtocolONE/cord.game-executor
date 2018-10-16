@@ -9,13 +9,9 @@
 #include <QtCore/QProcess>
 #include <QtCore/QSysInfo>
 
-#include <RestApi/ProtocolOneCredential.h>
-
 #include <Core/System/ProcessTools.h>
 
 #include <sstream>
-
-using P1::RestApi::ProtocolOneCredential;
 
 namespace P1{
   namespace GameExecutor{
@@ -62,7 +58,7 @@ namespace P1{
       {
         DEBUG_LOG << "Start " << pathToExe << workDirectory;
         
-        // HACK ППц нашел XP где обратные слешы не работают.!
+        // INFO It's important to replace separators.
         QString path = QDir::toNativeSeparators(pathToExe);
         QString commandLine = QString("\"%1\" %2").arg(path, args);
 

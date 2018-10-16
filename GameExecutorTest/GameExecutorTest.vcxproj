@@ -19,7 +19,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -56,10 +56,10 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>UNICODE;WIN32;QT_DLL;NOMINMAX;QT_CORE_LIB;QT_GUI_LIB;QT_SQL_LIB;QT_TESTLIB_LIB;QT_CONCURRENT_LIB;QT_XML_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING;CORE_STATIC_LIB;SETTINGS_STATIC_LIB;APPLICATION_STATIC_LIB;RESTAPI_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;WIN32;QT_DLL;NOMINMAX;QT_CORE_LIB;QT_GUI_LIB;QT_SQL_LIB;QT_TESTLIB_LIB;QT_CONCURRENT_LIB;QT_XML_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING;GAMEEXECUTOR_STATIC_LIB;CORE_STATIC_LIB;SETTINGS_STATIC_LIB;APPLICATION_STATIC_LIB;RESTAPI_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;$(QTDIR)\include;.\;$(ProjectDir)include;$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include;$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include;$(SolutionDir)Common\include;$(ProjectDir)..\GameExecutor\include;$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtTest;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(ProjectDir)deps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level3</WarningLevel>
@@ -70,7 +70,7 @@
       <OutputFile>$(TargetPath)</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;$(SolutionDir)!build\GameExecutor\$(Configuration);$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\lib;$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\lib;$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>qtmaind.lib;GameExecutorX86d.lib;RestApiX86d.lib;CoreX86d.lib;SettingsX86d.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Sqld.lib;Qt5Testd.lib;Qt5Concurrentd.lib;Qt5Xmld.lib;Qt5Widgetsd.lib;Qt5Networkd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Wininet.lib;qtmaind.lib;GameExecutorX86d.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Sqld.lib;Qt5Testd.lib;Qt5Concurrentd.lib;Qt5Xmld.lib;Qt5Widgetsd.lib;Qt5Networkd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
@@ -130,14 +130,14 @@ xcopy /Y /I /R "$(QTDIR)\bin\icuuc53.dll" "$(TargetDir)"</Command>
       <OutputFile>.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
       <ExecutionDescription>Moc'ing %(Identity)...</ExecutionDescription>
       <IncludePath>.\GeneratedFiles\$(ConfigurationName)\.;.\GeneratedFiles;$(QTDIR)\include;.;$(ProjectDir)include;$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include;$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include;$(SolutionDir)Common\include;$(ProjectDir)..\GameExecutor\include;$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtTest;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(ProjectDir)deps</IncludePath>
-      <Define>UNICODE;WIN32;QT_DLL;NOMINMAX;QT_CORE_LIB;QT_GUI_LIB;QT_SQL_LIB;QT_TESTLIB_LIB;QT_CONCURRENT_LIB;QT_XML_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING;CORE_STATIC_LIB;SETTINGS_STATIC_LIB;APPLICATION_STATIC_LIB;RESTAPI_STATIC_LIB;_USING_V110_SDK71_;_UNICODE</Define>
+      <Define>UNICODE;WIN32;QT_DLL;NOMINMAX;QT_CORE_LIB;QT_GUI_LIB;QT_SQL_LIB;QT_TESTLIB_LIB;QT_CONCURRENT_LIB;QT_XML_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING;GAMEEXECUTOR_STATIC_LIB;CORE_STATIC_LIB;SETTINGS_STATIC_LIB;APPLICATION_STATIC_LIB;RESTAPI_STATIC_LIB;%(PreprocessorDefinitions)</Define>
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>UNICODE;WIN32;QT_NO_DEBUG;NDEBUG;NOMINMAX;QT_CORE_LIB;QT_GUI_LIB;QT_SQL_LIB;QT_TESTLIB_LIB;QT_CONCURRENT_LIB;QT_XML_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING;CORE_STATIC_LIB;SETTINGS_STATIC_LIB;APPLICATION_STATIC_LIB;RESTAPI_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;WIN32;QT_NO_DEBUG;NDEBUG;NOMINMAX;QT_CORE_LIB;QT_GUI_LIB;QT_SQL_LIB;QT_TESTLIB_LIB;QT_CONCURRENT_LIB;QT_XML_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING;GAMEEXECUTOR_STATIC_LIB;CORE_STATIC_LIB;SETTINGS_STATIC_LIB;APPLICATION_STATIC_LIB;RESTAPI_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;$(QTDIR)\include;.\;$(ProjectDir)include;$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include;$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include;$(SolutionDir)Common\include;$(ProjectDir)..\GameExecutor\include;$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtTest;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(ProjectDir)deps;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <Optimization>Disabled</Optimization>
@@ -148,7 +148,7 @@ xcopy /Y /I /R "$(QTDIR)\bin\icuuc53.dll" "$(TargetDir)"</Command>
       <OutputFile>$(TargetPath)</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;$(SolutionDir)!build\GameExecutor\$(Configuration);$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\lib;$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\lib;$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>qtmain.lib;GameExecutorX86.lib;RestApiX86.lib;CoreX86.lib;SettingsX86.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Sql.lib;Qt5Test.lib;Qt5Concurrent.lib;Qt5Xml.lib;Qt5Widgets.lib;Qt5Network.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Wininet.lib;qtmain.lib;GameExecutorX86.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Sql.lib;Qt5Test.lib;Qt5Concurrent.lib;Qt5Xml.lib;Qt5Widgets.lib;Qt5Network.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
@@ -203,14 +203,13 @@ xcopy /Y /I /R "$(QTDIR)\bin\icuuc53.dll" "$(TargetDir)"</Command>
       <OutputFile>.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
       <ExecutionDescription>Moc'ing %(Identity)...</ExecutionDescription>
       <IncludePath>.\GeneratedFiles\$(ConfigurationName)\.;.\GeneratedFiles;$(QTDIR)\include;.;$(ProjectDir)include;$(QGNACOMMONDIR)\GGS\Core\$(CoreArea)\include;$(QGNACOMMONDIR)\GGS\RestApi\$(RestApiArea)\include;$(SolutionDir)Common\include;$(ProjectDir)..\GameExecutor\include;$(QGNACOMMONDIR)\GGS\Settings\$(SettingsArea)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtTest;$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtNetwork;$(ProjectDir)deps</IncludePath>
-      <Define>UNICODE;WIN32;QT_NO_DEBUG;NDEBUG;NOMINMAX;QT_CORE_LIB;QT_GUI_LIB;QT_SQL_LIB;QT_TESTLIB_LIB;QT_CONCURRENT_LIB;QT_XML_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING;CORE_STATIC_LIB;SETTINGS_STATIC_LIB;APPLICATION_STATIC_LIB;RESTAPI_STATIC_LIB;_USING_V110_SDK71_;_UNICODE</Define>
+      <Define>UNICODE;WIN32;QT_NO_DEBUG;NDEBUG;NOMINMAX;QT_CORE_LIB;QT_GUI_LIB;QT_SQL_LIB;QT_TESTLIB_LIB;QT_CONCURRENT_LIB;QT_XML_LIB;QT_WIDGETS_LIB;QT_NETWORK_LIB;_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING;GAMEEXECUTOR_STATIC_LIB;CORE_STATIC_LIB;SETTINGS_STATIC_LIB;APPLICATION_STATIC_LIB;RESTAPI_STATIC_LIB;%(PreprocessorDefinitions)</Define>
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="deps\gmock-gtest-all.cc" />
     <ClCompile Include="src\DisableAeroHookTest.cpp" />
     <ClCompile Include="src\DownloadCustomFileTest.cpp" />
-    <ClCompile Include="src\ExecutableFileTest.cpp" />
     <ClCompile Include="src\FileUtils.cpp" />
     <ClCompile Include="src\GameExecutorTest.cpp" />
     <ClCompile Include="src\GameExecutor\Executor\ExecutorWrapper.cpp" />

@@ -5,7 +5,6 @@
 #include <GameExecutor/Executor/ExecutableFileClient.h>
 
 #include <Core/Service.h>
-#include <RestApi/CommandBase.h>
 
 #include <QtCore/QProcess>
 
@@ -26,7 +25,7 @@ namespace P1 {
 
       public:
         explicit ExecutableFilePrivate(QObject *parent);
-        virtual ~ExecutableFilePrivate();
+        virtual ~ExecutableFilePrivate() = default;
 
         void execute(
           const P1::Core::Service &service, 
@@ -45,7 +44,7 @@ namespace P1 {
         void launcherStarted();
         void launcherFinished(int exitCode);
 
-        void getUserServiceAccountResult(P1::RestApi::CommandBase::CommandResults result);
+        //void getUserServiceAccountResult(P1::RestApi::CommandBase::CommandResults result);
 
         GameExecutorService *_executorService;
         P1::Core::Service _service;

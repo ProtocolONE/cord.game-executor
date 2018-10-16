@@ -11,16 +11,10 @@ namespace P1 {
       InternalFatalError, 
       ExternalFatalError, 
       AuthorizationError = 5, 
-      GuestAccountExpired = 6,
       UnhandledRestApiError,
       CanExecutionHookBreak,
       PreExecutionHookBreak,
       AlreadyStartedError,
-      ServiceAccountBlockedError = 102,
-      ServiceAuthorizationImpossible = 125,
-      PakkanenPermissionDenied = 601,
-      PakkanenPhoneVerification = 603,
-      PakkanenGeoIpBlocked = 605,
     };
 
     Q_ENUMS(P1::GameExecutor::FinishState);
